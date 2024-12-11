@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
             key: 'Content-Security-Policy',
             value: "default-src 'self'; " +
                    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.youtube.com https://s.ytimg.com www.youtube.com; " +
-                   "script-src-elem 'self' 'unsafe-inline' https://www.youtube.com https://s.ytimg.com www.youtube.com; " +
+                   "script-src-elem 'self' 'unsafe-inline' https://www.youtube.com https://s.ytimg.com www.youtube.com https://vercel.live; " +
                    "style-src 'self' 'unsafe-inline'; " +
                    "frame-src https://www.youtube.com; " +
                    "connect-src https://www.youtube.com; " +

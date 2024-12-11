@@ -74,6 +74,8 @@ export default function Home() {
   useEffect(() => {
     const savedStartTime = localStorage.getItem("startTime");
     const savedTimerLength = localStorage.getItem("timerLength");
+    const remainingTime = localStorage.getItem("remainingTime");
+
   
     // Check if triggerReload is true
     if (triggerReload) {
@@ -114,6 +116,8 @@ export default function Home() {
         setIsTimerRunning(true);
         setIsElementsVisible(false);
         startCountdown(remaining);
+
+        setIframeSrc(`https://www.youtube.com/embed/${selectedYouTubeAudio}?autoplay=1`);
       } else {
         endTimer();
       }
@@ -124,17 +128,20 @@ export default function Home() {
   const startCountdown = (remainingTime: number) => {
     clearInterval(window.timerInterval);
     const interval = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1000) {
-          clearInterval(window.timerInterval);
-          clearInterval(interval);
-          endTimer();
-          return 0;
-        }
-        return prev - 1000;
+      requestAnimationFrame(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 1000) {
+            clearInterval(window.timerInterval);
+            clearInterval(interval);
+            endTimer();
+            return 0;
+          }
+          return prev - 1000;
+        });
       });
     }, 1000);
   };
+  
 
   const startTimer = () => {
     const now = Date.now();
