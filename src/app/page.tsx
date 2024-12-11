@@ -4,35 +4,10 @@ import { useEffect, useState, useRef } from "react";
 import { Image, Modal, ModalBody, ModalContent, Button } from "@nextui-org/react";
 import SettingsModal from "@/components/SettingsModal";
 import { sounds, gifs, endSounds } from "../components/SettingsModal/assets";
-import YouTube from 'react-youtube';
 
 
-type YouTubePlayer = {
-  loadVideoById: (videoId: string) => void;
-  playVideo: () => void;
-  stopVideo: () => void;
-  setVolume: (volume: number) => void;
-};
 
-const youtubeOptions = {
-  height: '0',
-  width: '0',
-  playerVars: {
-    autoplay: 0,
-    controls: 0,
-    mute: 1,
-    modestbranding: 1,
-    rel: 0,
-    fs: 0,
-    playsinline: 1,
-    iv_load_policy: 3,
-    disablekb: 1,
-    origin: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000', // Change here if testing locally
-    enablejsapi: 1,
-    noads: 1,
-    cc_load_policy: 0
-  }
-};
+
 
 export default function Home() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
@@ -52,9 +27,9 @@ export default function Home() {
   const [savedGif, setSavedGif] = useState<GifKeys | null>(null);
   const [selectedSound, setSelectedSound] = useState<SoundKeys | "">("");
   const [selectedEndSound, setSelectedEndSound] = useState<EndSoundKeys | "">("");
-  const player = useRef<YouTubePlayer | null>(null); // Specify type
-  const [selectedYouTubeAudio, setSelectedYouTubeAudio] = useState<string>('');
-  
+  const [selectedYouTubeAudio, setSelectedYouTubeAudio] = useState<string>('LJih9bxSacU');
+  const [iframeSrc, setIframeSrc] = useState("");
+
 
 
 
@@ -171,18 +146,9 @@ export default function Home() {
     setIsElementsVisible(false);
     startCountdown(timerLength);
 
-    if (player.current && selectedYouTubeAudio) {
-      try {
-        player.current.loadVideoById(selectedYouTubeAudio);
-        console.log('Loading YouTube video ID:', selectedYouTubeAudio);
-        
-        player.current.playVideo();
-        player.current.setVolume(0);
-      } catch (error) {
-        console.error('Error starting YouTube audio:', error);
-      }
+    if (selectedYouTubeAudio) {
+      setIframeSrc(`https://www.youtube.com/embed/${selectedYouTubeAudio}?autoplay=1`);
     }
-
   };
 
   const endTimer = () => {
@@ -194,9 +160,7 @@ export default function Home() {
     localStorage.removeItem("startTime");
     localStorage.removeItem("timerLength");
     clearInterval(window.timerInterval);
-    if (player.current && selectedYouTubeAudio) {
-      player.current.stopVideo();
-    }
+
   };
 
   const handleOptionSelect = (value: number) => {
@@ -222,20 +186,15 @@ export default function Home() {
 
   return (
     <div className="flex flex-col w-full h-screen items-center justify-center overflow-hidden">
-      <YouTube 
-        videoId={selectedYouTubeAudio} // Pass only the video ID
-        opts={youtubeOptions}
-        onReady={(event) => { 
-          player.current = event.target; 
-          event.target.setVolume(0);
-          event.target.mute();  // Additional muting
-        }}
-        onError={(error) => {
-          console.error('YouTube Player Error:', error);
-          // Optionally log the specific error details
-          console.log('Error details:', JSON.stringify(error));
-        }}
-      />
+      <iframe 
+        width="0" height="0" 
+        src={iframeSrc}
+        title="YouTube video player" 
+        frameBorder="0" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        allowFullScreen>
+      </iframe>
+      
       <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
         <SettingsModal onTriggerReload={handleTriggerReload} />
       </div>
