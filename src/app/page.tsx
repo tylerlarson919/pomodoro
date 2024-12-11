@@ -3,7 +3,7 @@
 import { useEffect, useState, useRef } from "react";
 import { Image, Modal, ModalBody, ModalContent, Button } from "@nextui-org/react";
 import SettingsModal from "@/components/SettingsModal";
-import { sounds, gifs } from "../components/SettingsModal/assets";
+import { sounds, gifs, endSounds } from "../components/SettingsModal/assets";
 import YouTube from 'react-youtube';
 
 
@@ -20,7 +20,17 @@ const youtubeOptions = {
   playerVars: {
     autoplay: 0,
     controls: 0,
-    mute: 1  // Mute the video by default
+    mute: 1,
+    modestbranding: 1,
+    rel: 0,
+    fs: 0,
+    playsinline: 1,
+    iv_load_policy: 3,
+    disablekb: 1,
+    origin: typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000', // Change here if testing locally
+    enablejsapi: 1,
+    noads: 1,
+    cc_load_policy: 0
   }
 };
 
@@ -34,14 +44,17 @@ export default function Home() {
   const [triggerReload, setTriggerReload] = useState(false);
 
   type SoundKeys = keyof typeof sounds; 
+  type EndSoundKeys = keyof typeof endSounds; 
   type GifKeys = keyof typeof gifs; 
   const [selectedGif, setSelectedGif] = useState<GifKeys | "">("");
   const [savedSound, setSavedSound] = useState<SoundKeys | null>(null);
+  const [savedEndSound, setSavedEndSound] = useState<EndSoundKeys | null>(null);
   const [savedGif, setSavedGif] = useState<GifKeys | null>(null);
   const [selectedSound, setSelectedSound] = useState<SoundKeys | "">("");
+  const [selectedEndSound, setSelectedEndSound] = useState<EndSoundKeys | "">("");
   const player = useRef<YouTubePlayer | null>(null); // Specify type
   const [selectedYouTubeAudio, setSelectedYouTubeAudio] = useState<string>('');
-
+  
 
 
 
@@ -61,18 +74,25 @@ export default function Home() {
 
   useEffect(() => {
     const sound = localStorage.getItem("selectedSound");
+    const endSound = localStorage.getItem("selectedEndSound");
     const gif = localStorage.getItem("selectedGif");
 
     if (sound !== null) {
         setSavedSound(sound as SoundKeys); // Type assertion
         setSelectedSound(sound as SoundKeys); // Update selectedSound
-    }
+        setSelectedYouTubeAudio(sounds[sound as SoundKeys]); // Store only the video ID
+        console.log("setSelectedYouTubeAudio:", sounds[sound as SoundKeys]);
+      }
 
     if (gif !== null) {
         setSavedGif(gif as GifKeys); // Type assertion
         setSelectedGif(gif as GifKeys); // Update selectedGif
     }
-  }, [selectedSound, selectedGif]); // This array will trigger the effect when savedSound or savedGif change
+    if (endSound !== null) {
+      setSavedEndSound(endSound as EndSoundKeys); // Type assertion
+      setSelectedEndSound(endSound as EndSoundKeys); // Update selectedGif
+  }
+  }, [selectedSound, selectedEndSound, selectedGif]); // This array will trigger the effect when savedSound or savedGif change
 
 
 
@@ -83,12 +103,20 @@ export default function Home() {
     // Check if triggerReload is true
     if (triggerReload) {
       const sound = localStorage.getItem("selectedSound");
+      const endSound = localStorage.getItem("selectedEndSound");
       const gif = localStorage.getItem("selectedGif");
   
       if (sound !== null) {
         setSavedSound(sound as SoundKeys); // Type assertion
         setSelectedSound(sound as SoundKeys); // Update selectedSound
+        setSelectedYouTubeAudio(sounds[sound as SoundKeys]);
         console.log("Selected Sound:", sounds[sound as SoundKeys]); // Log the sound file path
+      }
+
+      if (endSound !== null) {
+        setSavedEndSound(endSound as EndSoundKeys); // Type assertion
+        setSelectedEndSound(endSound as EndSoundKeys); // Update selectedSound
+        console.log("Selected endSound:", endSounds[endSound as EndSoundKeys]); // Log the sound file path
       }
   
       if (gif !== null) {
@@ -119,9 +147,11 @@ export default function Home() {
   
 
   const startCountdown = (remainingTime: number) => {
+    clearInterval(window.timerInterval);
     const interval = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1000) {
+          clearInterval(window.timerInterval);
           clearInterval(interval);
           endTimer();
           return 0;
@@ -140,11 +170,12 @@ export default function Home() {
     setTimeLeft(timerLength);
     setIsElementsVisible(false);
     startCountdown(timerLength);
-    startCountdown(timerLength);
 
     if (player.current && selectedYouTubeAudio) {
       try {
         player.current.loadVideoById(selectedYouTubeAudio);
+        console.log('Loading YouTube video ID:', selectedYouTubeAudio);
+        
         player.current.playVideo();
         player.current.setVolume(0);
       } catch (error) {
@@ -158,9 +189,11 @@ export default function Home() {
     setIsTimerRunning(false);
     setStartTime(null);
     setTimeLeft(timerLength);
+    playEndSound();
     setIsElementsVisible(true);
     localStorage.removeItem("startTime");
     localStorage.removeItem("timerLength");
+    clearInterval(window.timerInterval);
     if (player.current && selectedYouTubeAudio) {
       player.current.stopVideo();
     }
@@ -170,7 +203,15 @@ export default function Home() {
     setTimerLength(value);
     setTimeLeft(value);
     setShowModal(false);
+  };
 
+
+  const playEndSound = () => {
+    const defaultEndSound = "./endSounds/daybreak_alarm.mp3"; // Replace with your default sound path
+  
+    const soundToPlay = selectedEndSound ? endSounds[selectedEndSound as EndSoundKeys] : defaultEndSound;
+    const audio = new Audio(soundToPlay);
+    audio.play();
   };
 
   const formatTime = (ms: number) => {
@@ -182,14 +223,17 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full h-screen items-center justify-center overflow-hidden">
       <YouTube 
-        videoId={selectedYouTubeAudio} 
+        videoId={selectedYouTubeAudio} // Pass only the video ID
         opts={youtubeOptions}
         onReady={(event) => { 
           player.current = event.target; 
-          event.target.setVolume(0);  // Ensure volume is set to 0
+          event.target.setVolume(0);
+          event.target.mute();  // Additional muting
         }}
         onError={(error) => {
           console.error('YouTube Player Error:', error);
+          // Optionally log the specific error details
+          console.log('Error details:', JSON.stringify(error));
         }}
       />
       <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>

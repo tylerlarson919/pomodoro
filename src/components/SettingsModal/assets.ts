@@ -8,6 +8,10 @@ export const sounds = {
     LoFi: "4xDzrJKXOOY",
 } as const;
 
+export const endSounds = {
+    CalmAlarm: "./endSounds/daybreak_alarm.mp3",
+} as const;
+
 export const gifs = {
     Campfire: "./campfire.gif", // Replace with actual GIF file paths
     FallVibes: "./zen-fall-swing.gif",

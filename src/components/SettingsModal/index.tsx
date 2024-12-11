@@ -4,7 +4,7 @@ import dynamic from "next/dynamic";
 import { faBars } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { Modal, ModalBody, ModalContent, Select, SelectSection, SelectItem, Button } from "@nextui-org/react";
-import { sounds, gifs } from "./assets"; // Adjust path as necessary
+import { sounds, gifs, endSounds } from "./assets"; // Adjust path as necessary
 
 
 
@@ -20,10 +20,14 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
   
     const [showModal, setShowModal] = useState(false);
     const [selectedSound, setSelectedSound] = useState("");
+    const [selectedEndSound, setSelectedEndSound] = useState("");
     const [selectedGif, setSelectedGif] = useState("");
+
+
 
     const save = () => {
       localStorage.setItem("selectedSound", selectedSound);
+      localStorage.setItem("selectedEndSound", selectedEndSound);
       localStorage.setItem("selectedGif", selectedGif);
       
       // Trigger reload
@@ -36,11 +40,15 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
 
   useEffect(() => {
     const savedSound = localStorage.getItem("selectedSound");
+    const savedEndSound = localStorage.getItem("selectedEndSound");
     const savedGif = localStorage.getItem("selectedGif");
 
     if (savedSound) {
         setSelectedSound(savedSound);
     }
+    if (savedEndSound) {
+      setSelectedEndSound(savedEndSound);
+  }
     if (savedGif) {
         setSelectedGif(savedGif);
     }
@@ -75,7 +83,30 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                   value={selectedSound}
                 >
                   {Object.keys(sounds).map(sound => (
-                    <SelectItem className="dark" key={sound} value={sound}>{sound}</SelectItem>
+                    <SelectItem className="dark" key={sound} value={sound}>
+                      {sound.replace(/([A-Z])/g, ' $1').trim()}
+                    </SelectItem>
+                  ))}
+                </Select>
+
+                <h3 className="mt-6">Select End Sound</h3>
+                <Select
+                  className="dark"
+                  popoverProps={{
+                    classNames: {
+                      base: "before:bg-default-200",
+                      content: "p-0 border-small border-divider dark border-none",
+                    },
+                  }}
+                  aria-label="Select End Sound"
+                  placeholder={selectedEndSound ? selectedEndSound : 'Select Sound'}
+                  onChange={(event) => setSelectedEndSound(event.target.value)} 
+                  value={selectedEndSound}
+                >
+                  {Object.keys(endSounds).map(endSound => (
+                    <SelectItem className="dark" key={endSound} value={endSound}>
+                      {endSound.replace(/([A-Z])/g, ' $1').trim()}
+                    </SelectItem>
                   ))}
                 </Select>
 
@@ -94,7 +125,9 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                   value={selectedGif}
                 >
                   {Object.keys(gifs).map(gif => (
-                    <SelectItem className="dark" key={gif} value={gif}>{gif}</SelectItem>
+                    <SelectItem className="dark" key={gif} value={gif}>
+                      {gif.replace(/([A-Z])/g, ' $1').trim()}
+                    </SelectItem>
                   ))}
                 </Select>
                 <Button onPress={save} variant="faded" className="dark mt-6">Save Settings</Button>
