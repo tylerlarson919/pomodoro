@@ -160,6 +160,9 @@ export default function Home() {
     localStorage.removeItem("startTime");
     localStorage.removeItem("timerLength");
     clearInterval(window.timerInterval);
+    if (selectedYouTubeAudio) {
+      setIframeSrc("https://www.youtube.com");
+    }
 
   };
 
