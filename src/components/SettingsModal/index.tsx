@@ -123,15 +123,15 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                 >
                   {Object.keys(endSounds).map(endSound => (
                     <SelectItem className="dark" key={endSound} value={endSound}>
-                    <div className="flex justify-between items-center">
-                      {endSound.replace(/([A-Z])/g, ' $1').trim()}
-                      <Button onPress={() => playEndSound(endSound)} isIconOnly aria-label="Like" color="default" variant="flat" className="flex items-center justify-center">
-                        <FontAwesomeIcon 
-                          icon={faPlay}  
-                          className="text-white w-5 h-5" 
-                        /> 
-                      </Button>
-                    </div>
+                      <div className="flex justify-between items-center">
+                        {endSound.replace(/([A-Z])/g, ' $1').trim()}
+                        <Button onPress={() => playEndSound(endSound)} isIconOnly aria-label="Like" color="default" variant="flat" className="flex items-center justify-center">
+                          <FontAwesomeIcon 
+                            icon={faPlay}  
+                            className="text-white w-5 h-5" 
+                          /> 
+                        </Button>
+                      </div>
                     </SelectItem>
                   ))}
                 </Select>
