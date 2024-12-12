@@ -12,7 +12,7 @@ export const endSounds = {
     DayBreak: "./endSounds/daybreak_alarm.mp3",
     StairwayToHeaven: "./endSounds/stairway-to-heaven.mp3",
     Completion: "./endSounds/task-complete.mp3",
-    ZenFinish: "./endSounds/zen-finish",
+    ZenFinish: "./endSounds/zen-finish.mp3",
 } as const;
 
 export const gifs = {
