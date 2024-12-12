@@ -66,9 +66,11 @@ export default function Home() {
         setSavedGif(gif as GifKeys); // Type assertion
         setSelectedGif(gif as GifKeys); // Update selectedGif
     }
-    if (stars !== null) {
+    if (stars === "true") {
       setIsStarsSelected(true);
-    }
+  } else {
+      setIsStarsSelected(false);
+  }
     if (endSound !== null) {
       setSavedEndSound(endSound as EndSoundKeys); // Type assertion
       setSelectedEndSound(endSound as EndSoundKeys); // Update selectedGif
@@ -87,6 +89,7 @@ export default function Home() {
       const sound = localStorage.getItem("selectedSound");
       const endSound = localStorage.getItem("selectedEndSound");
       const gif = localStorage.getItem("selectedGif");
+      const stars = localStorage.getItem("stars");
   
       if (sound !== null) {
         setSavedSound(sound as SoundKeys); // Type assertion
@@ -106,6 +109,11 @@ export default function Home() {
         setSelectedGif(gif as GifKeys); // Update selectedGif
         console.log("Selected GIF path:", gifs[gif as GifKeys]); // Log the GIF file path
       }
+      if (stars === "true") {
+        setIsStarsSelected(true);
+    } else {
+        setIsStarsSelected(false);
+    }
     }
   
     // Existing logic to handle saved timer state
