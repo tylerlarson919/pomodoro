@@ -200,7 +200,7 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col w-full h-screen items-center justify-center overflow-hidden">
+    <div className="flex flex-col w-full h-screen items-center justify-center overflow-hidden bg-dark1">
       {isStarsSelected ? ( 
         <div className="flex w-full h-20 text-textcolor"> 
           <Particles
