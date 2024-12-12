@@ -2,7 +2,7 @@
 
 import React from "react";
 import dynamic from "next/dynamic";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faPlay } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { Checkbox, Modal, ModalBody, ModalContent, Select, SelectSection, SelectItem, Button } from "@nextui-org/react";
 import { sounds, gifs, endSounds } from "./assets"; // Adjust path as necessary
@@ -24,6 +24,18 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
     const [selectedEndSound, setSelectedEndSound] = useState("");
     const [selectedGif, setSelectedGif] = useState("");
     const [isStarsSelected, setIsStarsSelected] = React.useState(false);
+    type EndSoundKeys = keyof typeof endSounds; 
+
+
+    
+    const playEndSound = (soundName: string) => {
+      const defaultEndSound = "./endSounds/daybreak_alarm.mp3"; // Default sound path
+      const soundToPlay = soundName ? endSounds[soundName as EndSoundKeys] : defaultEndSound;
+      const audio = new Audio(soundToPlay);
+      audio.play();
+    };
+    
+    
 
 
     const save = () => {
@@ -111,7 +123,15 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                 >
                   {Object.keys(endSounds).map(endSound => (
                     <SelectItem className="dark" key={endSound} value={endSound}>
+                    <div className="flex justify-between items-center">
                       {endSound.replace(/([A-Z])/g, ' $1').trim()}
+                      <Button onPress={() => playEndSound(endSound)} isIconOnly aria-label="Like" color="default" variant="flat" className="flex items-center justify-center">
+                        <FontAwesomeIcon 
+                          icon={faPlay}  
+                          className="text-white w-5 h-5" 
+                        /> 
+                      </Button>
+                    </div>
                     </SelectItem>
                   ))}
                 </Select>

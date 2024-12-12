@@ -195,9 +195,17 @@ export default function Home() {
 
   const playEndSound = () => {
     const defaultEndSound = "./endSounds/daybreak_alarm.mp3"; // Replace with your default sound path
-  
     const soundToPlay = selectedEndSound ? endSounds[selectedEndSound as EndSoundKeys] : defaultEndSound;
     const audio = new Audio(soundToPlay);
+    audio.loop = true; 
+
+    const stopSound = () => {
+      audio.pause(); // Stop the audio
+      audio.currentTime = 0; // Reset playback to the start
+      document.removeEventListener("click", stopSound); // Remove the event listener
+    };
+
+    document.addEventListener("click", stopSound); 
     audio.play();
   };
 

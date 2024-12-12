@@ -9,7 +9,10 @@ export const sounds = {
 } as const;
 
 export const endSounds = {
-    CalmAlarm: "./endSounds/daybreak_alarm.mp3",
+    DayBreak: "./endSounds/daybreak_alarm.mp3",
+    StairwayToHeaven: "./endSounds/stairway-to-heaven.mp3",
+    Completion: "./endSounds/task-complete.mp3",
+    ZenFinish: "./endSounds/zen-finish",
 } as const;
 
 export const gifs = {
