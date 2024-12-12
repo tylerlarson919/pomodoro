@@ -210,7 +210,7 @@ export default function Home() {
   return (
     <div className="flex flex-col w-full h-screen items-center justify-center overflow-hidden bg-dark1">
       <div
-        className={`flex w-full h-20 text-textcolor fade-gradual ${
+        className={`flex w-full text-textcolor fade-gradual ${
           isStarsSelected ? "" : "hidden"
         }`}
       >

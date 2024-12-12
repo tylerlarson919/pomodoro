@@ -17,5 +17,7 @@ export const gifs = {
     FallVibes: "./zen-fall-swing.gif",
     JapaneseIsland: "./japan-island.gif",
     TreeOfWisdon: "./skill-tree.gif",
-    FloatingMonk: "./monk2.gif",
+    FloatingAirbender: "./monk2.gif",
+    ChillinInSpace: "./chillin-in-space-final.gif",
+    SpaceStation: "./space-station.gif",
 } as const;
