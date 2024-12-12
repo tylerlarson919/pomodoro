@@ -10,19 +10,24 @@ export default {
     "./node_modules/@nextui-org/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-        dark1: "#0a0a0a",
-        darkaccent: "#1d1d1d",
-        darkaccent2: "#343434",
-        textcolor: "#f7f7f7",
-        textaccent: "#949494",
-        secondary: "#7828C8",
-      },
-    },
+  	extend: {
+  		colors: {
+  			background: 'var(--background)',
+  			foreground: 'var(--foreground)',
+  			dark1: '#0a0a0a',
+  			darkaccent: '#1d1d1d',
+  			darkaccent2: '#343434',
+  			textcolor: '#f7f7f7',
+  			textaccent: '#949494',
+  			secondary: '#7828C8'
+  		},
+  		borderRadius: {
+  			lg: 'var(--radius)',
+  			md: 'calc(var(--radius) - 2px)',
+  			sm: 'calc(var(--radius) - 4px)'
+  		}
+  	}
   },
-  darkMode: "class",
-  plugins: [nextui()],
+  darkMode: ["class", "class"],
+  plugins: [nextui(), require("tailwindcss-animate")],
 } satisfies Config;

@@ -1,7 +1,7 @@
 // assets.js
 
 export const sounds = {
-    NoSound: "", // Default sound
+    NoSound: "",
     RainSound: "LJih9bxSacU",
     GentleRain: "-OekvEFm1lo",
     MeditationSound: "A1IYf7fKdhY",
@@ -13,6 +13,9 @@ export const endSounds = {
 } as const;
 
 export const gifs = {
-    Campfire: "./campfire.gif", // Replace with actual GIF file paths
+    Campfire: "./campfire.gif",
     FallVibes: "./zen-fall-swing.gif",
+    JapaneseIsland: "./japan-island.gif",
+    TreeOfWisdon: "./skill-tree.gif",
+    FloatingMonk: "./monk2.gif",
 } as const;

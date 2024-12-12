@@ -1,10 +1,11 @@
 "use client";
 
+import React from "react";
 import { useEffect, useState, useRef } from "react";
 import { Image, Modal, ModalBody, ModalContent, Button } from "@nextui-org/react";
 import SettingsModal from "@/components/SettingsModal";
 import { sounds, gifs, endSounds } from "../components/SettingsModal/assets";
-
+import Particles from "@/components/ui/particles"
 
 
 
@@ -28,8 +29,8 @@ export default function Home() {
   const [selectedSound, setSelectedSound] = useState<SoundKeys | "">("");
   const [selectedEndSound, setSelectedEndSound] = useState<EndSoundKeys | "">("");
   const [selectedYouTubeAudio, setSelectedYouTubeAudio] = useState<string>('LJih9bxSacU');
-  const [iframeSrc, setIframeSrc] = useState("");
-
+  const [iframeSrc, setIframeSrc] = useState("https://example.com");
+  const [isStarsSelected, setIsStarsSelected] = React.useState(false);
 
 
 
@@ -51,30 +52,34 @@ export default function Home() {
     const sound = localStorage.getItem("selectedSound");
     const endSound = localStorage.getItem("selectedEndSound");
     const gif = localStorage.getItem("selectedGif");
+    const stars = localStorage.getItem("stars");
+
 
     if (sound !== null) {
         setSavedSound(sound as SoundKeys); // Type assertion
         setSelectedSound(sound as SoundKeys); // Update selectedSound
         setSelectedYouTubeAudio(sounds[sound as SoundKeys]); // Store only the video ID
         console.log("setSelectedYouTubeAudio:", sounds[sound as SoundKeys]);
-      }
+    }
 
     if (gif !== null) {
         setSavedGif(gif as GifKeys); // Type assertion
         setSelectedGif(gif as GifKeys); // Update selectedGif
     }
+    if (stars !== null) {
+      setIsStarsSelected(true);
+    }
     if (endSound !== null) {
       setSavedEndSound(endSound as EndSoundKeys); // Type assertion
       setSelectedEndSound(endSound as EndSoundKeys); // Update selectedGif
-  }
-  }, [selectedSound, selectedEndSound, selectedGif]); // This array will trigger the effect when savedSound or savedGif change
+    }
+  }, [selectedSound, selectedEndSound, selectedGif, isStarsSelected]); // This array will trigger the effect when savedSound or savedGif change
 
 
 
   useEffect(() => {
     const savedStartTime = localStorage.getItem("startTime");
     const savedTimerLength = localStorage.getItem("timerLength");
-    const remainingTime = localStorage.getItem("remainingTime");
 
   
     // Check if triggerReload is true
@@ -168,7 +173,7 @@ export default function Home() {
     localStorage.removeItem("timerLength");
     clearInterval(window.timerInterval);
     if (selectedYouTubeAudio) {
-      setIframeSrc("https://www.youtube.com");
+      setIframeSrc("https://example.com");
     }
 
   };
@@ -196,6 +201,20 @@ export default function Home() {
 
   return (
     <div className="flex flex-col w-full h-screen items-center justify-center overflow-hidden">
+      {isStarsSelected ? ( 
+        <div className="flex w-full h-20 text-textcolor"> 
+          <Particles
+            className=" z-[0] bg-dark1 absolute inset-0"
+            quantity={800}
+            ease={100}
+            color="#ffffff"
+            refresh
+          />
+        </div> 
+      ) : ( 
+        <div className="hidden w-full h-20">
+        </div>
+      )}
       <iframe 
         width="0" height="0" 
         src={iframeSrc}
@@ -208,10 +227,9 @@ export default function Home() {
       <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
         <SettingsModal onTriggerReload={handleTriggerReload} />
       </div>
-      <div className="flex flex-col items-center justify-center  bg-dark1 gap-6">
-        <h1 className={`px-2 md:px-0 text-center text-textcolor text-4xl ${isElementsVisible ? '' : 'disappearing-element fade-out'}`}
-        >
-          Get Ready to Focus...
+      <div className="flex flex-col items-center justify-center gap-6">
+        <h1 className={`z-[2] px-2 md:px-0 text-center text-textcolor text-4xl ${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
+          LOCK IN.
         </h1>
 
         <div className="h-full flex flex-col md:flex-row items-center justify-center gap-4">
@@ -223,9 +241,9 @@ export default function Home() {
           />
         </div>
 
-        <div className="flex flex-col gap-2 items-center justify-center">
+        <div className="flex flex-col gap-6 items-center justify-center">
           <p 
-            className={`text-6xl ${isTimerRunning ? 'cursor-default' : 'cursor-pointer'}`}
+            className={`z-[1] text-textcolor text-6xl ${isTimerRunning ? 'cursor-default' : 'cursor-pointer'}`}
             onClick={() => !isTimerRunning && setShowModal(true)}
           >
             {formatTime(timeLeft)}
@@ -260,6 +278,7 @@ export default function Home() {
           >
             Start
           </Button>
+          
         </div>
       </div>
     </div>
