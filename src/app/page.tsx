@@ -209,8 +209,12 @@ export default function Home() {
 
   return (
     <div className="flex flex-col w-full h-screen items-center justify-center overflow-hidden bg-dark1">
-      {isStarsSelected ? ( 
-        <div className="flex w-full h-20 text-textcolor"> 
+      <div
+        className={`flex w-full h-20 text-textcolor fade-gradual ${
+          isStarsSelected ? "" : "hidden"
+        }`}
+      >
+        {isStarsSelected && ( 
           <Particles
             className=" z-[0] bg-dark1 absolute inset-0"
             quantity={800}
@@ -218,11 +222,8 @@ export default function Home() {
             color="#ffffff"
             refresh
           />
-        </div> 
-      ) : ( 
-        <div className="hidden w-full h-20">
-        </div>
-      )}
+        )}
+      </div>
       <iframe 
         width="0" height="0" 
         src={iframeSrc}
@@ -235,8 +236,8 @@ export default function Home() {
       <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
         <SettingsModal onTriggerReload={handleTriggerReload} />
       </div>
-      <div className="flex flex-col items-center justify-center gap-6">
-        <h1 className={`z-[2] px-2 md:px-0 text-center text-textcolor text-4xl ${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
+      <div className="flex flex-col items-center justify-center gap-2 px-6 md:px-0">
+        <h1 className={`z-[2] md:px-0 text-center text-textcolor text-4xl ${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
           LOCK IN.
         </h1>
 
@@ -244,7 +245,7 @@ export default function Home() {
           <Image 
             src={selectedGif ? gifs[selectedGif as GifKeys] : "/campfire.gif"}
             alt={selectedGif ? selectedGif : 'Campfire'}
-            width={500}
+            width={400}
             isBlurred
           />
         </div>

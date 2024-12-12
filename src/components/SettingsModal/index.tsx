@@ -101,7 +101,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                   popoverProps={{
                     classNames: {
                       base: "before:bg-default-200",
-                      content: "p-0 border-small border-divider dark border-none",
+                      content: "text-white p-0 border-small border-divider dark border-none",
                     },
                   }}
                   aria-label="Select End Sound"
@@ -122,7 +122,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                   popoverProps={{
                     classNames: {
                       base: "before:bg-default-200",
-                      content: "p-0 border-small border-divider dark border-none",
+                      content: "text-white p-0 border-small border-divider dark border-none",
                     },
                   }}
                   aria-label="Select Background Gif"
