@@ -18,7 +18,7 @@ export type LoginType = {
 
 
 
-const Login: NextPage<LoginType> = ({ className = "", onSuccess }) => {
+const Login: React.FC<LoginType> = ({ className = "", onSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
