@@ -1,29 +1,35 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { faBars, faPlay } from "@fortawesome/free-solid-svg-icons";
-import { useState, useEffect } from "react";
 import { Checkbox, Modal, ModalBody, ModalContent, Select, SelectSection, SelectItem, Button } from "@nextui-org/react";
-import { sounds, gifs, endSounds } from "./assets"; // Adjust path as necessary
+import { sounds, gifs, endSounds } from "./assets"; 
+import { editSettings, auth, db } from '../../../firebase'; 
 
+
+interface SettingsModalProps {
+  onTriggerReload: () => void; // Function to handle reload trigger
+  settingsProps: {
+    selectedSound: string;
+    selectedEndSound: string;
+    selectedGif: string;
+    isStarsSelected: boolean;
+  };
+}
 
 
 const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').then((mod) => mod.FontAwesomeIcon), {
     ssr: false,
   });
-
-  interface SettingsModalProps {
-    onTriggerReload: (value: boolean) => void; // Function to handle reload trigger
-  }
   
-  export default function SettingsModal({ onTriggerReload }: SettingsModalProps) {
+  export default function SettingsModal({ onTriggerReload, settingsProps }: SettingsModalProps) {
   
     const [showModal, setShowModal] = useState(false);
-    const [selectedSound, setSelectedSound] = useState("");
-    const [selectedEndSound, setSelectedEndSound] = useState("");
-    const [selectedGif, setSelectedGif] = useState("");
-    const [isStarsSelected, setIsStarsSelected] = React.useState(false);
+    const [selectedSound, setSelectedSound] = useState(settingsProps.selectedSound);
+    const [selectedEndSound, setSelectedEndSound] = useState(settingsProps.selectedEndSound);
+    const [selectedGif, setSelectedGif] = useState(settingsProps.selectedGif);
+    const [isStarsSelected, setIsStarsSelected] = useState(settingsProps.isStarsSelected); 
     type EndSoundKeys = keyof typeof endSounds; 
 
 
@@ -35,42 +41,30 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
       audio.play();
     };
     
+    // sync settings with props
+    useEffect(() => {
+      setSelectedSound(settingsProps.selectedSound);
+      setSelectedEndSound(settingsProps.selectedEndSound);
+      setSelectedGif(settingsProps.selectedGif);
+      setIsStarsSelected(settingsProps.isStarsSelected);
+    }, [settingsProps]);
+
+
+    const save = async () => {
+      const settings = {
+        selectedSound,
+        selectedEndSound,
+        selectedGif,
+        stars: isStarsSelected,
+      };
     
-
-
-    const save = () => {
-      localStorage.setItem("selectedSound", selectedSound);
-      localStorage.setItem("selectedEndSound", selectedEndSound);
-      localStorage.setItem("selectedGif", selectedGif);
-      localStorage.setItem("stars", isStarsSelected.toString());
-      
-      // Trigger reload
-      onTriggerReload(true);
-      setTimeout(() => onTriggerReload(false), 100); // Reset to false after 100ms
-  
+      await editSettings(settings); // Save settings to Firestore
+    
+      // Trigger reload immediately after saving settings
+      onTriggerReload(); 
+    
       setShowModal(false); // Close modal after saving
     };
-
-
-  useEffect(() => {
-    const savedSound = localStorage.getItem("selectedSound");
-    const savedEndSound = localStorage.getItem("selectedEndSound");
-    const savedGif = localStorage.getItem("selectedGif");
-    const areStarsOn = localStorage.getItem("stars");
-
-    if (savedSound) {
-        setSelectedSound(savedSound);
-    }
-    if (savedEndSound) {
-      setSelectedEndSound(savedEndSound);
-  }
-    if (savedGif) {
-        setSelectedGif(savedGif);
-    }
-    if (areStarsOn === "true") {
-      setIsStarsSelected(true);
-  }
-  }, []);
     
 
 
@@ -82,9 +76,14 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
           onClick={() => setShowModal(true)}
         /> 
         {showModal && (
-            <Modal className="dark" placement="center" isOpen={showModal} onClose={() => setShowModal(false)}>
+            <Modal 
+              className="dark bg-darkaccent"
+              placement="center"
+              isOpen={showModal}
+              onClose={() => setShowModal(false)}
+            >
               <ModalContent>
-                <ModalBody className="p-10 bg-darkaccent text-textcolor">
+                <ModalBody className="p-10  text-textcolor">
 
                 <h3>Select Background Sound</h3>
                 <Select
@@ -96,12 +95,13 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                     },
                   }}
                   aria-label="Select Background Sound"
-                  placeholder={selectedSound.replace(/([A-Z])/g, ' $1').trim()}
+                  placeholder="Select Background Sound"
+                  defaultSelectedKeys={[selectedSound]}
                   onChange={(event) => setSelectedSound(event.target.value)} 
                   value={selectedSound}
                 >
                   {Object.keys(sounds).map(sound => (
-                    <SelectItem className="dark" key={sound} value={sound}>
+                    <SelectItem textValue={sound.replace(/([A-Z])/g, ' $1').trim()} className="dark" key={sound} value={sound}>
                       {sound.replace(/([A-Z])/g, ' $1').trim()}
                     </SelectItem>
                   ))}
@@ -117,19 +117,29 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                     },
                   }}
                   aria-label="Select End Sound"
-                  placeholder={selectedEndSound.replace(/([A-Z])/g, ' $1').trim()}
+                  placeholder="Select End Sound"
+                  defaultSelectedKeys={[selectedEndSound]}
                   onChange={(event) => setSelectedEndSound(event.target.value)} 
                   value={selectedEndSound}
                 >
                   {Object.keys(endSounds).map(endSound => (
-                    <SelectItem className="dark" key={endSound} value={endSound}>
+                    <SelectItem textValue={endSound.replace(/([A-Z])/g, ' $1').trim()} className="dark" key={endSound} value={endSound}>
                       <div className="flex justify-between items-center">
                         {endSound.replace(/([A-Z])/g, ' $1').trim()}
-                        <Button onPress={() => playEndSound(endSound)} isIconOnly aria-label="Like" color="default" variant="flat" className="flex items-center justify-center">
+                        <Button
+                          onPress={(e) => {
+                            playEndSound(endSound); // Play the selected end sound
+                          }}
+                          isIconOnly
+                          aria-label="Play Sound"
+                          color="default"
+                          variant="flat"
+                          className="flex items-center justify-center"
+                        >
                           <FontAwesomeIcon 
                             icon={faPlay}  
                             className="text-white w-5 h-5" 
-                          /> 
+                          />
                         </Button>
                       </div>
                     </SelectItem>
@@ -146,12 +156,13 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                     },
                   }}
                   aria-label="Select Background Gif"
-                  placeholder={selectedGif.replace(/([A-Z])/g, ' $1').trim()}
+                  placeholder="Select Background Gif"
                   onChange={(event) => setSelectedGif(event.target.value)} 
                   value={selectedGif}
+                  defaultSelectedKeys={[selectedGif]}
                 >
                   {Object.keys(gifs).map(gif => (
-                    <SelectItem className="dark" key={gif} value={gif}>
+                    <SelectItem textValue={gif.replace(/([A-Z])/g, ' $1').trim()} className="dark" key={gif} value={gif}>
                       {gif.replace(/([A-Z])/g, ' $1').trim()}
                     </SelectItem>
                   ))}

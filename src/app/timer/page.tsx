@@ -6,19 +6,23 @@ import { Image, Modal, ModalBody, ModalContent, Button } from "@nextui-org/react
 import SettingsModal from "@/components/SettingsModal";
 import { sounds, gifs, endSounds } from "../../components/SettingsModal/assets";
 import Particles from "@/components/ui/particles"
+import { getFirestore, doc, getDoc } from "firebase/firestore"; // Add this import
+
+import { onAuthStateChanged, User, getAuth } from "firebase/auth";
+import { useRouter } from "next/navigation";
+import { auth, addSession, endSession, getSessions } from "../../../firebase";
 
 
 
+const Timer = () => {
+  const db = getFirestore();
 
-export default function TImer() {
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
   const [timerLength, setTimerLength] = useState(15 * 60 * 1000); // Default 15 minutes
   const [timeLeft, setTimeLeft] = useState(timerLength);
   const [showModal, setShowModal] = useState(false);
   const [isElementsVisible, setIsElementsVisible] = useState(true);
-  const [triggerReload, setTriggerReload] = useState(false);
-
   type SoundKeys = keyof typeof sounds; 
   type EndSoundKeys = keyof typeof endSounds; 
   type GifKeys = keyof typeof gifs; 
@@ -31,8 +35,31 @@ export default function TImer() {
   const [selectedYouTubeAudio, setSelectedYouTubeAudio] = useState<string>('LJih9bxSacU');
   const [iframeSrc, setIframeSrc] = useState("https://example.com");
   const [isStarsSelected, setIsStarsSelected] = React.useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
 
 
+  const settingsProps = {
+    selectedSound,
+    selectedEndSound,
+    selectedGif,
+    isStarsSelected,
+  };
+
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (!user) {
+        console.log("User is not authenticated, redirecting to login.");
+        router.push("/login"); // Redirect to login if not signed in
+      } else {
+        setUser(user);
+        await fetchUserSettings(user.uid); // Fetch user settings if authenticated
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup on unmount
+  }, [router]);
 
   const timerOptions = [
     { label: "1m", value: 1 * 60 * 1000 },
@@ -43,128 +70,71 @@ export default function TImer() {
     { label: "2hr", value: 120 * 60 * 1000 },
   ];
 
-  const handleTriggerReload = (value: any) => {
-    setTriggerReload(value);
+  const handleTriggerReload = async () => {
+    if (user) {
+      console.log("Triggering reload...");
+      await fetchUserSettings(user.uid); // Fetch updated settings based on user ID
+    }
   };
 
+  const fetchUserSettings = async (userId: any) => {
+    const userSettingsRef = doc(db, "podo", userId, "settings", "userSettings"); // Adjusted path
+    const userSettingsSnap = await getDoc(userSettingsRef);
 
-  useEffect(() => {
-    const sound = localStorage.getItem("selectedSound");
-    const endSound = localStorage.getItem("selectedEndSound");
-    const gif = localStorage.getItem("selectedGif");
-    const stars = localStorage.getItem("stars");
+    if (userSettingsSnap.exists()) {
+      const settings = userSettingsSnap.data();
 
+      setTimerLength(settings.timerLength || (15 * 60 * 1000)); // Default to 15 minutes if not found
 
-    if (sound !== null) {
-        setSavedSound(sound as SoundKeys); // Type assertion
-        setSelectedSound(sound as SoundKeys); // Update selectedSound
-        setSelectedYouTubeAudio(sounds[sound as SoundKeys]); // Store only the video ID
-        console.log("setSelectedYouTubeAudio:", sounds[sound as SoundKeys]);
-    }
+      setSelectedSound(settings.selectedSound || "");
 
-    if (gif !== null) {
-        setSavedGif(gif as GifKeys); // Type assertion
-        setSelectedGif(gif as GifKeys); // Update selectedGif
-    }
-    if (stars === "true") {
-      setIsStarsSelected(true);
-  } else {
-      setIsStarsSelected(false);
-  }
-    if (endSound !== null) {
-      setSavedEndSound(endSound as EndSoundKeys); // Type assertion
-      setSelectedEndSound(endSound as EndSoundKeys); // Update selectedGif
-    }
-  }, [selectedSound, selectedEndSound, selectedGif, isStarsSelected]); // This array will trigger the effect when savedSound or savedGif change
+      setSelectedEndSound(settings.selectedEndSound || "");
 
+      setSelectedGif(settings.selectedGif || "");
 
-
-  useEffect(() => {
-    const savedStartTime = localStorage.getItem("startTime");
-    const savedTimerLength = localStorage.getItem("timerLength");
-
-  
-    // Check if triggerReload is true
-    if (triggerReload) {
-      const sound = localStorage.getItem("selectedSound");
-      const endSound = localStorage.getItem("selectedEndSound");
-      const gif = localStorage.getItem("selectedGif");
-      const stars = localStorage.getItem("stars");
-  
-      if (sound !== null) {
-        setSavedSound(sound as SoundKeys); // Type assertion
-        setSelectedSound(sound as SoundKeys); // Update selectedSound
-        setSelectedYouTubeAudio(sounds[sound as SoundKeys]);
-        console.log("Selected Sound:", sounds[sound as SoundKeys]); // Log the sound file path
-      }
-
-      if (endSound !== null) {
-        setSavedEndSound(endSound as EndSoundKeys); // Type assertion
-        setSelectedEndSound(endSound as EndSoundKeys); // Update selectedSound
-        console.log("Selected endSound:", endSounds[endSound as EndSoundKeys]); // Log the sound file path
-      }
-  
-      if (gif !== null) {
-        setSavedGif(gif as GifKeys); // Type assertion
-        setSelectedGif(gif as GifKeys); // Update selectedGif
-        console.log("Selected GIF path:", gifs[gif as GifKeys]); // Log the GIF file path
-      }
-      if (stars === "true") {
-        setIsStarsSelected(true);
+      setIsStarsSelected(settings.stars === true);
     } else {
-        setIsStarsSelected(false);
+      console.log("No user settings found, using defaults."); // Log if no settings are found
+      setTimerLength(15 * 60 * 1000); // Default to 15 minutes
     }
-    }
+  };
   
-    // Existing logic to handle saved timer state
-    if (savedStartTime && savedTimerLength) {
-      const now = Date.now();
-      const elapsed = now - parseInt(savedStartTime, 10);
-      const remaining = parseInt(savedTimerLength, 10) - elapsed;
-  
-      if (remaining > 0) {
-        setTimeLeft(remaining);
-        setStartTime(parseInt(savedStartTime, 10));
-        setTimerLength(parseInt(savedTimerLength, 10));
-        setIsTimerRunning(true);
-        setIsElementsVisible(false);
-        startCountdown(remaining);
-
-        setIframeSrc(`https://www.youtube.com/embed/${selectedYouTubeAudio}?autoplay=1`);
-      } else {
-        endTimer();
-      }
-    }
-  }, [triggerReload]); // Add triggerReload to the dependency array
   
 
-  const startCountdown = (remainingTime: number) => {
-    clearInterval(window.timerInterval);
-    const interval = setInterval(() => {
-      requestAnimationFrame(() => {
-        setTimeLeft((prev) => {
-          if (prev <= 1000) {
-            clearInterval(window.timerInterval);
-            clearInterval(interval);
-            endTimer();
-            return 0;
-          }
-          return prev - 1000;
-        });
+  const startCountdown = () => {
+    clearInterval(window.timerInterval); // Clear any existing interval
+    window.timerInterval = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1000) {
+          clearInterval(window.timerInterval);
+          endTimer();
+          return 0;
+        }
+        return prev - 1000; // Decrease time left by 1000ms (1 second)
       });
     }, 1000);
   };
   
+  
 
   const startTimer = () => {
     const now = Date.now();
+    const sessionId = `session_${now}`;
+    const sessionData = {
+      startTime: now,
+      timerLength: timerLength / 60000, // Convert milliseconds to minutes
+      endTime: now + timerLength,
+      currentTimer: true,
+      status: "current",
+    };
+
+    addSession({ ...sessionData, sessionId }); // Pass session data along with session ID
+
     setStartTime(now);
     setIsTimerRunning(true);
-    localStorage.setItem("startTime", now.toString());
-    localStorage.setItem("timerLength", timerLength.toString());
     setTimeLeft(timerLength);
     setIsElementsVisible(false);
-    startCountdown(timerLength);
+    startCountdown();
 
     if (selectedYouTubeAudio) {
       setIframeSrc(`https://www.youtube.com/embed/${selectedYouTubeAudio}?autoplay=1`);
@@ -177,14 +147,52 @@ export default function TImer() {
     setTimeLeft(timerLength);
     playEndSound();
     setIsElementsVisible(true);
-    localStorage.removeItem("startTime");
-    localStorage.removeItem("timerLength");
-    clearInterval(window.timerInterval);
+
+    clearInterval(window.timerInterval); // Clear the interval when the timer ends
     if (selectedYouTubeAudio) {
       setIframeSrc("https://example.com");
     }
 
+    decideToFinish();
   };
+
+  const decideToFinish = async () => {
+    const now = Date.now();
+    const user = auth.currentUser;
+  
+    if (user) {
+      const sessions = await getSessions(); // Fetch all sessions
+      const currentSessions = sessions?.filter(session => session.status === "current");
+  
+      if (currentSessions) {
+        const mostRecentSession = currentSessions.reduce((prev, current) => 
+          (prev.startTime > current.startTime) ? prev : current
+        );
+      
+        const endTime = mostRecentSession.endTime;
+        const sessionId = mostRecentSession.id;
+      
+        // Mark all other current sessions as failed
+        await Promise.all(currentSessions.map(async (session) => {
+          if (session.id !== sessionId) {
+            await endSession(session.id, { completed: false, status: "failed" });
+            console.log(`Session with ID: ${session.id} marked as failed.`);
+          }
+        }));
+      
+        console.log("Ending session with ID:", sessionId);
+        
+        if (now > endTime + 5 * 60 * 1000) {
+          await endSession(sessionId, { completed: false, status: "failed" });
+          console.log("Session marked as failed.");
+        } else {
+          await endSession(sessionId, { completed: true, status: "finished" });
+          console.log("Session marked as finished.");
+        }
+      }
+    }
+  };
+  
 
   const handleOptionSelect = (value: number) => {
     setTimerLength(value);
@@ -236,17 +244,16 @@ export default function TImer() {
         width="0" height="0" 
         src={iframeSrc}
         title="YouTube video player" 
-        frameBorder="0" 
         allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
         allowFullScreen>
       </iframe>
       
       <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
-        <SettingsModal onTriggerReload={handleTriggerReload} />
+        <SettingsModal onTriggerReload={handleTriggerReload} settingsProps={settingsProps} />
       </div>
       <div className="flex flex-col items-center justify-center gap-2 px-6 md:px-0">
         <h1 className={`z-[2] md:px-0 text-center text-textcolor text-4xl ${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
-          LOCK IN.
+          LOCK IN
         </h1>
 
         <div className="h-full flex flex-col md:flex-row items-center justify-center gap-4">
@@ -269,10 +276,10 @@ export default function TImer() {
           {showModal && (
             <Modal className="dark" placement="center" isOpen={showModal} onClose={() => setShowModal(false)}>
               <ModalContent>
-                <ModalBody className="p-10 bg-darkaccent text-textcolor">
+                <ModalBody className="p-10 bg-darkaccent text-textcolor grid grid-cols-3 gap-4 justify-items-center align-items-center">
                   {timerOptions.map((option) => (
                     <Button
-                      className="bg-darkaccent border-darkaccent2"
+                      className="bg-darkaccent border-darkaccent2 border-1 w-[80px] sm:w-[120px]"
                       color="secondary"
                       key={option.value}
                       variant="faded"
@@ -300,4 +307,6 @@ export default function TImer() {
       </div>
     </div>
   );
-}
+};
+
+export default Timer;

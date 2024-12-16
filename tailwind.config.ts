@@ -15,7 +15,7 @@ export default {
   			background: 'var(--background)',
   			foreground: 'var(--foreground)',
   			dark1: '#0a0a0a',
-  			darkaccent: '#1d1d1d',
+  			darkaccent: '#0c0c0c',
   			darkaccent2: '#343434',
   			textcolor: '#f7f7f7',
   			textaccent: '#949494',

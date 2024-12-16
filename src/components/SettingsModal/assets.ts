@@ -21,6 +21,6 @@ export const gifs = {
     JapaneseIsland: "./japan-island.gif",
     TreeOfWisdon: "./skill-tree.gif",
     FloatingAirbender: "./monk2.gif",
-    ChillinInSpace: "./chillin-in-space-final.gif",
+    ChillinInSpace: "./chillin-in-space-no-planet.gif",
     SpaceStation: "./space-station.gif",
 } as const;
