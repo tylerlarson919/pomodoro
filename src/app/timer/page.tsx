@@ -86,6 +86,16 @@ const Timer = () => {
 
       setSelectedSound(settings.selectedSound || "");
 
+      // Match selectedSound name to sounds id and set selectedYouTubeAudio
+      if (settings.selectedSound) {
+        const matchedSound = Object.entries(sounds).find(
+          ([id, sound]) => sound === settings.selectedSound
+        );
+        if (matchedSound) {
+          setSelectedYouTubeAudio(matchedSound[0]);
+        }
+      }
+
       setSelectedEndSound(settings.selectedEndSound || "");
 
       setSelectedGif(settings.selectedGif || "");
