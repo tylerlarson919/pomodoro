@@ -75,7 +75,15 @@ const Stats = () => {
   };
 
   useEffect(() => {
-    fetchSessions();
+    const fetchData = async () => {
+      if (auth.currentUser) {
+        await fetchSessions();
+      } else {
+        console.error("No user is logged in.");
+      }
+    };
+  
+    fetchData();
   }, []);
 
   return (
