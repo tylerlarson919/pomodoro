@@ -17,6 +17,7 @@ export default {
   			dark1: '#0a0a0a',
   			darkaccent: '#0c0c0c',
   			darkaccent2: '#343434',
+			darkaccent3: '#141414',
   			textcolor: '#f7f7f7',
   			textaccent: '#949494',
   			secondary: '#7828C8'
@@ -25,7 +26,10 @@ export default {
   			lg: 'var(--radius)',
   			md: 'calc(var(--radius) - 2px)',
   			sm: 'calc(var(--radius) - 4px)'
-  		}
+  		},
+		translate: {
+			'full-screen-minus-8': 'calc(100vw - 50px)', // Add this line for the custom translate utility
+		},
   	}
   },
   darkMode: ["class", "class"],

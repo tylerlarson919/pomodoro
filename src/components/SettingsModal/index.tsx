@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { faBars, faPlay } from "@fortawesome/free-solid-svg-icons";
-import { Checkbox, Modal, ModalBody, ModalContent, Select, SelectSection, SelectItem, Button } from "@nextui-org/react";
+import { faBars, faTimes, faPlay } from "@fortawesome/free-solid-svg-icons";
+import { Checkbox, Modal, ModalBody, ModalContent, Select, SelectSection, SelectItem, Button, Link } from "@nextui-org/react";
 import { sounds, gifs, endSounds } from "./assets"; 
 import { editSettings, auth, db } from '../../../firebase'; 
 
@@ -26,6 +26,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
   export default function SettingsModal({ onTriggerReload, settingsProps }: SettingsModalProps) {
   
     const [showModal, setShowModal] = useState(false);
+    const [showMenu, setShowMenu] = useState(false);
     const [selectedSound, setSelectedSound] = useState(settingsProps.selectedSound);
     const [selectedEndSound, setSelectedEndSound] = useState(settingsProps.selectedEndSound);
     const [selectedGif, setSelectedGif] = useState(settingsProps.selectedGif);
@@ -68,13 +69,39 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
     
 
 
-  return (
-    <div className="absolute top-4 left-4">
-        <FontAwesomeIcon 
-          icon={faBars}  
-          className="cursor-pointer text-white w-7 h-7 mt-2" 
-          onClick={() => setShowModal(true)}
-        /> 
+    return (
+      <div className="absolute top-0 left-0">
+        {/* Icon with rotation and transition */}
+        <div
+          className={`absolute top-2 left-2 z-[100] transform transition-transform duration-300 ease-in-out ${
+            showMenu ? "translate-x-full-screen-minus-8 sm:translate-x-[400%]" : "translate-x-0"
+          }`}
+        >
+          <FontAwesomeIcon
+            icon={showMenu ? faTimes : faBars}
+            className={`cursor-pointer text-white w-7 h-7 mt-2 transform transition-transform duration-300 ease-in-out ${
+              showMenu ? "rotate-180 scale-110" : "rotate-0 scale-100"
+            }`}
+            onClick={() => setShowMenu((prev) => !prev)}
+          />
+        </div>
+        
+        {/* Menu */}
+        <div
+          className={`z-40 rounded-2xl rounded-l-none fixed top-0 left-0 h-screen w-screen sm:w-[160px] bg-darkaccent3 bg-opacity-70 backdrop-blur-lg text-white transform transition-transform duration-300 ease-in-out ${
+            showMenu ? "translate-x-0" : "translate-x-[-100%]"
+          }`}
+        >
+          {/* Menu content */}
+          <div className="p-6">
+            <h2 className="text-2xl mb-4">Menu</h2>
+            <div className="flex flex-col gap-4">
+              <Link href="/timer" isBlock color="secondary">Timer</Link>
+              <Link href="/stats" isBlock color="foreground">Stats</Link>
+              <Link href="#" onPress={() => setShowModal(true)} isBlock color="foreground">Settings</Link>
+            </div>
+          </div>
+        </div>
         {showModal && (
             <Modal 
               className="dark bg-darkaccent"
