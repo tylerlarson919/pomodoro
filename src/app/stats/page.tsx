@@ -10,6 +10,7 @@ import {
   TableRow,
   TableCell
 } from "@nextui-org/table";
+import { onAuthStateChanged } from "firebase/auth";
 
 // Define the type for session data
 type Session = {
@@ -75,16 +76,17 @@ const Stats = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      if (auth.currentUser) {
-        await fetchSessions();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        fetchSessions();
       } else {
         console.error("No user is logged in.");
       }
-    };
+    });
   
-    fetchData();
+    return () => unsubscribe(); // Clean up the listener
   }, []);
+  
 
   return (
     <div className="flex flex-col w-full h-screen items-center justify-start overflow-hidden bg-dark1 p-6">
