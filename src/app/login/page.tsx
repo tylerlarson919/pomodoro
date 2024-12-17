@@ -1,5 +1,5 @@
 "use client";
-import type { FC } from "react";
+import type { NextPage } from "next"; // Use NextPage instead of FC
 import { useState, useCallback } from "react";
 import { auth, signInWithGoogle } from "../../../firebase";
 import {
@@ -10,7 +10,8 @@ import {
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
 
-const Login: FC<{ className?: string; onSuccess?: (email: string, password: string) => void }> = ({ className = "", onSuccess }) => {
+
+const Login: NextPage<{ className?: string; onSuccess?: (email: string, password: string) => void }> = ({ className = "", onSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
