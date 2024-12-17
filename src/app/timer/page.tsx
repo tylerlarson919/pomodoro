@@ -87,14 +87,17 @@ const Timer = () => {
       setSelectedSound(settings.selectedSound || "");
 
       // Match selectedSound name to sounds id and set selectedYouTubeAudio
-      if (settings.selectedSound) {
+      if (settings.selectedSound) { // Use settings.selectedSound directly
         const matchedSound = Object.entries(sounds).find(
-          ([id, sound]) => sound === settings.selectedSound
+          ([id, sound]) => id === settings.selectedSound
         );
+      
         if (matchedSound) {
-          setSelectedYouTubeAudio(matchedSound[0]);
+          setSelectedYouTubeAudio(matchedSound[1]); // Set the video ID, not the key
+          console.log("Setting YouTube Audio:", matchedSound[1]);
         }
       }
+      
 
       setSelectedEndSound(settings.selectedEndSound || "");
 
