@@ -9,7 +9,8 @@ import {
   AuthError, GoogleAuthProvider, User 
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { Input, Button, Divider } from "@nextui-org/react";
+import { Input, Image, Button, Divider } from "@nextui-org/react";
+import GoogleIcon from "@/icons/google-icon.webp";
 
 const Login: NextPage = () => {
   const [email, setEmail] = useState("");
@@ -19,6 +20,7 @@ const Login: NextPage = () => {
   const router = useRouter();
   const [isLogin, setIsLogin] = useState(false)
   const [user, setUser] = useState<User | null>(null);
+
 
   const handleAuthError = (err: unknown) => {
     const error = err as AuthError;
@@ -133,6 +135,7 @@ const Login: NextPage = () => {
             <Divider className="dark w-[100px] bg-gray-500" />
           </div>
           <Button
+            startContent={<Image src="/icons/google-logo.webp" alt="Google Icon" width={20} height={20} />}
             variant="bordered"
             color="secondary"
             onPress={loginWithGoogle}
