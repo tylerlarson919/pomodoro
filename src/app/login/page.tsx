@@ -1,5 +1,5 @@
 "use client";
-import { FC } from "react";
+import type { NextPage } from "next";
 import { useState, useCallback } from "react";
 import { auth, signInWithGoogle } from "../../../firebase";
 import {
@@ -11,7 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 
 
-const LoginForm: FC<{ className?: string; onSuccess?: (email: string, password: string) => void }> = ({ className = "", onSuccess }) => {
+const Login: NextPage<{ className?: string; onSuccess?: (email: string, password: string) => void }> = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,12 +46,12 @@ const LoginForm: FC<{ className?: string; onSuccess?: (email: string, password: 
     try {
       const result = await signInWithGoogle();
       console.log("sign-in-form.tsx | result", result);
-      if (onSuccess) onSuccess("", ""); // Google sign-in doesn't use email/password
+      if (props.onSuccess) props.onSuccess("", ""); // Google sign-in doesn't use email/password
       router.push("/timer"); // Redirect to /app
     } catch (error) {
       console.log("sign-in-form | ERROR", error);
     }
-  }, [router, onSuccess]);
+  }, [router, props.onSuccess]);
   
   const onEmailSignUpButtonClick = useCallback(async () => {
     try {
@@ -61,13 +61,13 @@ const LoginForm: FC<{ className?: string; onSuccess?: (email: string, password: 
   
       const result = await createUserWithEmailAndPassword(auth, email, password);
       console.log("sign-in-form.tsx | result", result);
-      if (onSuccess) onSuccess(email, password); // Pass email and password
+      if (props.onSuccess) props.onSuccess(email, password); // Pass email and password
       router.push("/timer"); // Redirect to /app
     } catch (error) {
       console.log("sign-in-form.tsx | ERROR", error);
     }
-  }, [email, password, router, onSuccess]);
-
+  }, [email, password, router, props.onSuccess]);
+  
   const onEmailLoginButtonClick = useCallback(async () => {
     try {
       if (!email || !password) {
@@ -76,12 +76,13 @@ const LoginForm: FC<{ className?: string; onSuccess?: (email: string, password: 
   
       const result = await signInWithEmailAndPassword(auth, email, password);
       console.log("sign-in-form.tsx | result", result);
-      if (onSuccess) onSuccess(email, password); // Pass email and password
+      if (props.onSuccess) props.onSuccess(email, password); // Pass email and password
       router.push("/timer"); // Redirect to /app
     } catch (error) {
       console.log("sign-in-form.tsx | ERROR", error);
     }
-  }, [email, password, router, onSuccess]);
+  }, [email, password, router, props.onSuccess]);
+  
   
   
 
@@ -134,3 +135,4 @@ const LoginForm: FC<{ className?: string; onSuccess?: (email: string, password: 
       </div>
     );    
 };
+export default Login;
