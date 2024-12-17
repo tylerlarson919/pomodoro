@@ -11,7 +11,7 @@ import {
 import { useRouter } from "next/navigation";
 
 
-const Login: NextPage<{ className?: string; onSuccess?: (email: string, password: string) => void }> = (props) => {
+const Login: NextPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
@@ -46,12 +46,11 @@ const Login: NextPage<{ className?: string; onSuccess?: (email: string, password
     try {
       const result = await signInWithGoogle();
       console.log("sign-in-form.tsx | result", result);
-      if (props.onSuccess) props.onSuccess("", ""); // Google sign-in doesn't use email/password
       router.push("/timer"); // Redirect to /app
     } catch (error) {
       console.log("sign-in-form | ERROR", error);
     }
-  }, [router, props.onSuccess]);
+  }, [router]);
   
   const onEmailSignUpButtonClick = useCallback(async () => {
     try {
@@ -61,12 +60,11 @@ const Login: NextPage<{ className?: string; onSuccess?: (email: string, password
   
       const result = await createUserWithEmailAndPassword(auth, email, password);
       console.log("sign-in-form.tsx | result", result);
-      if (props.onSuccess) props.onSuccess(email, password); // Pass email and password
       router.push("/timer"); // Redirect to /app
     } catch (error) {
       console.log("sign-in-form.tsx | ERROR", error);
     }
-  }, [email, password, router, props.onSuccess]);
+  }, [email, password, router]);
   
   const onEmailLoginButtonClick = useCallback(async () => {
     try {
@@ -76,12 +74,11 @@ const Login: NextPage<{ className?: string; onSuccess?: (email: string, password
   
       const result = await signInWithEmailAndPassword(auth, email, password);
       console.log("sign-in-form.tsx | result", result);
-      if (props.onSuccess) props.onSuccess(email, password); // Pass email and password
       router.push("/timer"); // Redirect to /app
     } catch (error) {
       console.log("sign-in-form.tsx | ERROR", error);
     }
-  }, [email, password, router, props.onSuccess]);
+  }, [email, password, router]);
   
   
   
