@@ -9,7 +9,7 @@ import {
   AuthError, GoogleAuthProvider, User 
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
-
+import { Input, Button, Divider } from "@nextui-org/react";
 
 const Login: NextPage = () => {
   const [email, setEmail] = useState("");
@@ -84,51 +84,64 @@ const Login: NextPage = () => {
   
 
     return (
-      <div className="p-5 max-w-md mx-auto flex flex-col gap-3">
-        <h1 className="text-2xl font-bold">Login</h1>
-        {error && <p className="text-red-500">{error}</p>}
-        
-        <button
-          onClick={loginWithGoogle}
-          disabled={loading}
-          className={`px-4 py-2 bg-blue-500 text-white rounded ${loading ? "cursor-not-allowed opacity-50" : "hover:bg-blue-600"}`}
-        >
-          {loading ? "Logging in..." : "Login with Google"}
-        </button>
-    
-        <hr className="my-3" />
-    
-        <form onSubmit={(e) => { e.preventDefault(); onEmailLoginButtonClick(); }}>
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="px-3 py-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="px-3 py-2 w-full border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className={`w-full px-4 py-2 bg-green-500 text-white rounded ${loading ? "cursor-not-allowed opacity-50" : "hover:bg-green-600"}`}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
+      <div className="p-5 w-full h-full min-h-screen mx-auto flex flex-col bg-darkaccent justify-center">
+        <div className="flex flex-col items-center justify-center gap-3 max-w-md mx-auto">
+          <h1 className="text-4xl font-bold text-white">Login</h1>
+          {error && <p className="text-red-500">{error}</p>}
+          
+          
+      
+      
+          <form onSubmit={(e) => { e.preventDefault(); onEmailLoginButtonClick(); }} className="flex flex-col gap-4 w-[300px] sm:w-[400px]">
+            <Input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="dark w-full "
+            />
+            <Input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="dark w-full "
+            />
+            <Button
+              variant="bordered"
+              color="primary"
+              type="submit"
+              disabled={loading}
+              className={`w-full dark ${loading ? "cursor-not-allowed" : ""}`}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+          </form>
 
-        <button
-          onClick={onEmailSignUpButtonClick}
-          disabled={loading}
-          className={`px-4 py-2 bg-yellow-500 text-white rounded ${loading ? "cursor-not-allowed opacity-50" : "hover:bg-yellow-600"}`}
-        >
-          {loading ? "Registering..." : "Register"}
-        </button>
+          <Button
+            variant="bordered"
+            color="warning"
+            onPress={onEmailSignUpButtonClick}
+            disabled={loading}
+            className={`w-[300px] sm:w-[400px] dark ${loading ? "cursor-not-allowed " : ""}`}
+          >
+            {loading ? "Registering..." : "Register"}
+          </Button>
+          <div className=" py-4 max-w-[300px] sm:max-w-[400px] flex flex-row gap-4 justify-center items-center">
+            <Divider className="dark w-[100px] bg-gray-500" />
+            <p className="text-gray-500">or</p>
+            <Divider className="dark w-[100px] bg-gray-500" />
+          </div>
+          <Button
+            variant="bordered"
+            color="secondary"
+            onPress={loginWithGoogle}
+            disabled={loading}
+            className={`w-[300px] sm:w-[400px] dark ${loading ? "cursor-not-allowed" : ""}`}
+          >
+            {loading ? "Logging in..." : "Login with Google"}
+          </Button>
+        </div>
       </div>
     );    
 };
