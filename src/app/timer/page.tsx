@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useEffect, useState, useRef } from "react";
-import { Image, Modal, ModalBody, ModalContent, Button } from "@nextui-org/react";
+import { Image, Modal, ModalBody, ModalContent, Button, Input } from "@nextui-org/react";
 import SettingsModal from "@/components/SettingsModal";
 import { sounds, gifs, endSounds } from "../../components/SettingsModal/assets";
 import Particles from "@/components/ui/particles"
@@ -19,6 +19,7 @@ const Timer = () => {
 
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [startTime, setStartTime] = useState<number | null>(null);
+  const [taskName, setTaskName] = React.useState("");
   const [timerLength, setTimerLength] = useState(15 * 60 * 1000); // Default 15 minutes
   const [timeLeft, setTimeLeft] = useState(timerLength);
   const [showModal, setShowModal] = useState(false);
@@ -27,9 +28,6 @@ const Timer = () => {
   type EndSoundKeys = keyof typeof endSounds; 
   type GifKeys = keyof typeof gifs; 
   const [selectedGif, setSelectedGif] = useState<GifKeys | "">("");
-  const [savedSound, setSavedSound] = useState<SoundKeys | null>(null);
-  const [savedEndSound, setSavedEndSound] = useState<EndSoundKeys | null>(null);
-  const [savedGif, setSavedGif] = useState<GifKeys | null>(null);
   const [selectedSound, setSelectedSound] = useState<SoundKeys | "">("");
   const [selectedEndSound, setSelectedEndSound] = useState<EndSoundKeys | "">("");
   const [selectedYouTubeAudio, setSelectedYouTubeAudio] = useState<string>('LJih9bxSacU');
@@ -121,6 +119,7 @@ const Timer = () => {
     const now = Date.now();
     const sessionId = `session_${now}`;
     const sessionData = {
+      timerName: taskName,
       startTime: now,
       timerLength: timerLength / 60000, // Convert milliseconds to minutes
       endTime: now + timerLength,
@@ -135,6 +134,7 @@ const Timer = () => {
     setTimeLeft(timerLength);
     setIsElementsVisible(false);
     startCountdown();
+    setTaskName("");
 
     if (selectedYouTubeAudio) {
       setIframeSrc(`https://www.youtube.com/embed/${selectedYouTubeAudio}?autoplay=1`);
@@ -202,10 +202,14 @@ const Timer = () => {
 
 
   const playEndSound = () => {
-    const defaultEndSound = "./endSounds/daybreak_alarm.mp3"; // Replace with your default sound path
+    const defaultEndSound = "/endSounds/task-complete.mp3"; // Replace with your default sound path
     const soundToPlay = selectedEndSound ? endSounds[selectedEndSound as EndSoundKeys] : defaultEndSound;
     const audio = new Audio(soundToPlay);
     audio.loop = true; 
+    
+    audio.onerror = (e) => {
+      console.error("Error loading sound:", e);
+  };
 
     const stopSound = () => {
       audio.pause(); // Stop the audio
@@ -255,6 +259,18 @@ const Timer = () => {
         <h1 className={`z-[2] md:px-0 text-center text-textcolor text-4xl ${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
           LOCK IN
         </h1>
+        <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
+          <Input 
+            label="Focusing on..." 
+            placeholder="Enter a task" 
+            variant="bordered"
+            className="dark w-[300px] sm:w-[400px] text-textcolor border-darkaccent3"
+            classNames={{inputWrapper: "border-1 border-darkaccent3 hover:border-darkaccent2 focus:border-darkaccent2 bg-darkaccent3/20 "}}
+            value={taskName} 
+            onValueChange={setTaskName}
+          >
+          </Input>
+        </div>
 
         <div className="h-full flex flex-col md:flex-row items-center justify-center gap-4">
           <Image 

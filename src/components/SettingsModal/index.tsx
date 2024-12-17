@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { faBars, faTimes, faPlay } from "@fortawesome/free-solid-svg-icons";
-import { Checkbox, Modal, ModalBody, ModalContent, Select, SelectSection, SelectItem, Button, Link } from "@nextui-org/react";
+import { faBars, faGear, faTimes, faPlay, faChartSimple } from "@fortawesome/free-solid-svg-icons";
+import { faClock } from "@fortawesome/free-regular-svg-icons";
+import { Checkbox, Modal, ModalBody, ModalContent, Select, SelectSection, SelectItem, Button, Link, Image } from "@nextui-org/react";
 import { sounds, gifs, endSounds } from "./assets"; 
 import { editSettings, auth, db } from '../../../firebase'; 
 
@@ -93,12 +94,28 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
           }`}
         >
           {/* Menu content */}
-          <div className="p-6">
-            <h2 className="text-2xl mb-4">Menu</h2>
-            <div className="flex flex-col gap-4">
-              <Link href="/timer" isBlock color="secondary">Timer</Link>
-              <Link href="/stats" isBlock color="foreground">Stats</Link>
-              <Link href="#" onPress={() => setShowModal(true)} isBlock color="foreground">Settings</Link>
+          <div className="p-4">
+            <div className="flex flex-col gap-4 pt-4">
+              <Image 
+                alt="Podo Logo"
+                src="./podo_logo.png"
+                height={63}
+                width={63}
+              />
+              <div className="flex flex-row gap-1 items-center justify-start">
+                <FontAwesomeIcon icon={faChartSimple} className="w-4 h-4 text-secondary" />
+                <Link href="/timer" isBlock color="secondary">
+                  Timer
+                </Link>
+              </div>
+              <div className="flex flex-row gap-1 items-center justify-start">
+                <FontAwesomeIcon icon={faClock} className="w-4 h-4 " />
+                <Link href="/stats" isBlock color="foreground">Stats</Link>
+              </div>
+              <div className="flex flex-row gap-1 items-center justify-start">
+                <FontAwesomeIcon icon={faGear} className="w-4 h-4 " />
+                <Link href="#" isBlock color="foreground" onPress={() => setShowModal(true)}>Settings</Link>
+              </div>
             </div>
           </div>
         </div>

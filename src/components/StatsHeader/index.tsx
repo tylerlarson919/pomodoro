@@ -2,8 +2,10 @@
 
 import React, { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
-import { faBars, faTimes, faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faChartSimple, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { Link } from "@nextui-org/link";
+import { Image } from "@nextui-org/image";
 
 
 
@@ -40,11 +42,24 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
           }`}
         >
           {/* Menu content */}
-          <div className="p-6">
-            <h2 className="text-2xl mb-4">Menu</h2>
-            <div className="flex flex-col gap-4">
-              <Link href="/timer" isBlock color="foreground">Timer</Link>
-              <Link href="/stats" isBlock color="secondary">Stats</Link>
+          <div className="p-4">
+            <div className="flex flex-col gap-4 pt-4">
+              <Image 
+                alt="Podo Logo"
+                src="./podo_logo.png"
+                height={63}
+                width={63}
+              />
+              <div className="flex flex-row gap-1 items-center justify-start">
+                <FontAwesomeIcon icon={faChartSimple} className="w-4 h-4" />
+                <Link href="/timer" isBlock color="foreground">
+                  Timer
+                </Link>
+              </div>
+              <div className="flex flex-row gap-1 items-center justify-start">
+                <FontAwesomeIcon icon={faClock} className="w-4 h-4 text-secondary" />
+                <Link href="/stats" isBlock color="secondary">Stats</Link>
+              </div>
             </div>
           </div>
         </div>

@@ -18,9 +18,11 @@ import {
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import StatsHeader from "@/components/StatsHeader";
+import Ripple from "@/components/ui/ripple";
 
 // Define the type for session data
 type Session = {
+  timerName: string;
   startTime: string;
   endTime: string;
   timerLength: string;
@@ -28,6 +30,7 @@ type Session = {
 };
 
  const columns = [
+  { name: "NAME", uid: "timerName" },
   { name: "START TIME", uid: "startTime" },
   { name: "END TIME", uid: "endTime" },
   { name: "TIMER LENGTH", uid: "timerLength" },
@@ -46,38 +49,59 @@ const Stats = () => {
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const [avgTimeValue, setAvgTimeValue] = useState(0);
+  const [timeThisMonth, setTimeThisMonth] = useState(0);
+  const [currentMonth, setCurrentMonth] = useState<string>("");
+
+
+  // Function to set the current month
+  const getCurrentMonth = () => {
+    const options: Intl.DateTimeFormatOptions = { month: 'long' }; // Specify the type explicitly
+    setCurrentMonth(new Date().toLocaleString('default', options));
+  };
 
 
   // Use effect for most stats calculations
   useEffect(() => {
-    // for avg time
-        const calculateAvgTimePerDay = () => {
-          const finishedSessions = sessionsData.filter(session => session.status === "finished");
-          
-          if (finishedSessions.length === 0) {
-            setAvgTimeValue(0);
-            return;
-          }
-      
-          const totalTime = finishedSessions.reduce((sum, session) => {
-            const [time] = session.timerLength.split(" ");
-            return sum + Number(time);
-          }, 0);
-      
-          // Get unique days from sessions (assumes startTime is a timestamp in milliseconds)
-          const uniqueDays = new Set(
-            finishedSessions.map(session => {
-              const date = new Date(Number(session.startTime));
-              return date.toDateString();
-            })
-          );
-      
-          const avgTime = totalTime / uniqueDays.size;
-          setAvgTimeValue(Math.round(avgTime));
-        };
-      
-        calculateAvgTimePerDay();
-      }, [sessionsData]);
+    getCurrentMonth();
+
+    const calculateAvgTimePerDay = () => {
+      const finishedSessions = sessionsData.filter(session => session.status === "finished");
+  
+      if (finishedSessions.length === 0) {
+        setAvgTimeValue(0);
+        setTimeThisMonth(0); // Reset timeThisMonth as well
+        return;
+      }
+  
+      const totalTime = finishedSessions.reduce((sum, session) => {
+        const [time] = session.timerLength.split(" ");
+        return sum + Number(time);
+      }, 0);
+  
+      // Get unique days from sessions (assumes startTime is a timestamp in milliseconds)
+      const uniqueDays = new Set(
+        finishedSessions.map(session => {
+          const date = new Date(Number(session.startTime));
+          return date.toDateString();
+        })
+      );
+  
+      const avgTime = totalTime / uniqueDays.size;
+      setAvgTimeValue(Math.round(avgTime));
+  
+      // Calculate time this month by summing the timerLength of finished sessions
+      const timeThisMonth = finishedSessions.reduce((sum, session) => {
+        const [time] = session.timerLength.split(" ");
+        return sum + Number(time);
+      }, 0);
+  
+      setTimeThisMonth(timeThisMonth);
+    };
+  
+    calculateAvgTimePerDay();
+  }, [sessionsData]);
+  
+  
       
 
 
@@ -88,11 +112,13 @@ const Stats = () => {
       const currentSessions = sessions
         ?.filter((session) => session.status !== "current")
         ?.map((session) => {
+          const timerName = session.timerName || "";
           const startTime = formatTimestamp(session.startTime);
           const endTime = formatTimestamp(session.endTime);
           const timerLength = calculateTimerLength(session.startTime, session.endTime);
 
           return {
+            timerName,
             startTime,
             endTime,
             timerLength,
@@ -109,17 +135,19 @@ const Stats = () => {
       setSessionsData(currentSessions || []);
     }
   };
+// Format timestamp into a readable format like "9/15/24, 3:30pm"
+const formatTimestamp = (timestamp: string | number) => {
+  if (!timestamp) return "N/A";
+  const date = new Date(Number(timestamp));
+  const month = date.getMonth() + 1; // getMonth() returns 0-11
+  const day = date.getDate();
+  const year = String(date.getFullYear()).slice(-2); // Get last two digits of the year
+  const hours = date.getHours() % 12 || 12; // Convert 0 to 12 for 12-hour format
+  const minutes = date.getMinutes().toString().padStart(2, "0"); // Keep 2-digit minutes
+  const ampm = date.getHours() >= 12 ? "pm" : "am"; // Use lowercase for AM/PM
 
-  // Format timestamp into a readable format like "2:30 PM"
-  const formatTimestamp = (timestamp: string | number) => {
-    if (!timestamp) return "N/A";
-    const date = new Date(Number(timestamp));
-    const hours = date.getHours() % 12 || 12; // Convert 0 to 12 for 12-hour format
-    const minutes = date.getMinutes().toString().padStart(2, "0"); // Keep 2-digit minutes
-    const ampm = date.getHours() >= 12 ? "PM" : "AM";
-    return `${hours}:${minutes} ${ampm}`;
-  };
-  
+  return `${month}/${day}/${year}, ${hours}:${minutes}${ampm}`;
+};  
 
   // Calculate timer length in minutes
   const calculateTimerLength = (start: string | number, end: string | number) => {
@@ -142,17 +170,18 @@ const Stats = () => {
   
 
   return (
-    <div className="flex flex-col w-full h-screen items-center justify-start overflow-hidden bg-dark1 p-6 gap-6">
+    <div className="flex flex-col w-full h-full min-h-screen items-center justify-start bg-dark1  px-6 lg:px-52 gap-6 pb-6">
       <StatsHeader/>
       <div className="flex flex-col items-center justify-start w-full">
         <h1 className="text-4xl font-bold text-white mb-4 mt-4">Session Stats</h1>
-        <Table classNames={{wrapper: "bg-darkaccent", th: "bg-darkaccent3"}} className="dark bg-darkaccent" aria-label="Session Stats Table">
+        <Table classNames={{wrapper: "bg-darkaccent", th: "bg-darkaccent3"}} className="dark" aria-label="Session Stats Table">
           <TableHeader className="dark" columns={columns}>
             {(column) => <TableColumn key={column.uid}>{column.name}</TableColumn>}
           </TableHeader>
-          <TableBody className="dark" items={sessionsData}>
+          <TableBody className="dark " items={sessionsData}>
             {(item) => (
               <TableRow className="dark" key={item.startTime}>
+                <TableCell className="dark text-white">{item.timerName}</TableCell>
                 <TableCell className="dark text-white">{item.startTime}</TableCell>
                 <TableCell className="dark text-white">{item.endTime}</TableCell>
                 <TableCell className="dark text-white">{item.timerLength}</TableCell>
@@ -167,10 +196,10 @@ const Stats = () => {
           </TableBody>
         </Table>
       </div>
-      <div className="flex flex-row items-center justify-center w-full gap-6">
-        <Card className="dark bg-darkaccent w-1/3">
-            <CardBody className="dark flex flex-col items-center justify-center">
-                <h4 className="text-2xl text-white mb-4">Avg Time per Day</h4>
+      <div className="flex flex-col sm:flex-row items-center justify-center w-full gap-6">
+        <Card className="dark bg-darkaccent w-full h-full sm:w-1/2 py-4 sm:h-[260px]">
+            <CardBody className="dark flex flex-row sm:flex-col gap-4 items-center justify-center overflow-hidden">
+                <h4 className="text-3xl sm:text-4xl text-white text-center">Avg Time per Day</h4>
                 <CircularProgress
                     color="secondary"
                     formatOptions={{style: "unit", unit: "minute"}}
@@ -187,14 +216,11 @@ const Stats = () => {
                 />
             </CardBody>
         </Card>
-        <Card className="dark bg-darkaccent w-1/3">
-            <CardBody className="dark flex flex-col items-center justify-center">
-                <h4 className="text-2xl text-white mb-4">Time Focused</h4>
-            </CardBody>
-        </Card>
-        <Card className="dark bg-darkaccent w-1/3">
-            <CardBody className="dark flex flex-col items-center justify-center">
-                <h4 className="text-2xl text-white mb-4">Time</h4>
+        <Card className="dark bg-darkaccent w-full sm:w-1/2 py-4 px-6 sm:h-[260px]">
+            <CardBody className="dark flex flex-col items-center justify-start md:justify-center">
+                <p className="text-left md:text-center text-5xl font-medium text-white">
+                  Focused for {timeThisMonth} mins in {currentMonth}. 
+                </p>
             </CardBody>
         </Card>
       </div>
