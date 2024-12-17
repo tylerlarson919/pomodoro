@@ -33,6 +33,7 @@ const Stats = () => {
     const user = auth.currentUser;
     if (user) {
       const sessions = await getSessions(); // Fetch all sessions
+      console.log("sessions: ", sessions);
       const currentSessions = sessions
         ?.filter((session) => session.status !== "current")
         ?.map((session) => {
@@ -54,8 +55,8 @@ const Stats = () => {
           return dateB - dateA; // Descending order
         });
 
+      console.log("currentSessions: ", currentSessions);
       setSessionsData(currentSessions || []);
-      console.log("Session Data: ", currentSessions);
     }
   };
 
