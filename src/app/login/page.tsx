@@ -10,7 +10,6 @@ import {
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Input, Image, Button, Divider } from "@nextui-org/react";
-import GoogleIcon from "@/icons/google-icon.webp";
 
 const Login: NextPage = () => {
   const [email, setEmail] = useState("");
