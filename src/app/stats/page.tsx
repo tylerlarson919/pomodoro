@@ -19,7 +19,7 @@ type Session = {
   status: string;
 };
 
-export const columns = [
+ const columns = [
   { name: "START TIME", uid: "startTime" },
   { name: "END TIME", uid: "endTime" },
   { name: "TIMER LENGTH", uid: "timerLength" },
