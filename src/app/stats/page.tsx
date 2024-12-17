@@ -55,6 +55,7 @@ const Stats = () => {
         });
 
       setSessionsData(currentSessions || []);
+      console.log("Session Data: ", currentSessions);
     }
   };
 
@@ -77,19 +78,19 @@ const Stats = () => {
   }, []);
 
   return (
-    <div className="flex flex-col w-full h-screen items-center justify-center overflow-hidden bg-dark1 p-6">
-      <h1 className="text-2xl text-white mb-4">Session Stats</h1>
-      <Table aria-label="Session Stats Table">
-        <TableHeader columns={columns}>
+    <div className="flex flex-col w-full h-screen items-center justify-start overflow-hidden bg-dark1 p-6">
+      <h1 className="text-2xl text-white mb-4 mt-4">Session Stats</h1>
+      <Table className="dark" aria-label="Session Stats Table">
+        <TableHeader className="dark" columns={columns}>
           {(column) => <TableColumn key={column.uid}>{column.name}</TableColumn>}
         </TableHeader>
-        <TableBody items={sessionsData}>
+        <TableBody className="dark" items={sessionsData}>
           {(item) => (
-            <TableRow key={item.startTime}>
-              <TableCell>{item.startTime}</TableCell>
-              <TableCell>{item.endTime}</TableCell>
-              <TableCell>{item.timerLength}</TableCell>
-              <TableCell>{item.status}</TableCell>
+            <TableRow className="dark" key={item.startTime}>
+              <TableCell className="dark">{item.startTime}</TableCell>
+              <TableCell className="dark">{item.endTime}</TableCell>
+              <TableCell className="dark">{item.timerLength}</TableCell>
+              <TableCell className="dark">{item.status}</TableCell>
             </TableRow>
           )}
         </TableBody>
