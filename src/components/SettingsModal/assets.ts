@@ -6,6 +6,7 @@ export const sounds = {
     GentleRain: "-OekvEFm1lo",
     MeditationSound: "A1IYf7fKdhY",
     LoFi: "4xDzrJKXOOY",
+    ChristmasJazz: "MD4mh6GLZCg",
 } as const;
 
 export const endSounds = {
