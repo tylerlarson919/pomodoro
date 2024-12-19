@@ -276,10 +276,10 @@ const Timer = () => {
       >
         {isSnowSelected && ( 
           <Snowfall
-            snowflakeCount={150}
+            snowflakeCount={50}
             speed={[0.5, 1.5]}
             wind={[0.5, 1.5]}
-            radius={[0.5, 3]}
+            radius={[0.5, 2]}
           />
         )}
       </div>

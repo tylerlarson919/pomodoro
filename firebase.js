@@ -25,7 +25,6 @@ const db = getFirestore(app);
 // Set persistence to local
 auth.setPersistence(browserLocalPersistence)
   .then(() => {
-    console.log("Persistence set to browserLocalPersistence");
   })
   .catch((error) => {
     console.error("Error setting persistence:", error);
@@ -72,11 +71,9 @@ export const editSettings = async (settings) => {
     if (settingsDoc.exists()) {
       // Update existing settings
       await setDoc(userSettingsRef, settings, { merge: true });
-      console.log("Settings updated:", settings);
     } else {
       // Create new settings document
       await setDoc(userSettingsRef, settings);
-      console.log("Settings created:", settings);
     }
   } else {
     console.error("No user is currently logged in.");
@@ -92,7 +89,6 @@ export const addSession = async (session) => {
     if (user) {
       const userSessionsRef = doc(db, "podo", user.uid, "sessions", session.sessionId); // Change this line
       await setDoc(userSessionsRef, session); // Use setDoc instead of addDoc to create a session with a specific ID
-      console.log("Session created with ID: ", session.sessionId);
     }
   } catch (e) {
     console.error("Error adding session: ", e);
@@ -107,7 +103,6 @@ export const endSession = async (sessionId, updateData) => {
     if (user) {
       const userSessionsRef = doc(db, "podo", user.uid, "sessions", sessionId); // Use sessionId directly
       await setDoc(userSessionsRef, { currentTimer: false, ...updateData }, { merge: true });
-      console.log("Session ended for ID: ", sessionId);
     }
   } catch (e) {
     console.error("Error ending session: ", e);

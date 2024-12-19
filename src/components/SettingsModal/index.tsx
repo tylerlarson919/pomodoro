@@ -206,7 +206,13 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                   defaultSelectedKeys={[selectedGif]}
                 >
                   {Object.keys(gifs).map(gif => (
-                    <SelectItem textValue={gif.replace(/([A-Z])/g, ' $1').trim()} className="dark" key={gif} value={gif}>
+                    <SelectItem
+                      startContent={<Image src={gifs[gif as keyof typeof gifs]} alt={gif} width={30} />}
+                      textValue={gif.replace(/([A-Z])/g, ' $1').trim()} 
+                      className="dark flex h-full max-h-[30px]" 
+                      key={gif} 
+                      value={gif}
+                    >
                       {gif.replace(/([A-Z])/g, ' $1').trim()}
                     </SelectItem>
                   ))}

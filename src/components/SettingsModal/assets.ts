@@ -17,13 +17,17 @@ export const endSounds = {
 } as const;
 
 export const gifs = {
-    Campfire: "./campfire.gif",
+    Campfire: "./campfire1.gif",
     FallVibes: "./zen-fall-swing.gif",
     JapaneseIsland: "./japan-island.gif",
     TreeOfWisdon: "./skill-tree.gif",
     FloatingAirbender: "./monk2.gif",
     ChillinInSpace: "./chillin-in-space-no-planet.gif",
+    LostCat: "./floating-cat.gif",
     SpaceStation: "./space-station.gif",
+    WindowToAnotherWorld: "window-to-another-world.gif",
+
+
 } as const;
 
 export const backgrounds = {
