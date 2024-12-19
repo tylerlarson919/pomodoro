@@ -159,7 +159,7 @@ const Stats = () => {
           // Sort by most recent `endTime`
           const dateA = new Date(Number(a.endTime)).getTime();
           const dateB = new Date(Number(b.endTime)).getTime();
-          return dateB - dateA; // Descending order
+          return dateA - dateB; // Descending order
         });
 
       setSessionsData(currentSessions || []);
