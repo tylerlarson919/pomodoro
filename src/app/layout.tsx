@@ -17,7 +17,7 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "It's Focus Time",
+  title: "Focus Flow",
   description: "Get Ready to Focus",
 };
 

@@ -32,7 +32,7 @@ export default function Header() {
       <NavbarBrand>
         {/* <Logo here /> */}
       </NavbarBrand>
-      <NavbarContent className="hidden sm:flex gap-4" justify="center">
+      <NavbarContent className="flex w-fit hidden sm:flex gap-4" justify="center">
         <NavbarItem>
           <Link color="foreground" href="#" className="text-white">
             Features
@@ -40,16 +40,11 @@ export default function Header() {
         </NavbarItem>
         <NavbarItem isActive>
           <Link aria-current="page" href="#" className="text-white">
-            Customers
-          </Link>
-        </NavbarItem>
-        <NavbarItem>
-          <Link color="foreground" href="#" className="text-white">
-            Integrations
+            Pricing
           </Link>
         </NavbarItem>
       </NavbarContent>
-      <NavbarContent justify="end">
+      <NavbarContent justify="center">
       {user ? (
           <NavbarItem>
             <div className="flex flex-row gap-2 items-center">
