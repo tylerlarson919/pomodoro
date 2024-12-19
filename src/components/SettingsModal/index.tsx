@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { faBars, faGear, faTimes, faPlay, faChartSimple } from "@fortawesome/free-solid-svg-icons";
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { Checkbox, Modal, ModalBody, ModalContent, Select, SelectSection, SelectItem, Button, Link, Image } from "@nextui-org/react";
-import { sounds, gifs, endSounds } from "./assets"; 
+import { sounds, gifs, endSounds, backgrounds } from "./assets"; 
 import { editSettings, auth, db } from '../../../firebase'; 
 
 
@@ -15,6 +15,7 @@ interface SettingsModalProps {
     selectedSound: string;
     selectedEndSound: string;
     selectedGif: string;
+    selectedBackground: string;
     isStarsSelected: boolean;
   };
 }
@@ -31,6 +32,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
     const [selectedSound, setSelectedSound] = useState(settingsProps.selectedSound);
     const [selectedEndSound, setSelectedEndSound] = useState(settingsProps.selectedEndSound);
     const [selectedGif, setSelectedGif] = useState(settingsProps.selectedGif);
+    const [selectedBackground, setSelectedBackground] = useState(settingsProps.selectedBackground);
     const [isStarsSelected, setIsStarsSelected] = useState(settingsProps.isStarsSelected); 
     type EndSoundKeys = keyof typeof endSounds; 
 
@@ -48,6 +50,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
       setSelectedSound(settingsProps.selectedSound);
       setSelectedEndSound(settingsProps.selectedEndSound);
       setSelectedGif(settingsProps.selectedGif);
+      setSelectedBackground(settingsProps.selectedBackground);
       setIsStarsSelected(settingsProps.isStarsSelected);
     }, [settingsProps]);
 
@@ -57,6 +60,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
         selectedSound,
         selectedEndSound,
         selectedGif,
+        selectedBackground,
         stars: isStarsSelected,
       };
     
@@ -67,8 +71,6 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
     
       setShowModal(false); // Close modal after saving
     };
-    
-
 
     return (
       <div className="absolute top-0 left-0">
@@ -170,21 +172,19 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                     <SelectItem textValue={endSound.replace(/([A-Z])/g, ' $1').trim()} className="dark" key={endSound} value={endSound}>
                       <div className="flex justify-between items-center">
                         {endSound.replace(/([A-Z])/g, ' $1').trim()}
-                        <Button
-                          onPress={(e) => {
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation(); 
                             playEndSound(endSound); // Play the selected end sound
                           }}
-                          isIconOnly
                           aria-label="Play Sound"
-                          color="default"
-                          variant="flat"
-                          className="flex items-center justify-center"
+                          className="flex items-center justify-center hover:bg-none bg-none"
                         >
                           <FontAwesomeIcon 
                             icon={faPlay}  
-                            className="text-white w-5 h-5" 
+                            className="text-white w-4 h-4" 
                           />
-                        </Button>
+                        </button>
                       </div>
                     </SelectItem>
                   ))}
@@ -211,7 +211,27 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                     </SelectItem>
                   ))}
                 </Select>
-                <Checkbox isSelected={isStarsSelected} onValueChange={setIsStarsSelected} color="secondary" className="mt-6" >Background Stars?</Checkbox>
+                <h3 className="mt-6">Choose Background</h3>
+                <Select 
+                  className=""
+                  popoverProps={{
+                    classNames: {
+                      base: "before:bg-default-200",
+                      content: "text-white p-0 border-small border-divider dark border-none",
+                    },
+                  }}
+                  aria-label="Choose Background"
+                  placeholder="Choose Background"
+                  onChange={(event) => setSelectedBackground(event.target.value)} 
+                  value={selectedBackground}
+                  defaultSelectedKeys={[selectedBackground]}
+                >
+                  {Object.keys(backgrounds).map(background => (
+                    <SelectItem textValue={background.replace(/([A-Z])/g, ' $1').trim()} className="dark" key={background} value={background}>
+                      {background.replace(/([A-Z])/g, ' $1').trim()}
+                    </SelectItem>
+                  ))}
+                </Select>
 
                 <Button onPress={save} variant="faded" className="dark mt-6">Save Settings</Button>
                   

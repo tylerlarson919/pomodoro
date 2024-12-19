@@ -10,6 +10,7 @@ import {
 } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Input, Image, Button, Divider } from "@nextui-org/react";
+import Link from "next/link";
 
 const Login: NextPage = () => {
   const [email, setEmail] = useState("");
@@ -46,26 +47,12 @@ const Login: NextPage = () => {
   const loginWithGoogle = useCallback(async () => {
     try {
       const result = await signInWithGoogle();
-      console.log("sign-in-form.tsx | result", result);
-      router.push("/timer"); // Redirect to /app
+      router.push("/timer"); // Redirect to /timer
     } catch (error) {
       console.log("sign-in-form | ERROR", error);
     }
   }, [router]);
   
-  const onEmailSignUpButtonClick = useCallback(async () => {
-    try {
-      if (!email || !password) {
-        throw new Error("Email and password are required.");
-      }
-  
-      const result = await createUserWithEmailAndPassword(auth, email, password);
-      console.log("sign-in-form.tsx | result", result);
-      router.push("/timer"); // Redirect to /app
-    } catch (error) {
-      console.log("sign-in-form.tsx | ERROR", error);
-    }
-  }, [email, password, router]);
   
   const onEmailLoginButtonClick = useCallback(async () => {
     try {
@@ -88,11 +75,11 @@ const Login: NextPage = () => {
       <div className="p-5 w-full h-full min-h-screen mx-auto flex flex-col bg-darkaccent justify-center">
         <div className="flex flex-col items-center justify-center gap-3 max-w-md mx-auto">
           <h1 className="text-4xl font-bold text-white">Login</h1>
+          <div className="flex flex-row gap-1">
+            <p className="text-textcolor">Don't have an account yet?</p>
+            <Link href="/signup" className="text-secondary hover:text-gray-400">Sign Up</Link>
+          </div>
           {error && <p className="text-red-500">{error}</p>}
-          
-          
-      
-      
           <form onSubmit={(e) => { e.preventDefault(); onEmailLoginButtonClick(); }} className="flex flex-col gap-4 w-[300px] sm:w-[400px]">
             <Input
               type="email"
@@ -118,17 +105,7 @@ const Login: NextPage = () => {
               {loading ? "Logging in..." : "Login"}
             </Button>
           </form>
-
-          <Button
-            variant="bordered"
-            color="warning"
-            onPress={onEmailSignUpButtonClick}
-            disabled={loading}
-            className={`w-[300px] sm:w-[400px] dark ${loading ? "cursor-not-allowed " : ""}`}
-          >
-            {loading ? "Registering..." : "Register"}
-          </Button>
-          <div className=" py-4 max-w-[300px] sm:max-w-[400px] flex flex-row gap-4 justify-center items-center">
+          <div className=" py-1.5 max-w-[300px] sm:max-w-[400px] flex flex-row gap-4 justify-center items-center">
             <Divider className="dark w-[100px] bg-gray-500" />
             <p className="text-gray-500">or</p>
             <Divider className="dark w-[100px] bg-gray-500" />

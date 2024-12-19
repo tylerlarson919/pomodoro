@@ -18,7 +18,7 @@ export default {
   			darkaccent: '#0c0c0c',
   			darkaccent2: '#343434',
   			darkaccent3: '#141414',
-  			textcolor: '#f7f7f7',
+  			textcolor: '#939393',
   			textaccent: '#949494',
   			secondary: '#7828C8'
   		},

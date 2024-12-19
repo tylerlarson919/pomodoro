@@ -4,13 +4,13 @@ import { getAuth } from "firebase/auth";
 
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBL_tpz-kDmR5MwA-WBOr_05jfcmEEDsB8",
-  authDomain: "podo-fe249.firebaseapp.com",
-  projectId: "podo-fe249",
-  storageBucket: "podo-fe249.firebasestorage.app",
-  messagingSenderId: "686732430921",
-  appId: "1:686732430921:web:87da249b43e6d91be43998",
-  measurementId: "G-K9Z2H9530S"
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
+  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
 // Ensure Firebase is initialized

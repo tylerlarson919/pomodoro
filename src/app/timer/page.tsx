@@ -4,13 +4,14 @@ import React from "react";
 import { useEffect, useState, useRef } from "react";
 import { Image, Modal, ModalBody, ModalContent, Button, Input } from "@nextui-org/react";
 import SettingsModal from "@/components/SettingsModal";
-import { sounds, gifs, endSounds } from "../../components/SettingsModal/assets";
+import { sounds, gifs, endSounds, backgrounds } from "../../components/SettingsModal/assets";
 import Particles from "@/components/ui/particles"
 import { getFirestore, doc, getDoc } from "firebase/firestore"; // Add this import
 
 import { onAuthStateChanged, User, getAuth } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { auth, addSession, endSession, getSessions } from "../../../firebase";
+import Snowfall from 'react-snowfall'
 
 
 
@@ -31,8 +32,13 @@ const Timer = () => {
   const [selectedSound, setSelectedSound] = useState<SoundKeys | "">("");
   const [selectedEndSound, setSelectedEndSound] = useState<EndSoundKeys | "">("");
   const [selectedYouTubeAudio, setSelectedYouTubeAudio] = useState<string>('LJih9bxSacU');
+  const [selectedBackground, setSelectedBackground] = useState<string>('');
   const [iframeSrc, setIframeSrc] = useState("https://example.com");
   const [isStarsSelected, setIsStarsSelected] = React.useState(false);
+  const [isSnowSelected, setIsSnowSelected] = React.useState(false);
+  const [isRainSelected, setIsRainSelected] = React.useState(false);
+  const [isCloudsSelected, setIsCloudsSelected] = React.useState(false);
+
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
@@ -41,6 +47,7 @@ const Timer = () => {
     selectedSound,
     selectedEndSound,
     selectedGif,
+    selectedBackground,
     isStarsSelected,
   };
 
@@ -94,16 +101,21 @@ const Timer = () => {
       
         if (matchedSound) {
           setSelectedYouTubeAudio(matchedSound[1]); // Set the video ID, not the key
-          console.log("Setting YouTube Audio:", matchedSound[1]);
         }
       }
       
 
       setSelectedEndSound(settings.selectedEndSound || "");
+      
+      setSelectedBackground(settings.selectedBackground || "");
 
       setSelectedGif(settings.selectedGif || "");
 
-      setIsStarsSelected(settings.stars === true);
+      setIsStarsSelected(settings.selectedBackground === "Stars");
+      setIsSnowSelected(settings.selectedBackground === "Snow");
+      setIsRainSelected(settings.selectedBackground === "Rain");
+      setIsCloudsSelected(settings.selectedBackground === "Clouds");
+
     } else {
       console.log("No user settings found, using defaults."); // Log if no settings are found
       setTimerLength(15 * 60 * 1000); // Default to 15 minutes
@@ -254,6 +266,20 @@ const Timer = () => {
             ease={100}
             color="#ffffff"
             refresh
+          />
+        )}
+      </div>
+      <div
+        className={`flex w-full text-textcolor fade-gradual ${
+          isSnowSelected ? "" : "hidden"
+        }`}
+      >
+        {isSnowSelected && ( 
+          <Snowfall
+            snowflakeCount={150}
+            speed={[0.5, 1.5]}
+            wind={[0.5, 1.5]}
+            radius={[0.5, 3]}
           />
         )}
       </div>

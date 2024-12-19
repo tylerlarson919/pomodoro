@@ -25,3 +25,10 @@ export const gifs = {
     ChillinInSpace: "./chillin-in-space-no-planet.gif",
     SpaceStation: "./space-station.gif",
 } as const;
+
+export const backgrounds = {
+    None: "",
+    Stars: "stars",
+    Snow: "snow",
+
+} as const;

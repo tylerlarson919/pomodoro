@@ -11,7 +11,7 @@ import Header from "../components/Header";
 export default function Home() {
 
   const getStarted = () => {
-    window.location.href = "/app";
+    window.location.href = "/signup";
   };
   
 
@@ -22,7 +22,7 @@ export default function Home() {
         <div className="flex flex-col items-center justify-center gap-6 text-white">
           <h1 className="z-10 whitespace-pre-wrap text-center text-7xl font-medium tracking-tighter">
             Get Started For Free!
-          </h1>
+          </h1> 
           <p>Supercharge your focus with Podo - Experience the ultimate web-based focus tool!</p>
           <Button variant="ghost" color="primary" onPress={getStarted} size="md">Get Started For Free!</Button>
         </div>

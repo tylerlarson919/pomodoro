@@ -30,8 +30,7 @@ export default function Header() {
     return (
     <Navbar>
       <NavbarBrand>
-        <AcmeLogo />
-        <p className="font-bold text-inherit">ACME</p>
+        {/* <Logo here /> */}
       </NavbarBrand>
       <NavbarContent className="hidden sm:flex gap-4" justify="center">
         <NavbarItem>
