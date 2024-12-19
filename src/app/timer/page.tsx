@@ -67,12 +67,16 @@ const Timer = () => {
   }, [router]);
 
   const timerOptions = [
-    { label: "1m", value: 1 * 60 * 1000 },
+    { label: "5m", value: 5 * 60 * 1000 },
     { label: "15m", value: 15 * 60 * 1000 },
+    { label: "20m", value: 20 * 60 * 1000 },
     { label: "30m", value: 30 * 60 * 1000 },
     { label: "45m", value: 45 * 60 * 1000 },
     { label: "1hr", value: 60 * 60 * 1000 },
+    { label: "1.5hrs", value: 90 * 60 * 1000 },
     { label: "2hr", value: 120 * 60 * 1000 },
+    { label: "2.5hrs", value: 150 * 60 * 1000 },
+
   ];
 
   const handleTriggerReload = async () => {
