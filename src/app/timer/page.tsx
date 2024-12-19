@@ -2,7 +2,7 @@
 
 import React from "react";
 import { useEffect, useState, useRef } from "react";
-import { Image, Modal, ModalBody, ModalContent, Button, Input } from "@nextui-org/react";
+import { Image, Modal, ModalBody, ModalContent, Button, Input, Skeleton } from "@nextui-org/react";
 import SettingsModal from "@/components/SettingsModal";
 import { sounds, gifs, endSounds, backgrounds } from "../../components/SettingsModal/assets";
 import Particles from "@/components/ui/particles"
@@ -109,7 +109,7 @@ const Timer = () => {
       
       setSelectedBackground(settings.selectedBackground || "");
 
-      setSelectedGif(settings.selectedGif || "");
+      setSelectedGif(settings.selectedGif || "/campfire1.gif");
 
       setIsStarsSelected(settings.selectedBackground === "Stars");
       setIsSnowSelected(settings.selectedBackground === "Snow");
@@ -312,12 +312,14 @@ const Timer = () => {
         </div>
 
         <div className="h-full flex flex-col md:flex-row items-center justify-center gap-4">
-          <Image 
-            src={selectedGif ? gifs[selectedGif as GifKeys] : "/campfire.gif"}
-            alt={selectedGif ? selectedGif : 'Campfire'}
-            width={400}
-            isBlurred
-          />
+            <Image
+              className="dark"
+              src={selectedGif ? gifs[selectedGif as GifKeys] : "/placeholder.png"}
+              alt={selectedGif ? selectedGif : ''}
+              width={400}
+              isBlurred
+              isLoading={!selectedGif}
+            />
         </div>
 
         <div className="flex flex-col gap-6 items-center justify-center">
