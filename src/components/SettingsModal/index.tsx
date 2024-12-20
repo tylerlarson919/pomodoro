@@ -239,7 +239,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                   ))}
                 </Select>
 
-                <Button onPress={save} variant="faded" className="dark mt-6">Save Settings</Button>
+                <Button onPress={save} variant="faded" className="dark mt-6 border-none">Save Settings</Button>
                   
                 </ModalBody>
               </ModalContent>

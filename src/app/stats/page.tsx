@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { auth, getSessions } from "../../../firebase";
 import {
   Table,
@@ -17,13 +17,23 @@ import {
   Dropdown,
   DropdownMenu,
   DropdownItem,
-  Button
+  DropdownSection,
+  Button,
+  ScrollShadow
 } from "@nextui-org/react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import StatsHeader from "@/components/StatsHeader";
 import { faChevronDown, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import dynamic from "next/dynamic";
+import { parse, getTime } from "date-fns";
+import FilterIcon from  "../../../public/icons/filter-icon";
+import SortIcon from  "../../../public/icons/sort-icon";
+import FilterCard, { FilterCardProps } from '@/components/FilterCard';
+import { filter, set } from "lodash";
+import type {RangeValue} from "@react-types/shared";
+import type {DateValue} from "@react-types/datepicker";
+import {parseDate} from "@internationalized/date";
 
 // Define the type for session data
 type Session = {
@@ -46,22 +56,184 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
     ssr: false,
   });
 
-const statusColorMap: Record<string, ChipProps["color"]> = {
-    active: "success",
-    paused: "danger",
-    vacation: "warning",
-  };
-
 const Stats = () => {
   const [sessionsData, setSessionsData] = useState<Session[]>([]);
+  const [filteredSessionsData, setFilteredSessionsData] = useState<Session[]>([]);
+
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const [avgTimeValue, setAvgTimeValue] = useState(0);
   const [timeThisMonth, setTimeThisMonth] = useState(0);
   const [currentMonth, setCurrentMonth] = useState<string>("");
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>("day");
+  const [isFilterMenuOpen, setisFilterMenuOpen] = useState(false);
+  const [isFilterActive, setisFilterActive] = useState(false);
+  const [isSortMenuOpen, setisSortMenuOpen] = useState(false);
   const [period, setPeriod] = useState("this");
   const periodOrder = ["last", "this"]; // Define the order of periods
+  // Filter card props
+  const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
+  const [selectedFilterTypeKeys1, setSelectedFilterTypeKeys1] = useState<Set<string>>(new Set());
+  const [selectedFilterTypeKeys2, setSelectedFilterTypeKeys2] = useState<Set<string>>(new Set());
+  const [removeFilter, setRemoveFilter] = useState(false);
+  const [filterType, setFilterType] = useState<string>("");
+  const [dateRange, setDateRange] = useState<RangeValue<DateValue> | null>(null);
+  const [date, setDate] = useState<DateValue | null>(null);
+  const [selectedStatusKey, setSelectedStatusKey] = useState<Set<string>>(new Set(["both"]));
+
+  useEffect(() => {
+    const resetData = () => {
+      let statusFlteredSessionData = sessionsData;
+
+      if (removeFilter === true || isFilterActive === false) {
+        console.log("Filter Removed");
+        if (statusFlteredSessionData) {
+          setFilteredSessionsData(statusFlteredSessionData); 
+        };
+        return; // Exit
+    }
+    };
+
+    const filterData = () => {
+        let statusFlteredSessionData = sessionsData;
+        let fullFilteredSessionData = null;
+
+        // Check if sessionsData is empty
+        if (sessionsData.length === 0) {
+            console.log("No sessions data available to filter.");
+            return; // Exit if no data
+        }
+
+        if (removeFilter === true) {
+          console.log("Filter Removed");
+          fullFilteredSessionData = sessionsData.filter(session => {
+            const status = "both"; 
+            return session.status === status;
+          });
+          if (fullFilteredSessionData) {
+            setFilteredSessionsData(fullFilteredSessionData); 
+          };
+          return; // Exit if no data
+      }
+
+        if (selectedStatusKey) {
+          if (selectedStatusKey.has("both")) {
+          } else {
+            statusFlteredSessionData = sessionsData.filter(session => {
+              const status = Array.from(selectedStatusKey)[0]; 
+              return session.status === status;
+            });
+
+          }
+        };
+
+        // Handle "is-relative-to-today" filter
+        if (selectedKeys.has("is-relative-to-today")) {
+          const today = new Date();
+          const periodMultiplier = selectedFilterTypeKeys1.has("this") ? 0 : -1; // Adjust based on selection
+          const timeFrame = selectedFilterTypeKeys2.has("day") ? 1 :
+                            selectedFilterTypeKeys2.has("week") ? 7 :
+                            selectedFilterTypeKeys2.has("month") ? 30 : 365;
+      
+          let startDate, endDate;
+      
+          if (selectedFilterTypeKeys2.has("week")) {
+              const currentDay = today.getDay(); // Get the current day (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
+              const sundayOffset = currentDay; // Offset to get to Sunday
+              const endOfWeekOffset = 6 - currentDay; // Offset to get to Saturday
+      
+              startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - sundayOffset, 0, 0, 0); // Start of this week (Sunday)
+              endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + endOfWeekOffset, 23, 59, 59); // End of this week (Saturday)
+          } else if (selectedFilterTypeKeys2.has("month")) {
+              startDate = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0); // Start of this month
+              endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59); // End of this month
+          } else if (selectedFilterTypeKeys2.has("year")) {
+              startDate = new Date(today.getFullYear(), 0, 1, 0, 0, 0); // Start of this year
+              endDate = new Date(today.getFullYear(), 11, 31, 23, 59, 59); // End of this year
+          }
+          else {
+              // For day
+              startDate = new Date(today.getTime() - (timeFrame * periodMultiplier * 24 * 60 * 60 * 1000));
+              endDate = new Date(today.getTime() + (timeFrame * (1 - periodMultiplier) * 24 * 60 * 60 * 1000));
+          }
+      
+          const formattedStartDate = startDate.toLocaleString('en-US', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+          }).replace(',', ''); // Remove comma for consistency
+          
+          const formattedEndDate = endDate.toLocaleString('en-US', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit',
+          }).replace(',', ''); // Remove comma for consistency
+      
+          const parsedStartDate = parse(formattedStartDate, "MM/dd/yyyy", new Date());
+          const parsedEndDate = parse(formattedEndDate, "MM/dd/yyyy", new Date());
+      
+          fullFilteredSessionData = statusFlteredSessionData.filter(session => {
+              const sessionEnd = parse(session.endTime, "MM/dd/yy, h:mma", new Date());              
+              return sessionEnd >= parsedStartDate && sessionEnd <= parsedEndDate;
+          });
+      }
+      
+        // Handle "is", "is-before", and "is-after" filters
+        else if (["is", "is-before", "is-after"].some(key => selectedKeys.has(key))) {
+            // Check if date is defined before parsing
+            if (date) {
+                const { day, month, year } = date; // Correctly destructuring from the date object
+                const sessionDate = new Date(year, month - 1, day);
+
+                fullFilteredSessionData = statusFlteredSessionData.filter(session => {
+                    const sessionEnd = parse(session.endTime, "MM/dd/yy, h:mma", new Date());
+                    if (selectedKeys.has("is")) {
+                        return sessionEnd.toDateString() === sessionDate.toDateString(); // Exact match
+                    } else if (selectedKeys.has("is-before")) {
+                        return sessionEnd < sessionDate; // Before
+                    } else if (selectedKeys.has("is-after")) {
+                        return sessionEnd > sessionDate; // After
+                    }
+                    return true; // Fallback if no conditions matched
+                });
+            } else {
+            }
+        } 
+        // Handle "is-between" filter
+        else if (selectedKeys.has("is-between") && dateRange) {
+            // Check if dateRange.start is defined before parsing
+            if (dateRange.start && dateRange.end) {
+                // Destructure day, month, and year from dateRange.start and dateRange.end
+                const { day: startDay, month: startMonth, year: startYear } = dateRange.start;
+                const { day: endDay, month: endMonth, year: endYear } = dateRange.end;
+        
+                // Create Date objects for start and end range
+                const startRange = new Date(startYear, startMonth - 1, startDay);
+                const endRange = new Date(endYear, endMonth, endDay + 1);
+                fullFilteredSessionData = statusFlteredSessionData.filter(session => {
+                    const sessionEnd = parse(session.endTime, "MM/dd/yy, h:mma", new Date());
+                    return sessionEnd >= startRange && sessionEnd <= endRange; // Within range
+                });
+            } else {
+            }
+        }
+        if (fullFilteredSessionData) {
+          setFilteredSessionsData(fullFilteredSessionData); 
+        };
+    };
+
+
+        if (removeFilter === true || isFilterActive === false) {
+            resetData();
+            setisFilterActive(false);
+            setisFilterMenuOpen(false);
+        } else {
+            filterData();
+        }
+    
+  }, [selectedKeys, selectedFilterTypeKeys1, selectedFilterTypeKeys2, filterType, dateRange, date, isFilterActive, removeFilter, selectedStatusKey, ]);
+
+
 
 
   // Function to set the current month
@@ -113,26 +285,50 @@ const Stats = () => {
   }, [sessionsData]);
   
   
-  // Function to filter sessions based on the selected timeframe
-  const filterSessionsByTimeframe = (sessions: Session[], timeframe: string) => {
-    const now = new Date();
-    return sessions.filter(session => {
-      const sessionDate = new Date(Number(session.startTime));
-      switch (timeframe) {
-        case "day":
-          return sessionDate.toDateString() === now.toDateString();
-        case "week":
-          const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-          return sessionDate >= startOfWeek && sessionDate <= new Date();
-        case "month":
-          return sessionDate.getMonth() === now.getMonth() && sessionDate.getFullYear() === now.getFullYear();
-        case "year":
-          return sessionDate.getFullYear() === now.getFullYear();
-        default:
-          return true; // No filtering
-      }
-    });
+// Function to filter sessions based on the selected timeframe
+const filterClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  if (!isFilterMenuOpen && !isFilterActive) {
+    setisFilterMenuOpen(true);
+    setisFilterActive(true);
+  } else if (!isFilterMenuOpen && isFilterActive) {
+    setisFilterActive(false);
+  } else if ( isFilterMenuOpen && isFilterActive) {
+    setisFilterActive(false);
+    setisFilterMenuOpen(false);
+  }
+};
+
+
+// Use effect to handle click outside when the filter menu is open
+useEffect(() => {
+  if (isFilterMenuOpen) {
+    document.addEventListener('mousedown', handleClickOutside);
+  } else {
+    document.removeEventListener('mousedown', handleClickOutside);
+  }
+
+  // Clean up the event listener on component unmount or when isFilterMenuOpen changes
+  return () => {
+    document.removeEventListener('mousedown', handleClickOutside);
   };
+}, [isFilterMenuOpen]);
+
+
+  // Function to handle clicks outside the filter menu
+  const handleClickOutside = (event: MouseEvent) => {
+    const filterButton = document.getElementById('filter-button'); // Use your filter button ID
+    const filterMenu = document.getElementById('filter-menu'); // Use your filter menu ID
+
+    if (filterButton && filterMenu && !filterButton.contains(event.target as Node) && !filterMenu.contains(event.target as Node)) {
+        setisFilterMenuOpen(false);
+        // Do not set isFilterActive to false here
+    }
+};
+
+
+const sortClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  setisSortMenuOpen(prevState => !prevState);
+};
 
 
   const fetchSessions = async () => {
@@ -156,13 +352,13 @@ const Stats = () => {
           };
         })
         ?.sort((a, b) => {
-          // Sort by most recent `endTime`
-          const dateA = new Date(Number(a.endTime)).getTime();
-          const dateB = new Date(Number(b.endTime)).getTime();
-          return dateA - dateB; // Descending order
+          const dateA = getTime(parse(a.endTime, "MM/dd/yy, h:mma", new Date()));
+          const dateB = getTime(parse(b.endTime, "MM/dd/yy, h:mma", new Date()))
+          return dateB - dateA; // Descending order
         });
-
       setSessionsData(currentSessions || []);
+      setFilteredSessionsData(currentSessions || []);
+
     }
   };
 // Format timestamp into a readable format like "9/15/24, 3:30pm"
@@ -257,27 +453,66 @@ const formatTimestamp = (timestamp: string | number) => {
         </div>
 
         <h1 className="text-4xl font-bold text-white mb-4 mt-4">Session Stats</h1>
-        <Table classNames={{wrapper: "bg-darkaccent", th: "bg-darkaccent3"}} className="dark" aria-label="Session Stats Table">
-          <TableHeader className="dark" columns={columns}>
-            {(column) => <TableColumn key={column.uid}>{column.name}</TableColumn>}
-          </TableHeader>
-          <TableBody className="dark " items={sessionsData}>
-            {(item) => (
-              <TableRow className="dark" key={item.startTime}>
-                <TableCell className="dark text-white">{item.timerName}</TableCell>
-                <TableCell className="dark text-white">{item.startTime}</TableCell>
-                <TableCell className="dark text-white">{item.endTime}</TableCell>
-                <TableCell className="dark text-white">{item.timerLength}</TableCell>
-                <TableCell className="dark text-white">
-                  <div className="flex flex-row gap-2 content-center items-center">
-                      <div className={`w-2 h-2 rounded-full items-center ${item.status === "finished" ? "bg-green-600" : "bg-red-600"}`}></div>
-                      {item.status}
-                  </div>
-              </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
+        <div className="bg-darkaccent w-full flex flex-col relative h-auto box-border outline-none shadow-medium rounded-large">
+          <div className="flex items-center justify-center w-full h-[40px] group relative">
+            <div className={`opacity-100 sm:opacity-0 ${isFilterActive ? "opacity-100" : ""} absolute left-0 right-0 top-0 bottom-0 transition-opacity duration-200 opacity-0 group-hover:opacity-100 flex items-center justify-end gap-2`}>
+              <div className="relative">
+                  <button id="filter-button" onClick={filterClick} className="hover:bg-gray-100/10 p-1.5 rounded-md active:bg-gray-400/10">
+                    <FilterIcon color={isFilterActive ? "#005BC4" : "#939393"} className="w-4 h-4" />
+                  </button>
+                  {isFilterMenuOpen && (
+                    <div className="fixed lg:absolute z-[100]"
+                      >
+                      <FilterCard 
+                        selectedKeys={selectedKeys}
+                        setSelectedKeys={setSelectedKeys}
+                        selectedFilterTypeKeys1={selectedFilterTypeKeys1}
+                        setSelectedFilterTypeKeys1={setSelectedFilterTypeKeys1}
+                        selectedFilterTypeKeys2={selectedFilterTypeKeys2}
+                        setSelectedFilterTypeKeys2={setSelectedFilterTypeKeys2}
+                        removeFilter={removeFilter}
+                        setRemoveFilter={setRemoveFilter} // Assuming you need a setter for removeFilter
+                        dateRange={dateRange}
+                        setDateRange={setDateRange}
+                        date={date}
+                        setDate={setDate}
+                        selectedStatusKey={selectedStatusKey}
+                        setSelectedStatusKey={setSelectedStatusKey}
+                      />
+                    </div>
+                  )}
+                </div>
+              <button id="sort-button" onClick={sortClick} className="hover:bg-gray-100/10 p-1.5 rounded-md active:bg-gray-400/10">
+                <SortIcon color={isSortMenuOpen ? "#005BC4" : "#939393"} className="w-4 h-4 " />
+              </button>
+            </div>
+          </div>
+          <ScrollShadow size={10} orientation="vertical" className="dark h-[450px]">
+            <Table isHeaderSticky removeWrapper classNames={{ th: "bg-darkaccent3"}} className="dark" aria-label="Session Stats Table"
+              
+            >
+              <TableHeader className="dark" columns={columns}>
+                {(column) => <TableColumn key={column.uid}>{column.name}</TableColumn>}
+              </TableHeader>
+              <TableBody className="dark " items={filteredSessionsData}>
+                {(item) => (
+                  <TableRow className="dark" key={item.startTime}>
+                    <TableCell className="dark text-white">{item.timerName}</TableCell>
+                    <TableCell className="dark text-white">{item.startTime}</TableCell>
+                    <TableCell className="dark text-white">{item.endTime}</TableCell>
+                    <TableCell className="dark text-white">{item.timerLength}</TableCell>
+                    <TableCell className="dark text-white">
+                      <div className="flex flex-row gap-2 content-center items-center justify-center sm:justify-start">
+                          <div className={`w-4 h-4 sm:w-2 sm:h-2 rounded-full items-center ${item.status === "finished" ? "bg-green-600" : "bg-red-600"}`}></div>
+                          <p className="hidden sm:flex">{item.status}</p>
+                      </div>
+                  </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </ScrollShadow>
+        </div>
       </div>
       <div className="flex flex-col sm:flex-row items-center justify-center w-full gap-6">
         <Card className="dark bg-darkaccent w-full h-full sm:w-1/2 py-4 sm:h-[260px]">

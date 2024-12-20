@@ -340,7 +340,7 @@ const Timer = () => {
                 <ModalBody className="p-10 bg-darkaccent text-textcolor grid grid-cols-3 gap-4 justify-items-center align-items-center">
                   {timerOptions.map((option) => (
                     <Button
-                      className="bg-darkaccent border-darkaccent2 border-1 w-[80px] sm:w-[120px]"
+                      className="bg-darkaccent border-darkaccent2 border-1 w-[80px] sm:w-[120px] text-textcolor"
                       color="secondary"
                       key={option.value}
                       variant="faded"

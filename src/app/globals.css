@@ -21,6 +21,12 @@
 }
 
 
+[data-slot="inner-wrapper"] {
+  /* Your styles here */
+  color: #939393 !important;
+}
+
+
 .fade-gradual {
   opacity: 1;
   visibility: visible;
