@@ -483,7 +483,7 @@ const formatTimestamp = (timestamp: string | number) => {
                 />
             </CardBody>
         </Card>
-        <Card className="dark bg-darkaccent w-full sm:w-1/2 py-4 px-6 sm:h-[260px]">
+        <Card className="dark bg-darkaccent w-full sm:w-1/2 py-4 px-6 h-full md:h-[260px]">
             <CardBody className="dark flex flex-col items-center justify-start md:justify-center">
                 <p className="text-left md:text-center text-5xl font-medium text-white">
                   Focused for {timeThisMonth} mins in {currentMonth}. 
