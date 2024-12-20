@@ -22,7 +22,7 @@
 
 /* For WebKit browsers (Chrome, Safari) */
 ::-webkit-scrollbar {
-  width: 12px; /* Width of the scrollbar */
+  width: 6px; /* Width of the scrollbar */
 }
 
 ::-webkit-scrollbar-thumb {

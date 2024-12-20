@@ -6,6 +6,8 @@ import { faBars, faChartSimple, faTimes } from "@fortawesome/free-solid-svg-icon
 import { faClock } from "@fortawesome/free-regular-svg-icons";
 import { Link } from "@nextui-org/link";
 import { Image } from "@nextui-org/image";
+import { onAuthStateChanged, User } from "firebase/auth";
+import { auth } from "../../../firebase"; // Adjust the path if necessary
 
 
 
@@ -15,11 +17,17 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
   
   export default function StatsHeader() {
       const [showMenu, setShowMenu] = useState(false);
+    const [user, setUser] = useState<null | User>(null);
 
-
+    useEffect(() => {
+      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+        setUser(currentUser);
+      });
+      return () => unsubscribe(); // Cleanup listener on unmount
+    }, []);
 
     return (
-      <div className="absolute top-0 left-0">
+        <div className="absolute top-0 left-0">
         {/* Icon with rotation and transition */}
         <div
           className={`absolute top-2 left-2 z-[100] transform transition-transform duration-300 ease-in-out ${
@@ -62,7 +70,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
               </div>
             </div>
           </div>
-        </div>
+        </div>      
     </div>
   );
 }

@@ -9,32 +9,25 @@ import {
   TableColumn,
   TableRow,
   TableCell,
-  ChipProps,
   Card,
   CardBody,
   CircularProgress,
-  DropdownTrigger,
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  DropdownSection,
-  Button,
   ScrollShadow
 } from "@nextui-org/react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import StatsHeader from "@/components/StatsHeader";
-import { faChevronDown, faChevronLeft, faChevronRight } from "@fortawesome/free-solid-svg-icons";
 import dynamic from "next/dynamic";
 import { parse, getTime } from "date-fns";
 import FilterIcon from  "../../../public/icons/filter-icon";
 import SortIcon from  "../../../public/icons/sort-icon";
-import FilterCard, { FilterCardProps } from '@/components/FilterCard';
-import { filter, set } from "lodash";
+import FilterCard from '@/components/FilterCard';
 import type {RangeValue} from "@react-types/shared";
 import type {DateValue} from "@react-types/datepicker";
-import {parseDate} from "@internationalized/date";
 import LineChart from "@/components/LineChart"  ;
+import UHeaderIcon from "@/components/userHeaderIcon";
+
+
 // Define the type for session data
 type Session = {
   timerName: string;
@@ -398,6 +391,7 @@ const formatTimestamp = (timestamp: string | number) => {
   return (
     <div className="flex flex-col w-full h-full min-h-screen max-h-full items-center justify-start bg-dark1  px-6 lg:px-52 gap-6 pb-6">
       <StatsHeader/>
+      <UHeaderIcon/>
       <div className="flex flex-col items-center justify-start w-full">
 
         <h1 className="text-4xl font-bold text-white mb-4 mt-4">Session Stats</h1>

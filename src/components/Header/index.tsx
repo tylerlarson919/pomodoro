@@ -53,7 +53,7 @@ export default function Header() {
                 </Button>
                 <Image
                     className="w-full rounded-full"
-                    alt="NextUI hero Image"
+                    alt="User Profile"
                     src={user?.photoURL || "https://via.placeholder.com/40"}
                     height={35}
                 />

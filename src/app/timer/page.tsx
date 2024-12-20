@@ -12,6 +12,7 @@ import { onAuthStateChanged, User, getAuth } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { auth, addSession, endSession, getSessions } from "../../../firebase";
 import Snowfall from 'react-snowfall'
+import UHeaderIcon from "@/components/userHeaderIcon";
 
 
 
@@ -297,6 +298,7 @@ const Timer = () => {
       
       <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
         <SettingsModal onTriggerReload={handleTriggerReload} settingsProps={settingsProps} />
+        <UHeaderIcon />
       </div>
       <div className="flex flex-col items-center justify-center gap-2 px-6 md:px-0">
         <h1 className={`z-[2] md:px-0 text-center text-textcolor text-4xl ${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
