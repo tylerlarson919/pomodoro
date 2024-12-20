@@ -399,58 +399,6 @@ const formatTimestamp = (timestamp: string | number) => {
     <div className="flex flex-col w-full h-full min-h-screen items-center justify-start bg-dark1  px-6 lg:px-52 gap-6 pb-6">
       <StatsHeader/>
       <div className="flex flex-col items-center justify-start w-full">
-        <div className="flex flex-row items-center justify-start w-full gap-4">
-          <div className="flex items-center justify-center gap-2 w-full pt-6">
-            <Button
-              aria-label="Previous Period"
-              isIconOnly
-              variant="bordered"
-              className="border-none bg-transparent text-white"
-              onPress={() =>
-                setPeriod((prev) => {
-                  const currentIndex = periodOrder.indexOf(prev);
-                  return periodOrder[Math.max(currentIndex - 1, 0)];
-                })
-              }
-            >
-              <FontAwesomeIcon icon={faChevronLeft} />
-            </Button>
-            <span aria-label="Current Selection" className="text-white mx-1 ">{period}</span>
-            <Button
-              aria-label="Next Period"
-              isIconOnly
-              variant="bordered"
-              className="border-none bg-transparent text-white"
-              onPress={() =>
-                setPeriod((prev) => {
-                  const currentIndex = periodOrder.indexOf(prev);
-                  return periodOrder[Math.min(currentIndex + 1, periodOrder.length - 1)];
-                })
-              }
-            >
-              <FontAwesomeIcon icon={faChevronRight} />
-            </Button>
-            <Dropdown aria-label="Filter Timeframe" className="dark">
-              <DropdownTrigger>
-                <Button className="dark" aria-label="Filter Timeframe" endContent={<FontAwesomeIcon icon={faChevronDown} />} variant="shadow" color="default">
-                  {selectedTimeframe} {/* Display the selected timeframe */}
-                </Button>
-              </DropdownTrigger>
-              <DropdownMenu
-                className="dark"
-                aria-label="Filter Timeframe Menu"
-                selectedKeys={selectedTimeframe}
-                selectionMode="single"
-                onSelectionChange={(key) => setSelectedTimeframe(Array.from(key as Set<string>)[0])}
-              >
-                <DropdownItem className="text-white" key="day" aria-label="Filter by Day">Day</DropdownItem>
-                <DropdownItem className="text-white" key="week" aria-label="Filter by Week">Week</DropdownItem>
-                <DropdownItem className="text-white" key="month" aria-label="Filter by Month">Month</DropdownItem>
-                <DropdownItem className="text-white" key="year" aria-label="Filter by Year">Year</DropdownItem>
-              </DropdownMenu>
-            </Dropdown>
-          </div>
-        </div>
 
         <h1 className="text-4xl font-bold text-white mb-4 mt-4">Session Stats</h1>
         <div className="bg-darkaccent w-full flex flex-col relative h-auto box-border outline-none shadow-medium rounded-large">
