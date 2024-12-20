@@ -34,7 +34,7 @@ import { filter, set } from "lodash";
 import type {RangeValue} from "@react-types/shared";
 import type {DateValue} from "@react-types/datepicker";
 import {parseDate} from "@internationalized/date";
-
+import LineChart from "@/components/LineChart"  ;
 // Define the type for session data
 type Session = {
   timerName: string;
@@ -396,7 +396,7 @@ const formatTimestamp = (timestamp: string | number) => {
   
 
   return (
-    <div className="flex flex-col w-full h-full min-h-screen items-center justify-start bg-dark1  px-6 lg:px-52 gap-6 pb-6">
+    <div className="flex flex-col w-full h-full min-h-screen max-h-full items-center justify-start bg-dark1  px-6 lg:px-52 gap-6 pb-6">
       <StatsHeader/>
       <div className="flex flex-col items-center justify-start w-full">
 
@@ -491,6 +491,14 @@ const formatTimestamp = (timestamp: string | number) => {
             </CardBody>
         </Card>
       </div>
+      
+      <Card className="dark bg-darkaccent w-full py-1 px-1 h-[500px] md:h-[450px]">
+        <CardBody className="relative dark flex flex-col items-center justify-start md:justify-center">
+          <div className="w-full h-full">
+            <LineChart data={filteredSessionsData} />
+          </div>
+        </CardBody>
+      </Card>
     </div>
   );
 };
