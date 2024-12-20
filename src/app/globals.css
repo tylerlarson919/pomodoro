@@ -20,6 +20,22 @@
   }
 }
 
+/* For WebKit browsers (Chrome, Safari) */
+::-webkit-scrollbar {
+  width: 12px; /* Width of the scrollbar */
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #343434; /* Darker color for the scrollbar thumb */
+  border-radius: 10px; /* Rounded corners for the scrollbar thumb */
+}
+
+::-webkit-scrollbar-track {
+  background: #0c0c0c; /* Dark background for the scrollbar track */
+}
+
+
+
 
 [data-slot="inner-wrapper"] {
   /* Your styles here */
