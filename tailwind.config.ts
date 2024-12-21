@@ -28,7 +28,7 @@ export default {
   			sm: 'calc(var(--radius) - 4px)'
   		},
   		translate: {
-  			'full-screen-minus-8': 'calc(100vw - 50px)'
+  			'full-screen-minus-8': 'calc(100vw - 70px)'
   		},
   		animation: {
   			ripple: 'ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite'

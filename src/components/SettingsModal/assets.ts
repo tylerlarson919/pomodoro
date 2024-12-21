@@ -17,15 +17,15 @@ export const endSounds = {
 } as const;
 
 export const gifs = {
-    Campfire: "./campfire1.gif",
-    FallVibes: "./zen-fall-swing.gif",
-    JapaneseIsland: "./japan-island.gif",
-    TreeOfWisdon: "./skill-tree.gif",
-    FloatingAirbender: "./monk2.gif",
-    ChillinInSpace: "./chillin-in-space-no-planet.gif",
-    LostCat: "./floating-cat.gif",
-    SpaceStation: "./space-station.gif",
-    WindowToAnotherWorld: "window-to-another-world.gif",
+    Campfire: "./gifs/campfire.gif",
+    FallVibes: "./gifs/zen-fall-swing.gif",
+    JapaneseIsland: "./gifs/japan-island.gif",
+    TreeOfWisdon: "./gifs/skill-tree.gif",
+    FloatingAirbender: "./gifs/monk.gif",
+    ChillinInSpace: "./gifs/chillin-in-space-no-planet.gif",
+    LostCat: "./gifs/floating-cat.gif",
+    SpaceStation: "./gifs/space-station.gif",
+    WindowToAnotherWorld: "./gifs/window-to-another-world.gif",
 
 
 } as const;

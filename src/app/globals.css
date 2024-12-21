@@ -3,6 +3,17 @@
 @tailwind utilities;
 
 
+/* Prevent layout shift caused by the scrollbar */
+html {
+  scrollbar-gutter: stable; /* Reserves space for the scrollbar */
+}
+
+/* Ensure content width remains consistent */
+body {
+  overflow: overlay; /* Scrollbar overlays instead of affecting layout */
+}
+
+
 
 .disappearing-element {
   transition: opacity 0.5s ease;
@@ -20,20 +31,19 @@
   }
 }
 
-/* For WebKit browsers (Chrome, Safari) */
+/* Persistent custom scrollbar styling */
 ::-webkit-scrollbar {
-  width: 6px; /* Width of the scrollbar */
+  width: 6px; /* Fixed width to prevent shifting */
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #343434; /* Darker color for the scrollbar thumb */
-  border-radius: 10px; /* Rounded corners for the scrollbar thumb */
+  background-color: #343434;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #0c0c0c; /* Dark background for the scrollbar track */
+  background: #0c0c0c;
 }
-
 
 
 

@@ -17,7 +17,6 @@ import {
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import StatsHeader from "@/components/StatsHeader";
-import dynamic from "next/dynamic";
 import { parse, getTime } from "date-fns";
 import FilterIcon from  "../../../public/icons/filter-icon";
 import SortIcon from  "../../../public/icons/sort-icon";
@@ -45,10 +44,6 @@ type Session = {
   { name: "STATUS", uid: "status" }
 ];
 
-const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').then((mod) => mod.FontAwesomeIcon), {
-    ssr: false,
-  });
-
 const Stats = () => {
   const [sessionsData, setSessionsData] = useState<Session[]>([]);
   const [filteredSessionsData, setFilteredSessionsData] = useState<Session[]>([]);
@@ -64,6 +59,15 @@ const Stats = () => {
   const [isSortMenuOpen, setisSortMenuOpen] = useState(false);
   const [period, setPeriod] = useState("this");
   const periodOrder = ["last", "this"]; // Define the order of periods
+  // Unused settings props:
+   const [selectedGif, setSelectedGif] = useState<string>('');
+   const [selectedSound, setSelectedSound] = useState<string>('');
+   const [selectedEndSound, setSelectedEndSound] = useState<string>('');
+   const [selectedYouTubeAudio, setSelectedYouTubeAudio] = useState<string>('LJih9bxSacU');
+   const [selectedBackground, setSelectedBackground] = useState<string>('');
+   const [iframeSrc, setIframeSrc] = useState("https://example.com");
+   const [isStarsSelected, setIsStarsSelected] = React.useState(false);
+
   // Filter card props
   const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set());
   const [selectedFilterTypeKeys1, setSelectedFilterTypeKeys1] = useState<Set<string>>(new Set());
@@ -73,6 +77,26 @@ const Stats = () => {
   const [dateRange, setDateRange] = useState<RangeValue<DateValue> | null>(null);
   const [date, setDate] = useState<DateValue | null>(null);
   const [selectedStatusKey, setSelectedStatusKey] = useState<Set<string>>(new Set(["both"]));
+
+
+  const settingsProps = {
+    selectedSound,
+    selectedEndSound,
+    selectedGif,
+    selectedBackground,
+    isStarsSelected,
+  };
+
+  const handleTriggerReload = async () => {
+    if (user) {
+      console.log("Triggering reload...");
+      await fetchUserSettings(user.uid); // Fetch updated settings based on user ID
+    }
+  };
+
+  const fetchUserSettings = async (uid: string) => {
+      console.log("No Settings to update on the stats page");
+  }
 
   useEffect(() => {
     const resetData = () => {
@@ -387,17 +411,17 @@ const formatTimestamp = (timestamp: string | number) => {
     return () => unsubscribe(); // Clean up the listener
   }, []);
   
-
+ 
   return (
     <div className="flex flex-col w-full h-full min-h-screen max-h-full items-center justify-start bg-dark1  px-6 lg:px-52 gap-6 pb-6">
       <StatsHeader/>
-      <UHeaderIcon/>
+      <UHeaderIcon onTriggerReload={handleTriggerReload} settingsProps={settingsProps}/>
       <div className="flex flex-col items-center justify-start w-full">
 
         <h1 className="text-4xl font-bold text-white mb-4 mt-4">Session Stats</h1>
         <div className="bg-darkaccent w-full flex flex-col relative h-auto box-border outline-none shadow-medium rounded-large">
           <div className="flex items-center justify-center w-full h-[40px] group relative">
-            <div className={`opacity-100 sm:opacity-0 ${isFilterActive ? "opacity-100" : ""} absolute left-0 right-0 top-0 bottom-0 transition-opacity duration-200 opacity-0 group-hover:opacity-100 flex items-center justify-end gap-2`}>
+            <div className={`opacity-100 ${isFilterActive ? "opacity-100" : "opacity-0"} absolute left-0 right-0 top-0 bottom-0 transition-opacity duration-200 opacity-0 group-hover:opacity-100 flex items-center justify-end gap-2`}>
               <div className="relative">
                   <button id="filter-button" onClick={filterClick} className="hover:bg-gray-100/10 p-1.5 rounded-md active:bg-gray-400/10">
                     <FilterIcon color={isFilterActive ? "#005BC4" : "#939393"} className="w-4 h-4" />
@@ -467,11 +491,9 @@ const formatTimestamp = (timestamp: string | number) => {
                     showValueLabel={true}
                     size="lg"
                     value={avgTimeValue}
-                    maxValue={avgTimeValue <= 60 ? 60 : 120}
+                    maxValue={avgTimeValue <= 120 ? 120 : 400}
                     classNames={{
                         svg: "w-36 h-36 drop-shadow-md",
-                        indicator: "stroke-white",
-                        track: "stroke-white/10",
                         value: "text-2xl  text-white",
                     }}
                 />

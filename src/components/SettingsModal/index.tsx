@@ -18,6 +18,7 @@ interface SettingsModalProps {
     selectedBackground: string;
     isStarsSelected: boolean;
   };
+  isModalOpen?: boolean;
 }
 
 
@@ -25,10 +26,9 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
     ssr: false,
   });
   
-  export default function SettingsModal({ onTriggerReload, settingsProps }: SettingsModalProps) {
+  export default function SettingsModal({ onTriggerReload, settingsProps, isModalOpen }: SettingsModalProps) {
   
-    const [showModal, setShowModal] = useState(false);
-    const [showMenu, setShowMenu] = useState(false);
+    const [showModal, setShowModal] = useState(isModalOpen || false);
     const [selectedSound, setSelectedSound] = useState(settingsProps.selectedSound);
     const [selectedEndSound, setSelectedEndSound] = useState(settingsProps.selectedEndSound);
     const [selectedGif, setSelectedGif] = useState(settingsProps.selectedGif);
@@ -37,7 +37,13 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
     type EndSoundKeys = keyof typeof endSounds; 
 
 
-    
+    useEffect(() => {
+      if (typeof isModalOpen === "boolean") {
+          setShowModal(isModalOpen);
+      }
+  }, [isModalOpen]);
+
+  
     const playEndSound = (soundName: string) => {
       const defaultEndSound = "./endSounds/daybreak_alarm.mp3"; // Default sound path
       const soundToPlay = soundName ? endSounds[soundName as EndSoundKeys] : defaultEndSound;
@@ -73,54 +79,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
     };
 
     return (
-      <div className="absolute top-0 left-0">
-        {/* Icon with rotation and transition */}
-        <div
-          className={`absolute top-2 left-2 z-[100] transform transition-transform duration-300 ease-in-out ${
-            showMenu ? "translate-x-full-screen-minus-8 sm:translate-x-[400%]" : "translate-x-0"
-          }`}
-        >
-          <FontAwesomeIcon
-            icon={showMenu ? faTimes : faBars}
-            className={`cursor-pointer text-white w-7 h-7 mt-2 transform transition-transform duration-300 ease-in-out ${
-              showMenu ? "rotate-180 scale-110" : "rotate-0 scale-100"
-            }`}
-            onClick={() => setShowMenu((prev) => !prev)}
-          />
-        </div>
-        
-        {/* Menu */}
-        <div
-          className={`z-40 rounded-2xl rounded-l-none fixed top-0 left-0 h-screen w-screen sm:w-[160px] bg-darkaccent3 bg-opacity-70 backdrop-blur-lg text-white transform transition-transform duration-300 ease-in-out ${
-            showMenu ? "translate-x-0" : "translate-x-[-100%]"
-          }`}
-        >
-          {/* Menu content */}
-          <div className="p-4">
-            <div className="flex flex-col gap-4 pt-4">
-              <Image 
-                alt="Podo Logo"
-                src="./podo_logo.png"
-                height={63}
-                width={63}
-              />
-              <div className="flex flex-row gap-1 items-center justify-start">
-                <FontAwesomeIcon icon={faChartSimple} className="w-4 h-4 text-secondary" />
-                <Link href="/timer" isBlock color="secondary">
-                  Timer
-                </Link>
-              </div>
-              <div className="flex flex-row gap-1 items-center justify-start">
-                <FontAwesomeIcon icon={faClock} className="w-4 h-4 " />
-                <Link href="/stats" isBlock color="foreground">Stats</Link>
-              </div>
-              <div className="flex flex-row gap-1 items-center justify-start">
-                <FontAwesomeIcon icon={faGear} className="w-4 h-4 " />
-                <Link href="#" isBlock color="foreground" onPress={() => setShowModal(true)}>Settings</Link>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div className="">
         {showModal && (
             <Modal 
               className="dark bg-darkaccent"
@@ -207,7 +166,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                 >
                   {Object.keys(gifs).map(gif => (
                     <SelectItem
-                      startContent={<Image src={gifs[gif as keyof typeof gifs]} alt={gif} width={30} />}
+                      startContent={<Image src={gifs[gif as keyof typeof gifs].replace(/\.gif$/, '.png')} alt={gif} width={30} />}
                       textValue={gif.replace(/([A-Z])/g, ' $1').trim()} 
                       className="dark flex h-full max-h-[30px]" 
                       key={gif} 

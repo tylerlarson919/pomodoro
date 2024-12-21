@@ -13,6 +13,7 @@ import { useRouter } from "next/navigation";
 import { auth, addSession, endSession, getSessions } from "../../../firebase";
 import Snowfall from 'react-snowfall'
 import UHeaderIcon from "@/components/userHeaderIcon";
+import StatsHeader from "@/components/StatsHeader";
 
 
 
@@ -52,6 +53,40 @@ const Timer = () => {
     isStarsSelected,
   };
 
+
+
+  useEffect(() => {
+    const checkCurrentTimer = () => {
+      const savedTimer = JSON.parse(localStorage.getItem("currentTimer") || "{}");
+      if (savedTimer?.endTime) {
+        const now = Date.now();
+        if (now >= savedTimer.endTime) {
+          // Timer has expired
+          console.log("Timer expired");
+          localStorage.removeItem("currentTimer");
+          setIsTimerRunning(false);
+          setStartTime(null);
+          setTimeLeft(timerLength);
+        } else {
+          // Timer is still active
+          console.log("Resuming timer");
+          setStartTime(savedTimer.startTime);
+          setTimeLeft(savedTimer.endTime - now);
+          setIsTimerRunning(true);
+          startCountdown();
+          setIsElementsVisible(false);
+          if (savedTimer.selectedYouTubeAudio) {
+            setTimeout(() => {
+                setIframeSrc(`https://www.youtube.com/embed/${savedTimer.selectedYouTubeAudio}?autoplay=1&enablejsapi=1`);
+            }, 5000); // Wait for 5 seconds before setting the iframe src
+          }
+        }
+      }
+    };
+  
+    checkCurrentTimer();
+  }, []);
+  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -159,6 +194,9 @@ const Timer = () => {
 
     addSession({ ...sessionData, sessionId }); // Pass session data along with session ID
 
+    localStorage.setItem("currentTimer", JSON.stringify({ ...sessionData, selectedYouTubeAudio }));
+    
+
     setStartTime(now);
     setIsTimerRunning(true);
     setTimeLeft(timerLength);
@@ -167,7 +205,7 @@ const Timer = () => {
     setTaskName("");
 
     if (selectedYouTubeAudio) {
-      setIframeSrc(`https://www.youtube.com/embed/${selectedYouTubeAudio}?autoplay=1`);
+      setIframeSrc(`https://www.youtube.com/embed/${selectedYouTubeAudio}?autoplay=1&enablejsapi=1`);
     }
   };
 
@@ -175,6 +213,8 @@ const Timer = () => {
     setIsTimerRunning(false);
     setStartTime(null);
     setTimeLeft(timerLength);
+    localStorage.removeItem("currentTimer");
+
     playEndSound();
     setIsElementsVisible(true);
 
@@ -292,13 +332,13 @@ const Timer = () => {
         width="0" height="0" 
         src={iframeSrc}
         title="YouTube video player" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; " 
         allowFullScreen>
       </iframe>
       
       <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
-        <SettingsModal onTriggerReload={handleTriggerReload} settingsProps={settingsProps} />
-        <UHeaderIcon />
+        <StatsHeader />
+        <UHeaderIcon onTriggerReload={handleTriggerReload} settingsProps={settingsProps}/>
       </div>
       <div className="flex flex-col items-center justify-center gap-2 px-6 md:px-0">
         <h1 className={`z-[2] md:px-0 text-center text-textcolor text-4xl ${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
