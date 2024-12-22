@@ -18,9 +18,9 @@ export default {
   			darkaccent: '#0c0c0c',
   			darkaccent2: '#343434',
   			darkaccent3: '#141414',
-  			textcolor: '#939393', 
+  			textcolor: '#939393',
   			textaccent: '#949494',
-  			secondary: '#7828C8',
+  			secondary: '#7828C8'
   		},
   		borderRadius: {
   			lg: 'var(--radius)',
@@ -31,7 +31,10 @@ export default {
   			'full-screen-minus-8': 'calc(100vw - 70px)'
   		},
   		animation: {
-  			ripple: 'ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite'
+  			ripple: 'ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite',
+  			gradient: 'gradient 8s linear infinite',
+  			'shiny-text': 'shiny-text 8s infinite',
+  			meteor: 'meteor 5s linear infinite'
   		},
   		keyframes: {
   			ripple: {
@@ -40,6 +43,32 @@ export default {
   				},
   				'50%': {
   					transform: 'translate(-50%, -50%) scale(0.9)'
+  				}
+  			},
+  			gradient: {
+  				to: {
+  					backgroundPosition: 'var(--bg-size) 0'
+  				}
+  			},
+  			'shiny-text': {
+  				'0%, 90%, 100%': {
+  					'background-position': 'calc(-100% - var(--shiny-width)) 0'
+  				},
+  				'30%, 60%': {
+  					'background-position': 'calc(100% + var(--shiny-width)) 0'
+  				}
+  			},
+  			meteor: {
+  				'0%': {
+  					transform: 'rotate(215deg) translateX(0)',
+  					opacity: '1'
+  				},
+  				'70%': {
+  					opacity: '1'
+  				},
+  				'100%': {
+  					transform: 'rotate(215deg) translateX(-500px)',
+  					opacity: '0'
   				}
   			}
   		}

@@ -1,20 +1,19 @@
 "use client";
 
 import React from "react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { Image, Modal, ModalBody, ModalContent, Button, Input, Skeleton } from "@nextui-org/react";
 import SettingsModal from "@/components/SettingsModal";
 import { sounds, gifs, endSounds, backgrounds } from "../../components/SettingsModal/assets";
-import Particles from "@/components/ui/particles"
+import ParticlesStars from "@/components/ui/particles"
 import { getFirestore, doc, getDoc } from "firebase/firestore"; // Add this import
-
 import { onAuthStateChanged, User, getAuth } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { auth, addSession, endSession, getSessions } from "../../../firebase";
-import Snowfall from 'react-snowfall'
 import UHeaderIcon from "@/components/userHeaderIcon";
 import StatsHeader from "@/components/StatsHeader";
-
+import Meteors from "@/components/ui/meteors";
+import SnowParticles from "@/components/SnowParticles";
 
 
 const Timer = () => {
@@ -39,10 +38,11 @@ const Timer = () => {
   const [isStarsSelected, setIsStarsSelected] = React.useState(false);
   const [isSnowSelected, setIsSnowSelected] = React.useState(false);
   const [isRainSelected, setIsRainSelected] = React.useState(false);
-  const [isCloudsSelected, setIsCloudsSelected] = React.useState(false);
+  const [isMeteorsSelected, setIsMeteorsSelected] = React.useState(false);
 
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+
 
 
   const settingsProps = {
@@ -52,9 +52,7 @@ const Timer = () => {
     selectedBackground,
     isStarsSelected,
   };
-
-
-
+  
   useEffect(() => {
     const checkCurrentTimer = () => {
       const savedTimer = JSON.parse(localStorage.getItem("currentTimer") || "{}");
@@ -154,7 +152,7 @@ const Timer = () => {
       setIsStarsSelected(settings.selectedBackground === "Stars");
       setIsSnowSelected(settings.selectedBackground === "Snow");
       setIsRainSelected(settings.selectedBackground === "Rain");
-      setIsCloudsSelected(settings.selectedBackground === "Clouds");
+      setIsMeteorsSelected(settings.selectedBackground === "Meteors");
 
     } else {
       console.log("No user settings found, using defaults."); // Log if no settings are found
@@ -302,10 +300,9 @@ const Timer = () => {
       <div
         className={`flex w-full text-textcolor fade-gradual ${
           isStarsSelected ? "" : "hidden"
-        }`}
-      >
+        }`}>
         {isStarsSelected && ( 
-          <Particles
+          <ParticlesStars
             className=" z-[0] bg-dark1 absolute inset-0"
             quantity={800}
             ease={100}
@@ -316,18 +313,21 @@ const Timer = () => {
       </div>
       <div
         className={`flex w-full text-textcolor fade-gradual ${
-          isSnowSelected ? "" : "hidden"
-        }`}
-      >
-        {isSnowSelected && ( 
-          <Snowfall
-            snowflakeCount={50}
-            speed={[0.5, 1.5]}
-            wind={[0.5, 1.5]}
-            radius={[0.5, 2]}
-          />
+          isMeteorsSelected ? "" : "hidden"
+        }`}>
+        {isMeteorsSelected && ( 
+          <Meteors number={40} />
         )}
       </div>
+      <div
+        className={`flex w-full text-textcolor fade-gradual ${
+          isSnowSelected ? "" : "hidden"
+        }`}>
+        {isSnowSelected && ( 
+          <SnowParticles/>
+        )}
+      </div>
+
       <iframe 
         width="0" height="0" 
         src={iframeSrc}

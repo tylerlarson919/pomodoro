@@ -34,5 +34,7 @@ export const backgrounds = {
     None: "",
     Stars: "stars",
     Snow: "snow",
+    Rain: "rain",
+    Meteors: "meteors",
 
 } as const;

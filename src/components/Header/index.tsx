@@ -1,20 +1,14 @@
+
 import { useEffect, useState } from "react";
 import {Navbar, Image, NavbarBrand, NavbarContent, NavbarItem, Link, Button} from "@nextui-org/react";
 import { auth } from "../../../firebase"; // Adjust the path if necessary
 import { onAuthStateChanged, User } from "firebase/auth";
-
-export const AcmeLogo = () => {
-  return (
-    <svg fill="none" height="36" viewBox="0 0 32 32" width="36">
-      <path
-        clipRule="evenodd"
-        d="M17.6482 10.1305L15.8785 7.02583L7.02979 22.5499H10.5278L17.6482 10.1305ZM19.8798 14.0457L18.11 17.1983L19.394 19.4511H16.8453L15.1056 22.5499H24.7272L19.8798 14.0457Z"
-        fill="currentColor"
-        fillRule="evenodd"
-      />
-    </svg>
-  );
-};
+import { BackgroundGradient } from "../ui/background-gradient";
+import { ChevronRight } from "lucide-react";
+import { cn } from "@/lib/utils";
+import LoginIcon from "../../../public/icons/log-in";
+import { HoverBorderGradient } from "../ui/hover-border-gradient";
+import { HoverBorderGradientPurple } from "../ui/hover-border-gradient-purple";
 
 export default function Header() {
     const [user, setUser] = useState<null | User>(null);
@@ -28,50 +22,45 @@ export default function Header() {
     
     
     return (
-    <Navbar>
-      <NavbarBrand>
-        {/* <Logo here /> */}
-      </NavbarBrand>
-      <NavbarContent className="flex w-fit hidden sm:flex gap-4" justify="center">
-        <NavbarItem>
-          <Link color="foreground" href="#" className="text-white">
-            Features
-          </Link>
-        </NavbarItem>
-        <NavbarItem isActive>
-          <Link aria-current="page" href="#" className="text-white">
-            Pricing
-          </Link>
-        </NavbarItem>
-      </NavbarContent>
-      <NavbarContent justify="center">
-      {user ? (
-          <NavbarItem>
-            <div className="flex flex-row gap-2 items-center">
-                <Button as={Link} color="primary" href="/timer" variant="flat" className="text-white">
+      <div className="w-full min-h-20 max-h-20 px-5 sm:px-32 lg:px-40 py-2 bg-transparent sticky top-0 z-50">
+        <HoverBorderGradientPurple as="div" containerClassName="rounded-2xl w-full" className="w-full h-full rounded-2xl bg-darkaccent/90 backdrop-blur-sm shadow-sm flex flex-row items-center justify-between p-2">
+            <Image
+              className="w-full rounded-full"
+              alt="FocuusFlow Logo"
+              src="./podo_logo.png"
+              height={50}
+            />
+          <div className="flex flex-row gap-2 items-center justify-center">
+            <Link href="/features" className="text-white">Features</Link>
+            <Link href="/pricing" className="text-white">Pricing</Link>
+          </div>
+          {user ? (
+            <div className="flex flex-row gap-2 items-center justify-center">
+              <Button as={Link} color="primary" href="/timer" variant="flat" className="text-white">
                 Go to App
-                </Button>
-                <Image
-                    className="w-full rounded-full"
-                    alt="User Profile"
-                    src={user?.photoURL || "https://via.placeholder.com/40"}
-                    height={35}
-                />
+              </Button>
+              <Image
+                className="w-full rounded-full"
+                alt="User Profile"
+                src={user?.photoURL || "https://via.placeholder.com/40"}
+                height={35}
+              />
             </div>
-          </NavbarItem>
         ) : (
           <>
-            <NavbarItem>
-              <Link href="/login">Login</Link>
-            </NavbarItem>
-            <NavbarItem>
-              <Button as={Link} color="primary" href="/signup" variant="flat" className="text-white">
-                Sign Up
-              </Button>
-            </NavbarItem>
+            <div className="flex flex-row gap-2 items-center justify-center">
+            <HoverBorderGradient
+              containerClassName="rounded-full"
+              as="button"
+              className="bg-darkaccent text-white flex items-center space-x-2"
+            >
+              <span>Get Started</span>
+            </HoverBorderGradient>
+
+            </div>
           </>
         )}
-      </NavbarContent>
-    </Navbar>
+      </HoverBorderGradientPurple>
+    </div>
   );
 }
