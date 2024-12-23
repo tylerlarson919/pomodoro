@@ -1,0 +1,51 @@
+.sticky-cards-container {
+    grid-column-gap: 2rem;
+    grid-row-gap: 2rem;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+    display: flex;
+    position: static;
+}
+.sticky-card {
+    z-index: 3;
+    background-color: #0c0c0c;
+    color: white;
+    border-radius: 30px;
+    padding: 2rem;
+    transition: all .2s cubic-bezier(.39, .575, .565, 1);
+    position: sticky;
+    top: 6rem;
+}
+.sticky-card:hover {
+    background-color: #141414;
+    background-image: none;
+    transform: scale(1.04);
+  }
+.padding-global {
+    text-align: left;
+    padding-left: 0%;
+    padding-right: 0%;
+}
+.container-large {
+    grid-column-gap: 3rem;
+    grid-row-gap: 3rem;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    width: 100%;
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+    display: flex;
+}
+.padding-section-large-6 {
+    grid-column-gap: 2rem;
+    grid-row-gap: 2rem;
+    flex-flow: column;
+    justify-content: flex-start;
+    align-items: center;
+    padding-top: 0;
+    padding-bottom: 0;
+    display: flex;
+}

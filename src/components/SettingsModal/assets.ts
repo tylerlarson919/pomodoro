@@ -26,8 +26,6 @@ export const gifs = {
     LostCat: "./gifs/floating-cat.gif",
     SpaceStation: "./gifs/space-station.gif",
     WindowToAnotherWorld: "./gifs/window-to-another-world.gif",
-
-
 } as const;
 
 export const backgrounds = {
