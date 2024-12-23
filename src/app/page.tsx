@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
 import AnimatedGridPattern from "../components/ui/animated-grid-pattern";
@@ -13,6 +13,8 @@ import { gifs, backgrounds } from "@/components/SettingsModal/assets";
 import { faChevronLeft, faChevronRight } from '@fortawesome/free-solid-svg-icons';
 import dynamic from 'next/dynamic';
 import "./page.css";
+import Meteors from "@/components/ui/meteors";
+import SnowParticles from "@/components/SnowParticles";
 
 const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').then((mod) => mod.FontAwesomeIcon), {
     ssr: false,
@@ -23,16 +25,36 @@ export default function Home() {
   type GifKeys = keyof typeof gifs; 
   const gifKeys = Object.keys(gifs) as GifKeys[]; // Get all gif keys
   const [selectedGifIndex, setSelectedGifIndex] = useState(0);
-
+  const backgroundValues = Object.values(backgrounds).filter((val) => val !== "");
+  const [selectedBackgroundIndex, setSelectedBackgroundIndex] = useState< "stars" | "snow" | "meteors">(backgroundValues[0]);
+  
+useEffect(() => {
+  console.log("Selected GIF:", selectedBackgroundIndex);
+}, [selectedBackgroundIndex]);
 
   const getStarted = () => {
     window.location.href = "/signup";
   };
   
+  const onNextBackground = () => {
+    setSelectedBackgroundIndex((prevIndex) => {
+      const currentIndex = backgroundValues.indexOf(prevIndex); // Correctly typed
+      return backgroundValues[(currentIndex + 1) % backgroundValues.length];
+    });
+  };
+  
+  const onPrevBackground = () => {
+    setSelectedBackgroundIndex((prevIndex) => {
+      const currentIndex = backgroundValues.indexOf(prevIndex); // Correctly typed
+      return backgroundValues[(currentIndex - 1 + backgroundValues.length) % backgroundValues.length];
+    });
+  };
+  
+  
+
   const onNextClick = () => {
     setSelectedGifIndex((prevIndex) => (prevIndex + 1) % gifKeys.length);
   };
-
   const onPrevClick = () => {
     setSelectedGifIndex((prevIndex) => 
       (prevIndex - 1 + gifKeys.length) % gifKeys.length
@@ -44,10 +66,32 @@ export default function Home() {
   };
 
   return (
-    <div className="flex flex-col w-full min-h-screen items-center justify-start bg-dark1 pb-14">
+    <div className="relative flex flex-col w-full min-h-screen items-center justify-start bg-dark1 pb-14">
+      <div className={`w-full h-full relative ${ selectedBackgroundIndex === "stars" ? "" : "hidden"}`}>
+        {selectedBackgroundIndex === "stars" && (
+            <ParticlesStars
+            className="fixed top-0 left-0 w-screen h-screen z-0" // Adjust styling to cover the entire background
+            quantity={600} // Check if this number is supported by the component
+            ease={100}
+            color="#ffffff"
+            refresh={true}
+          />
+        )}
+      </div>
+      <div className={`fixed top-0 left-0 w-screen h-screen z-0 ${ selectedBackgroundIndex === "snow" ? "" : "hidden"}`}>
+        {selectedBackgroundIndex === "snow" && (
+          <SnowParticles/>
+        )}
+      </div>
+      <div className={`fixed top-0 left-0 w-screen h-screen z-0 ${ selectedBackgroundIndex === "meteors" ? "" : "hidden"}`}>
+        {selectedBackgroundIndex === "meteors" && (
+          <Meteors number={40} />
+        )}
+      </div>
+      
       <Header/>
       <div className="relative w-full h-full flex flex-col items-center justify-start w-full ">
-        <div className="h-full relative flex flex-col w-full items-center justify-center rounded-lg bg-dark1 p-10 md:shadow-xl">
+        <div className="h-full relative flex flex-col w-full items-center justify-center rounded-lg p-10 md:shadow-xl">
           <div className="z-10 flex flex-col items-center justify-center gap-10 text-white  w-full">
             <div className="flex flex-col items-center justify-center gap-0 text-white">
               <Image
@@ -67,13 +111,7 @@ export default function Home() {
                 <Button variant="solid" color="secondary" onPress={getStarted} size="md">View Pricing</Button>
               </div>
           </div>
-          <ParticlesStars
-              className=" bg-dark1 absolute inset-0"
-              quantity={800}
-              ease={100}
-              color="#ffffff"
-              refresh
-            />
+          
         </div>
         <div className="w-full h-full px-10 sm:px-0 sm:w-4/5 sm:max-w-4/5 gap-4">
           <div className="sticky-cards-container w-full">
@@ -118,17 +156,22 @@ export default function Home() {
                       <div className="flex flex-col gap-2 items-start justify-center text-left max-w-[550px] px-4 pt-4 sm:px-0 sm:pt-0">
                         <p className="text-white text-3xl">Choose background sounds & effects!</p>
                         <p className="text-textcolor text-lg">Choose from more than 20 different background sounds and effects to enhance your focus even more!</p>
-                      </div>                    
-                      <div className="z-[10] flex flex-col items-center justify-center">
-                        
-                        <div className="flex flex-row gap-2 items-center justify-center min-w-[187px]">
-                          <button className="bg-transparent hover:bg-white/10 rounded-full p-2" onClick={onPrevClick}>
+                        <div className="flex flex-row gap-2 items-center justify-start min-w-[187px] pt-2 w-full">
+                          <button className="bg-transparent hover:bg-white/10 rounded-full p-2" onClick={onPrevBackground}>
                             <FontAwesomeIcon icon={faChevronLeft} className="text-white"/>
                           </button>
-                          <p className="text-white text-center min-w-[130px] w-[130px] min-h-[50px] flex items-center justify-center">{formatGifKey(gifKeys[selectedGifIndex])}</p>
-                          <button className="bg-transparent hover:bg-white/10 rounded-full p-2" onClick={onNextClick}>
+                          <p className="text-white text-center min-w-[60px] w-[60px] min-h-[50px] flex items-center justify-center capitalize">
+                            {selectedBackgroundIndex}
+                          </p>
+                          <button className="bg-transparent hover:bg-white/10 rounded-full p-2" onClick={onNextBackground}>
                             <FontAwesomeIcon icon={faChevronRight} className="text-white"/>
                           </button>
+                        </div>
+                      </div>                    
+                      <div className="z-[10] flex items-center justify-center">
+                        
+                        <div className="flex flex-row gap-2 items-center justify-center min-w-[187px]">
+                          Background sounds here
                         </div>
                       </div>
                     </div>
@@ -144,17 +187,10 @@ export default function Home() {
                       <div className="flex flex-col gap-2 items-start justify-center text-left max-w-[550px] px-4 pt-4 sm:px-0 sm:pt-0">
                         <p className="text-white text-3xl">View key metrics</p>
                         <p className="text-textcolor text-lg">View important stats about your logs in the stats page.</p>
-                      </div>                    
-                      <div className="z-[10] flex flex-col items-center justify-center">
-                        <Image className="w-full" src="/images/stats-page.png" alt="stats-page" height={200} />
+                      </div>
+                      <div className="z-[10] flex items-center justify-center">
                         <div className="flex flex-row gap-2 items-center justify-center min-w-[187px]">
-                          <button className="bg-transparent hover:bg-white/10 rounded-full p-2" onClick={onPrevClick}>
-                            <FontAwesomeIcon icon={faChevronLeft} className="text-white"/>
-                          </button>
-                          <p className="text-white text-center min-w-[130px] w-[130px] min-h-[50px] flex items-center justify-center">{formatGifKey(gifKeys[selectedGifIndex])}</p>
-                          <button className="bg-transparent hover:bg-white/10 rounded-full p-2" onClick={onNextClick}>
-                            <FontAwesomeIcon icon={faChevronRight} className="text-white"/>
-                          </button>
+                          Stats Image Here
                         </div>
                       </div>
                     </div>
@@ -164,20 +200,21 @@ export default function Home() {
             </div>
             
           </div>
-          <div className="flex flex-col sm:flex-row justify-between items-center w-full gap-4 py-10">
-            <h1 className="text-white text-center sm:text-left text-4xl md:text-5xl">Get started for free</h1>
+          <div className=" flex flex-col sm:flex-row justify-between items-center w-full gap-4 py-10">
+            <h1 className="z-10 text-white text-center sm:text-left text-4xl md:text-5xl">Get started for free</h1>
             <div className="flex flex-col gap-2 items-center justify-start max-w-[350px]">
-              <p className="text-textcolor text-center sm:text-left">Start your journey to focusing today. Join FocusFlow for free and unlock a new world of focus insights.</p>
-              <Button color="secondary" variant="shadow" className="w-full">
+              <p className="text-textcolor text-center sm:text-left z-10">Start your journey to focusing today. Join FocusFlow for free and unlock a new world of focus insights.</p>
+              <Button color="secondary" variant="shadow" className="z-10 w-full">
                 Start your free trial
               </Button>
             </div>
           </div>
-          <div className="w-full h-full">
+          <div className="w-full h-full ">
             <PricingSection />
           </div>
         </div>
       </div>
+     
     </div>
   );
 }

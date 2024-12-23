@@ -24,7 +24,6 @@ export const gifs = {
     FloatingAirbender: "./gifs/monk.gif",
     ChillinInSpace: "./gifs/chillin-in-space-no-planet.gif",
     LostCat: "./gifs/floating-cat.gif",
-    SpaceStation: "./gifs/space-station.gif",
     WindowToAnotherWorld: "./gifs/window-to-another-world.gif",
 } as const;
 
@@ -32,7 +31,6 @@ export const backgrounds = {
     None: "",
     Stars: "stars",
     Snow: "snow",
-    Rain: "rain",
     Meteors: "meteors",
 
 } as const;
