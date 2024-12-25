@@ -80,7 +80,7 @@ import MenuIcon from "../../../public/icons/menu-icon"
                   setShowMenu((prev) => !prev);
                 }}
             >
-              <XIcon color="white" className="w-7 h-7"/>
+              <XIcon color="white" width={"24"} height={"24"}/>
             </div>
           ) : (
             <div 

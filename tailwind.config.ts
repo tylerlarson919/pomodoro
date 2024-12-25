@@ -34,7 +34,8 @@ export default {
   			ripple: 'ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite',
   			gradient: 'gradient 8s linear infinite',
   			'shiny-text': 'shiny-text 8s infinite',
-  			meteor: 'meteor 5s linear infinite'
+  			meteor: 'meteor 5s linear infinite',
+
   		},
   		keyframes: {
   			ripple: {
@@ -70,7 +71,7 @@ export default {
   					transform: 'rotate(215deg) translateX(-500px)',
   					opacity: '0'
   				}
-  			}
+  			},
   		}
   	}
   },

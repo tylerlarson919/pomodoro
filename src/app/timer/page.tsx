@@ -3,18 +3,20 @@
 import React from "react";
 import { useEffect, useMemo, useState, useRef, useCallback } from "react";
 import { Image, Modal, ModalBody, ModalContent, Button, Input, Skeleton } from "@nextui-org/react";
-import SettingsModal from "@/components/SettingsModal";
 import { sounds, gifs, endSounds, backgrounds } from "../../components/SettingsModal/assets";
 import ParticlesStars from "@/components/ui/particles"
 import { getFirestore, doc, getDoc } from "firebase/firestore"; // Add this import
 import { onAuthStateChanged, User, getAuth } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { auth, addSession, endSession, getSessions } from "../../../firebase";
+import { auth, addSession, endSession, getSessions, editSettings } from "../../../firebase";
 import UHeaderIcon from "@/components/userHeaderIcon";
 import StatsHeader from "@/components/StatsHeader";
 import Meteors from "@/components/ui/meteors";
 import SnowParticles from "@/components/SnowParticles";
-
+import YouTubeAudioPlayer from "@/components/YoutubeAudio";
+import TimerPopupModal from "@/components/TimerPopupModal";
+import EndSessionButton from "@/components/EndSessionButton";
+import { HoverBorderGradient  } from "@/components/ui/hover-border-gradient";
 
 const Timer = () => {
   const db = getFirestore();
@@ -33,13 +35,14 @@ const Timer = () => {
   const [selectedSound, setSelectedSound] = useState<SoundKeys | "">("");
   const [selectedEndSound, setSelectedEndSound] = useState<EndSoundKeys | "">("");
   const [selectedYouTubeAudio, setSelectedYouTubeAudio] = useState<string>('LJih9bxSacU');
+  const [isYoutubeAudioPlaying, setIsYoutubeAudioPlaying] = React.useState(false);
   const [selectedBackground, setSelectedBackground] = useState<string>('');
-  const [iframeSrc, setIframeSrc] = useState("https://example.com");
   const [isStarsSelected, setIsStarsSelected] = React.useState(false);
   const [isSnowSelected, setIsSnowSelected] = React.useState(false);
   const [isRainSelected, setIsRainSelected] = React.useState(false);
   const [isMeteorsSelected, setIsMeteorsSelected] = React.useState(false);
-
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const [popupType, setPopupType] = React.useState<"end" | "continue">("end");
   const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
 
@@ -52,6 +55,57 @@ const Timer = () => {
     selectedBackground,
     isStarsSelected,
   };
+
+  const handlePopupClose = () => {
+    if (popupType === "continue") {
+      //endTimer with playSound as false
+      endTimer(false);
+      setPopupType("end");
+      setIsPopupOpen(false);
+    } else {
+      setIsPopupOpen(false);
+    }
+  };
+
+  const handlePopupConfirm = () => {
+    if (popupType === "continue") {
+      setIsPopupOpen(false); 
+      resumeTimer();
+      setPopupType("end");
+    } else {
+      setIsPopupOpen(false);
+      //endTimer with playSound as false
+      endTimer(false);
+    }
+  };
+
+  const resumeTimer = () => {
+    console.log("Resuming timer");
+    const savedTimer = JSON.parse(localStorage.getItem("currentTimer") || "{}");
+    if (savedTimer?.endTime) {
+      const now = Date.now();
+    setStartTime(savedTimer.startTime);
+    setTimeLeft(savedTimer.endTime - now);
+    setIsTimerRunning(true);
+    startCountdown();
+    setIsElementsVisible(false);
+    setIsYoutubeAudioPlaying(true);
+    }
+  };
+
+  useEffect(() => {
+    if (!isTimerRunning) {
+      setTimeLeft(timerLength);
+    }
+  }, [timerLength, isTimerRunning]);
+  
+
+  useEffect(() => {
+    if (user && timerLength) {
+      editSettings({ timerLength })
+        .catch((err) => console.error("Error updating timer length:", err));
+    }
+  }, [timerLength, user]);
   
   useEffect(() => {
     const checkCurrentTimer = () => {
@@ -67,17 +121,8 @@ const Timer = () => {
           setTimeLeft(timerLength);
         } else {
           // Timer is still active
-          console.log("Resuming timer");
-          setStartTime(savedTimer.startTime);
-          setTimeLeft(savedTimer.endTime - now);
-          setIsTimerRunning(true);
-          startCountdown();
-          setIsElementsVisible(false);
-          if (savedTimer.selectedYouTubeAudio) {
-            setTimeout(() => {
-                setIframeSrc(`https://www.youtube.com/embed/${savedTimer.selectedYouTubeAudio}?autoplay=1&enablejsapi=1`);
-            }, 5000); // Wait for 5 seconds before setting the iframe src
-          }
+          setPopupType("continue");
+          setIsPopupOpen(true);
         }
       }
     };
@@ -101,6 +146,7 @@ const Timer = () => {
   }, [router]);
 
   const timerOptions = [
+    { label: "30 secs", value: 0.5 * 60 * 1000 },
     { label: "5m", value: 5 * 60 * 1000 },
     { label: "15m", value: 15 * 60 * 1000 },
     { label: "20m", value: 20 * 60 * 1000 },
@@ -139,6 +185,7 @@ const Timer = () => {
       
         if (matchedSound) {
           setSelectedYouTubeAudio(matchedSound[1]); // Set the video ID, not the key
+
         }
       }
       
@@ -203,22 +250,23 @@ const Timer = () => {
     setTaskName("");
 
     if (selectedYouTubeAudio) {
-      setIframeSrc(`https://www.youtube.com/embed/${selectedYouTubeAudio}?autoplay=1&enablejsapi=1`);
+      setIsYoutubeAudioPlaying(true);
     }
   };
 
-  const endTimer = () => {
+  const endTimer = (playSound = true) => {
     setIsTimerRunning(false);
     setStartTime(null);
     setTimeLeft(timerLength);
     localStorage.removeItem("currentTimer");
-
-    playEndSound();
+    if (playSound) {
+      playEndSound();
+    };
     setIsElementsVisible(true);
 
     clearInterval(window.timerInterval); // Clear the interval when the timer ends
     if (selectedYouTubeAudio) {
-      setIframeSrc("https://example.com");
+      setIsYoutubeAudioPlaying(false);
     }
 
     decideToFinish();
@@ -253,10 +301,13 @@ const Timer = () => {
         if (now > endTime + 5 * 60 * 1000) {
           await endSession(sessionId, { completed: false, status: "failed" });
           console.log("Session marked as failed.");
+        } else if (now < endTime) { // Timer ended early
+          await endSession(sessionId, { completed: false, status: "failed", wasEndedEarly: true });
+          console.log("Session ended early and marked as failed.");
         } else {
           await endSession(sessionId, { completed: true, status: "finished" });
           console.log("Session marked as finished.");
-        }
+        }        
       }
     }
   };
@@ -328,17 +379,21 @@ const Timer = () => {
         )}
       </div>
 
-      <iframe 
-        width="0" height="0" 
-        src={iframeSrc}
-        title="YouTube video player" 
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; " 
-        allowFullScreen>
-      </iframe>
+      <YouTubeAudioPlayer videoId={selectedYouTubeAudio} isPlaying={isYoutubeAudioPlaying} />
+
+      <TimerPopupModal 
+        isPopupOpen={isPopupOpen} 
+        type={popupType} 
+        onClose={() => handlePopupClose()} 
+        onConfirm={() => handlePopupConfirm()}
+      />
       
       <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
         <StatsHeader />
         <UHeaderIcon onTriggerReload={handleTriggerReload} settingsProps={settingsProps}/>
+      </div>
+      <div className={`${isElementsVisible ? 'disappearing-element fade-out' : ''}`}>
+        <EndSessionButton onPress={() => setIsPopupOpen(true)} />
       </div>
       <div className="flex flex-col items-center justify-center gap-2 px-6 md:px-0">
         <h1 className={`z-[2] md:px-0 text-center text-textcolor text-4xl ${isElementsVisible ? '' : 'disappearing-element fade-out'}`}>
@@ -395,17 +450,16 @@ const Timer = () => {
               </ModalContent>
             </Modal>
           )}
-
-          <Button
-            variant="ghost"
-            color="secondary"
-            onPress={startTimer}
-            isDisabled={isTimerRunning}
-            className={`${isElementsVisible ? '' : 'disappearing-element fade-out'}`}
-          >
-            Start
-          </Button>
-          
+          <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'} w-full h-full flex justify-center`}>
+            <HoverBorderGradient 
+              containerClassName="rounded-xl" 
+              as="button" 
+              className="w-28"
+              onClick={startTimer}
+            >
+              Start
+            </HoverBorderGradient >
+          </div>
         </div>
       </div>
     </div>
