@@ -5,6 +5,7 @@ export const sounds = {
     RainSound: "LJih9bxSacU",
     GentleRain: "-OekvEFm1lo",
     MeditationSound: "A1IYf7fKdhY",
+    HealingTones: "pxq5W0tgb5A",
     LoFi: "4xDzrJKXOOY",
     ChristmasJazz: "MD4mh6GLZCg",
 } as const;

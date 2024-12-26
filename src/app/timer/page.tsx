@@ -450,9 +450,9 @@ const Timer = () => {
               </ModalContent>
             </Modal>
           )}
-          <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'} w-full h-full flex justify-center`}>
+          <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'} w-full h-full flex justify-center `}>
             <HoverBorderGradient 
-              containerClassName="rounded-xl" 
+              containerClassName="rounded-xl " 
               as="button" 
               className="w-28"
               onClick={startTimer}

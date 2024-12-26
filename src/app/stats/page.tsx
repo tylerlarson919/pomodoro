@@ -396,8 +396,15 @@ const formatTimestamp = (timestamp: string | number) => {
   const calculateTimerLength = (start: string | number, end: string | number) => {
     if (!start || !end) return "N/A";
     const diff = (Number(end) - Number(start)) / 1000 / 60; // Convert milliseconds to minutes
-    return `${Math.round(diff)} min`;
+    const hours = Math.floor(diff / 60);
+    const minutes = Math.round(diff % 60);
+    
+    if (hours > 0) {
+      return `${hours}h ${minutes}m`;
+    }
+    return `${minutes}m`;
   };
+  
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {

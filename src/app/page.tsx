@@ -1,10 +1,9 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useRef, useEffect } from 'react';
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import AnimatedGridPattern from "../components/ui/animated-grid-pattern";
-import { Button, Image } from "@nextui-org/react";
+import { Button, Select, SelectItem, Image } from "@nextui-org/react";
 import { get } from "lodash";
 import Header from "@/components/Header";
 import PricingSection from "@/components/PricingSection";
@@ -15,11 +14,16 @@ import dynamic from 'next/dynamic';
 import "./page.css";
 import Meteors from "@/components/ui/meteors";
 import SnowParticles from "@/components/SnowParticles";
+import PlayIcon from "../../public/icons/play-icon";
+import PauseIcon from "../../public/icons/pause-icon";
+import ReactAudioPlayer from 'react-audio-player';
+import SlickSlider from "@/components/SlickSlider";
 
 const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').then((mod) => mod.FontAwesomeIcon), {
     ssr: false,
   });
 
+  type Selection = Set<string>;
 
 export default function Home() {
   type GifKeys = keyof typeof gifs; 
@@ -27,10 +31,39 @@ export default function Home() {
   const [selectedGifIndex, setSelectedGifIndex] = useState(0);
   const backgroundValues = Object.values(backgrounds).filter((val) => val !== "");
   const [selectedBackgroundIndex, setSelectedBackgroundIndex] = useState< "stars" | "snow" | "meteors">(backgroundValues[0]);
+  const [isAudioPlaying, setIsAudioPlaying] = useState(false);
+  const [selectedBackgroundSound, setSelectedBackgroundSound] = React.useState<Selection>(new Set<string>(["gentleRain"]));
+  const [audioToPlay, setAudioToPlay] = React.useState<string | undefined>(undefined);
   
-useEffect(() => {
-  console.log("Selected GIF:", selectedBackgroundIndex);
-}, [selectedBackgroundIndex]);
+
+  useEffect(() => {
+    if (isAudioPlaying) {
+      if (selectedBackgroundSound.has("gentleRain")) {
+        setAudioToPlay("./homepage-sounds/gentle-rain.mp3");
+      } else if (selectedBackgroundSound.has("classical")) {
+        setAudioToPlay("./homepage-sounds/classical.mp3");
+      } else if (selectedBackgroundSound.has("lofi")) {
+        setAudioToPlay("./homepage-sounds/lofi.mp3");
+      } else if (selectedBackgroundSound.has("healingTones")) {
+        setAudioToPlay("./homepage-sounds/healing-tones.mp3");
+      }
+    } else {
+      setAudioToPlay(undefined);
+    }
+  }, [isAudioPlaying]);
+
+  const playPauseClick = () => {
+    setIsAudioPlaying(prevState => !prevState);
+  };
+
+  const handleSoundSelectionChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setIsAudioPlaying(false);
+    setSelectedBackgroundSound(new Set<string>(e.target.value.split(",")));
+  };
+
+  useEffect(() => {
+    console.log("Selected GIF:", selectedBackgroundIndex);
+  }, [selectedBackgroundIndex]);
 
   const getStarted = () => {
     window.location.href = "/signup";
@@ -113,9 +146,9 @@ useEffect(() => {
           </div>
           
         </div>
-        <div className="w-full h-full px-10 sm:px-0 sm:w-4/5 sm:max-w-4/5 gap-4">
+        <div className="w-full h-full px-10 sm:px-0 sm:w-4/5 sm:max-w-4/5 max-w-[1000px] gap-4">
           <div className="sticky-cards-container w-full">
-            <div className="sticky-card block border-2 border-darkaccent3 min-w-full min-h-[500px] max-h-[500px] sm:min-h-[450px] sm:max-h-[450px] flex justify-center items-center">
+            <div className="sticky-card block border-2 border-darkaccent3 min-w-full min-h-[500px] max-h-[500px] sm:min-h-[450px] sm:max-h-[450px]  flex justify-center items-center">
               <div className="text-left py-0 w-full h-full">
                 <div className="container-large">
                   <div className="padding-section-large-6">
@@ -168,10 +201,41 @@ useEffect(() => {
                           </button>
                         </div>
                       </div>                    
-                      <div className="z-[10] flex items-center justify-center">
-                        
-                        <div className="flex flex-row gap-2 items-center justify-center min-w-[187px]">
-                          Background sounds here
+                      <div className="z-[10] flex items-start justify-center flex-col gap-2">
+                        <p className="text-textcolor text-sm text-left">Choose from 20+ focus sounds!</p>
+                        <div className="flex flex-row gap-2 items-center justify-center min-w-[230px]">
+                            <Select
+                              className="dark"
+                              classNames={{
+                                listbox: "dark",
+                                popoverContent: "dark",
+                                listboxWrapper: "text-white",
+                              }}
+                              variant="bordered"
+                              aria-label="Background Sound Selection"
+                              selectedKeys={selectedBackgroundSound}
+                              onChange={handleSoundSelectionChange}
+                            >
+                              <SelectItem className="dark" key="lofi">LoFi</SelectItem>
+                              <SelectItem className="dark" key="gentleRain">Gentle Rain</SelectItem>
+                              <SelectItem className="dark" key="classical">Classical</SelectItem>
+                              <SelectItem className="dark" key="healingTones">Healing Tones</SelectItem>
+                              <SelectItem isReadOnly className="dark text-textcolor data-[hover=true]:text-textcolor data-[hover=true]:bg-transparent" key="manyMore">And many more!</SelectItem>
+                            </Select>
+                            <button className="bg-white/15 hover:bg-white/10 backdrop-blur-lg rounded-lg p-2 transition-all" onClick={playPauseClick}>
+                              {isAudioPlaying ? (
+                                <PauseIcon color="white" width={20} height={20}/>
+                              ) : (
+                                <PlayIcon color="white" width={20} height={20}/>
+                              )}
+                            </button>
+                            {isAudioPlaying ? (
+                            <ReactAudioPlayer
+                              onEnded={() => (setIsAudioPlaying(false))}
+                              src={audioToPlay}
+                              autoPlay
+                            />
+                            ) : null}
                         </div>
                       </div>
                     </div>
@@ -184,13 +248,13 @@ useEffect(() => {
                 <div className="container-large">
                   <div className="padding-section-large-6">
                     <div className="card flex flex-col sm:flex-row gap-4 w-full h-full justify-between">
-                      <div className="flex flex-col gap-2 items-start justify-center text-left max-w-[550px] px-4 pt-4 sm:px-0 sm:pt-0">
+                      <div className="w-full sm:w-1/2 flex flex-col gap-2 items-start justify-center text-left max-w-[550px] px-4 pt-4 sm:px-0 sm:pt-0">
                         <p className="text-white text-3xl">View key metrics</p>
                         <p className="text-textcolor text-lg">View important stats about your logs in the stats page.</p>
                       </div>
-                      <div className="z-[10] flex items-center justify-center">
+                      <div className="w-full sm:w-1/2 z-[10] flex items-center justify-center">
                         <div className="flex flex-row gap-2 items-center justify-center min-w-[187px]">
-                          Stats Image Here
+                          <SlickSlider/>
                         </div>
                       </div>
                     </div>
@@ -200,7 +264,7 @@ useEffect(() => {
             </div>
             
           </div>
-          <div className=" flex flex-col sm:flex-row justify-between items-center w-full gap-4 py-10">
+          <div className=" flex flex-col sm:flex-row justify-between items-center w-full gap-4 py-16">
             <h1 className="z-10 text-white text-center sm:text-left text-4xl md:text-5xl">Get started for free</h1>
             <div className="flex flex-col gap-2 items-center justify-start max-w-[350px]">
               <p className="text-textcolor text-center sm:text-left z-10">Start your journey to focusing today. Join FocusFlow for free and unlock a new world of focus insights.</p>
