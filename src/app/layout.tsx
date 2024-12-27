@@ -31,7 +31,7 @@ export default function RootLayout({
       <html lang="en">
 
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+          className={`w-screen h-screen max-w-screen ${geistSans.variable} ${geistMono.variable} antialiased overflow-hidden`}
         >
           <NextUIProvider>
             {children}

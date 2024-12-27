@@ -363,10 +363,10 @@ const Timer = () => {
         )}
       </div>
       <div
-        className={`flex w-full max-w-screen text-textcolor fade-gradual ${
+        className={`fixed top-0 left-0 w-screen h-screen z-0 fade-gradual ${
           isMeteorsSelected ? "" : "hidden"
         }`}>
-        {isMeteorsSelected && ( 
+        {isMeteorsSelected && (
           <Meteors number={40} />
         )}
       </div>

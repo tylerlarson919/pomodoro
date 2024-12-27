@@ -100,7 +100,7 @@ export default function Home() {
 
   return (
     <div className="relative flex flex-col w-full min-h-screen items-center justify-start bg-dark1 pb-14">
-      <div className={`w-full h-full relative ${ selectedBackgroundIndex === "stars" ? "" : "hidden"}`}>
+      <div className={`w-full h-full relative fade-gradual ${ selectedBackgroundIndex === "stars" ? "" : "hidden"}`}>
         {selectedBackgroundIndex === "stars" && (
             <ParticlesStars
             className="fixed top-0 left-0 w-screen h-screen z-0" // Adjust styling to cover the entire background
@@ -111,12 +111,12 @@ export default function Home() {
           />
         )}
       </div>
-      <div className={`fixed top-0 left-0 w-screen h-screen z-0 ${ selectedBackgroundIndex === "snow" ? "" : "hidden"}`}>
+      <div className={`fixed top-0 left-0 w-screen h-screen z-0 fade-gradual ${ selectedBackgroundIndex === "snow" ? "" : "hidden"}`}>
         {selectedBackgroundIndex === "snow" && (
           <SnowParticles/>
         )}
       </div>
-      <div className={`fixed top-0 left-0 w-screen h-screen z-0 ${ selectedBackgroundIndex === "meteors" ? "" : "hidden"}`}>
+      <div className={`fixed top-0 left-0 w-screen h-screen z-0 fade-gradual ${ selectedBackgroundIndex === "meteors" ? "" : "hidden"}`}>
         {selectedBackgroundIndex === "meteors" && (
           <Meteors number={40} />
         )}
