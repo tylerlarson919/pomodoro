@@ -347,7 +347,7 @@ const Timer = () => {
   };
 
   return (
-    <div className="flex flex-col w-full h-screen items-center justify-center overflow-hidden bg-dark1">
+    <div className="flex flex-col w-full h-screen max-h-screen items-center justify-center overflow-hidden bg-dark1">
       <div
         className={`flex w-full text-textcolor fade-gradual ${
           isStarsSelected ? "" : "hidden"
@@ -363,7 +363,7 @@ const Timer = () => {
         )}
       </div>
       <div
-        className={`flex w-full text-textcolor fade-gradual ${
+        className={`flex w-full max-w-screen text-textcolor fade-gradual ${
           isMeteorsSelected ? "" : "hidden"
         }`}>
         {isMeteorsSelected && ( 
