@@ -414,6 +414,7 @@ const Timer = () => {
 
         <div className="h-full flex flex-col md:flex-row items-center justify-center gap-4">
             <Image
+              disableSkeleton
               className="dark"
               src={selectedGif ? gifs[selectedGif as GifKeys] : "/placeholder.png"}
               alt={selectedGif ? selectedGif : ''}

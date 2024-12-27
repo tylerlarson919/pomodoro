@@ -25,7 +25,7 @@ import type {RangeValue} from "@react-types/shared";
 import type {DateValue} from "@react-types/datepicker";
 import LineChart from "@/components/LineChart"  ;
 import UHeaderIcon from "@/components/userHeaderIcon";
-
+import MakeDummyData from "@/components/makeDummyData";
 
 // Define the type for session data
 type Session = {
@@ -263,9 +263,10 @@ const Stats = () => {
   // Use effect for most stats calculations
   useEffect(() => {
     getCurrentMonth();
-
+  
     const calculateAvgTimePerDay = () => {
       const finishedSessions = sessionsData.filter(session => session.status === "finished");
+      console.log("finishedSessions:", finishedSessions);
   
       if (finishedSessions.length === 0) {
         setAvgTimeValue(0);
@@ -273,16 +274,33 @@ const Stats = () => {
         return;
       }
   
+      // Helper function to parse timerLength (e.g., "1m")
+      const parseTimerLength = (timerLength: any) => {
+        const match = timerLength.match(/^(\d+)([smhd])$/); // Matches format like "1m"
+        if (!match) return 0;
+  
+        const value = Number(match[1]);
+        const unit = match[2];
+  
+        // Convert time to minutes
+        switch (unit) {
+          case 's': return value / 60; // seconds to minutes
+          case 'm': return value;     // already in minutes
+          case 'h': return value * 60; // hours to minutes
+          case 'd': return value * 1440; // days to minutes
+          default: return 0;
+        }
+      };
+  
       const totalTime = finishedSessions.reduce((sum, session) => {
-        const [time] = session.timerLength.split(" ");
-        return sum + Number(time);
+        return sum + parseTimerLength(session.timerLength);
       }, 0);
   
-      // Get unique days from sessions (assumes startTime is a timestamp in milliseconds)
+      // Get unique days from sessions (convert startTime string to a Date)
       const uniqueDays = new Set(
         finishedSessions.map(session => {
-          const date = new Date(Number(session.startTime));
-          return date.toDateString();
+          const date = new Date(session.startTime);
+          return date.toDateString(); // Normalize to unique day strings
         })
       );
   
@@ -291,15 +309,14 @@ const Stats = () => {
   
       // Calculate time this month by summing the timerLength of finished sessions
       const timeThisMonth = finishedSessions.reduce((sum, session) => {
-        const [time] = session.timerLength.split(" ");
-        return sum + Number(time);
+        return sum + parseTimerLength(session.timerLength);
       }, 0);
   
       setTimeThisMonth(timeThisMonth);
     };
   
     calculateAvgTimePerDay();
-  }, [sessionsData]);
+  }, [sessionsData]);  
   
   
 // Function to filter sessions based on the selected timeframe

@@ -128,6 +128,7 @@ export default function Home() {
           <div className="z-10 flex flex-col items-center justify-center gap-10 text-white  w-full">
             <div className="flex flex-col items-center justify-center gap-0 text-white">
               <Image
+                disableSkeleton
                 className="dark h-full w-full"
                 src="./podo_logo.png"
                 alt="Podo Logo"
@@ -146,6 +147,10 @@ export default function Home() {
           </div>
           
         </div>
+          <div className="w-full h-full">
+            <Image className="dark" src="" alt="" width={100} height={100} />
+          </div>
+          <h2 className="text-center text-white text-5xl py-6">So many features to explore</h2>
         <div className="w-full h-full px-10 sm:px-0 sm:w-4/5 sm:max-w-4/5 max-w-[1000px] gap-4">
           <div className="sticky-cards-container w-full">
             <div className="sticky-card block border-2 border-darkaccent3 min-w-full min-h-[500px] max-h-[500px] sm:min-h-[450px] sm:max-h-[450px]  flex justify-center items-center">
@@ -154,12 +159,13 @@ export default function Home() {
                   <div className="padding-section-large-6">
                     <div className="card flex flex-col sm:flex-row gap-4 w-full h-full justify-between">
                       <div className="flex flex-col gap-2 items-start justify-center text-left max-w-[550px] px-4 pt-4 sm:px-0 sm:pt-0">
-                        <p className="text-white text-3xl">Choose different focus images!</p>
-                        <p className="text-textcolor text-lg">Click the arrows to change!</p>
+                        <p className="text-white text-3xl">Set the focus image that fits your mood</p>
+                        <p className="text-textcolor text-lg">Click the arrows to change</p>
                       </div>                    
                       <div className="z-[10] flex flex-col items-center justify-center">
                         <Image
                           className="dark h-full max-h-[275px] min-h-[100px] w-full "
+                          disableSkeleton
                           src={gifs[gifKeys[selectedGifIndex]]} // Use the current gif based on index
                           alt={gifKeys[selectedGifIndex]}
                           width={275}
@@ -168,11 +174,11 @@ export default function Home() {
                         />
                         <div className="flex flex-row gap-2 items-center justify-center min-w-[187px]">
                           <button className="bg-transparent hover:bg-white/10 rounded-full p-2" onClick={onPrevClick}>
-                            <FontAwesomeIcon icon={faChevronLeft} className="text-white"/>
+                            <FontAwesomeIcon icon={faChevronLeft} className="text-secondary animate-pulse"/>
                           </button>
                           <p className="text-white text-center min-w-[130px] w-[130px] min-h-[50px] flex items-center justify-center">{formatGifKey(gifKeys[selectedGifIndex])}</p>
                           <button className="bg-transparent hover:bg-white/10 rounded-full p-2" onClick={onNextClick}>
-                            <FontAwesomeIcon icon={faChevronRight} className="text-white"/>
+                            <FontAwesomeIcon icon={faChevronRight} className="text-secondary animate-pulse"/>
                           </button>
                         </div>
                       </div>
@@ -187,17 +193,17 @@ export default function Home() {
                   <div className="padding-section-large-6">
                     <div className="card flex flex-col sm:flex-row gap-4 w-full h-full justify-between">
                       <div className="flex flex-col gap-2 items-start justify-center text-left max-w-[550px] px-4 pt-4 sm:px-0 sm:pt-0">
-                        <p className="text-white text-3xl">Choose background sounds & effects!</p>
-                        <p className="text-textcolor text-lg">Choose from more than 20 different background sounds and effects to enhance your focus even more!</p>
+                        <p className="text-white text-3xl">Choose background sounds & effects</p>
+                        <p className="text-textcolor text-lg">Choose from more than 20 different background sounds and effects to enhance your focus even more</p>
                         <div className="flex flex-row gap-2 items-center justify-start min-w-[187px] pt-2 w-full">
                           <button className="bg-transparent hover:bg-white/10 rounded-full p-2" onClick={onPrevBackground}>
-                            <FontAwesomeIcon icon={faChevronLeft} className="text-white"/>
+                            <FontAwesomeIcon icon={faChevronLeft} className="text-secondary animate-pulse"/>
                           </button>
                           <p className="text-white text-center min-w-[60px] w-[60px] min-h-[50px] flex items-center justify-center capitalize">
                             {selectedBackgroundIndex}
                           </p>
                           <button className="bg-transparent hover:bg-white/10 rounded-full p-2" onClick={onNextBackground}>
-                            <FontAwesomeIcon icon={faChevronRight} className="text-white"/>
+                            <FontAwesomeIcon icon={faChevronRight} className="text-secondary animate-pulse"/>
                           </button>
                         </div>
                       </div>                    
@@ -222,11 +228,11 @@ export default function Home() {
                               <SelectItem className="dark" key="healingTones">Healing Tones</SelectItem>
                               <SelectItem isReadOnly className="dark text-textcolor data-[hover=true]:text-textcolor data-[hover=true]:bg-transparent" key="manyMore">And many more!</SelectItem>
                             </Select>
-                            <button className="bg-white/15 hover:bg-white/10 backdrop-blur-lg rounded-lg p-2 transition-all" onClick={playPauseClick}>
+                            <button className="animate-pulsesm bg-white/15 hover:bg-white/10 backdrop-blur-lg rounded-lg p-2 transition-all" onClick={playPauseClick}>
                               {isAudioPlaying ? (
-                                <PauseIcon color="white" width={20} height={20}/>
+                                <PauseIcon color="#7828c8" width={20} height={20}/>
                               ) : (
-                                <PlayIcon color="white" width={20} height={20}/>
+                                <PlayIcon color="#7828c8" width={20} height={20}/>
                               )}
                             </button>
                             {isAudioPlaying ? (
@@ -249,8 +255,8 @@ export default function Home() {
                   <div className="padding-section-large-6">
                     <div className="card flex flex-col sm:flex-row gap-4 w-full h-full justify-between">
                       <div className="w-full sm:w-1/2 flex flex-col gap-2 items-start justify-center text-left max-w-[550px] px-4 pt-4 sm:px-0 sm:pt-0">
-                        <p className="text-white text-3xl">View key metrics</p>
-                        <p className="text-textcolor text-lg">View important stats about your logs in the stats page.</p>
+                        <p className="text-white text-3xl">Track your focus journey</p>
+                        <p className="text-textcolor text-lg">View important stats to see your strengths and weaknesses</p>
                       </div>
                       <div className="w-full sm:w-1/2 z-[10] flex items-center justify-center">
                         <div className="flex flex-row gap-2 items-center justify-center min-w-[187px]">

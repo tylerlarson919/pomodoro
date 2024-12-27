@@ -35,9 +35,18 @@ export default {
   			gradient: 'gradient 8s linear infinite',
   			'shiny-text': 'shiny-text 8s infinite',
   			meteor: 'meteor 5s linear infinite',
-
+			pulse: 'pulse-animation 2s ease-in-out infinite',
+			pulsesm: 'pulse-animationsm 2s ease-in-out infinite',
   		},
   		keyframes: {
+			'pulse-animation': {
+				'0%, 100%': { transform: 'scale(1)' },
+				'50%': { transform: 'scale(1.3)' },
+        	},
+			'pulse-animationsm': {
+				'0%, 100%': { transform: 'scale(1)' },
+				'50%': { transform: 'scale(1.1)' },
+        	},
   			ripple: {
   				'0%, 100%': {
   					transform: 'translate(-50%, -50%) scale(1)'
