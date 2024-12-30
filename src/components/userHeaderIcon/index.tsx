@@ -121,7 +121,7 @@ type ReplaceSpacesProps = {
                 >
                     <div className="flex flex-col p-2">
                         <p className="font-semibold text-textcolor text-xs">Signed in as</p>
-                        <p className="font-semibold text-white text-sm">{user?.displayName}</p>
+                        <p className="font-semibold text-white text-sm">Rick</p>
                     </div>
                     <div
                         className="p-2 text-textcolor cursor-pointer hover:bg-darkaccent2 text-sm font-semibold cursor-pointer rounded-lg gap-2 flex flex-row items-center"

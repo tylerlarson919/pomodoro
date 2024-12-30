@@ -129,11 +129,10 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center gap-0 text-white">
               <Image
                 disableSkeleton
-                className="dark h-full w-full"
+                className="dark h-full"
                 src="./podo_logo.png"
                 alt="Podo Logo"
                 width={100}
-                height={100}
               />
               <h1 className=" whitespace-pre-wrap text-center text-7xl font-medium tracking-tighter pb-4">
                 Your Flow, Your Way
