@@ -133,7 +133,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                         {endSound.replace(/([A-Z])/g, ' $1').trim()}
                         <button
                           onClick={(e) => {
-                            e.stopPropagation(); 
+                            
                             playEndSound(endSound); // Play the selected end sound
                           }}
                           aria-label="Play Sound"

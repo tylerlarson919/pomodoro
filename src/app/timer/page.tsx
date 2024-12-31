@@ -17,6 +17,7 @@ import YouTubeAudioPlayer from "@/components/YoutubeAudio";
 import TimerPopupModal from "@/components/TimerPopupModal";
 import EndSessionButton from "@/components/EndSessionButton";
 import { HoverBorderGradient  } from "@/components/ui/hover-border-gradient";
+import TimerSelector from "@/components/ui/timer-selector";
 
 const Timer = () => {
   const db = getFirestore();
@@ -26,7 +27,6 @@ const Timer = () => {
   const [taskName, setTaskName] = React.useState("");
   const [timerLength, setTimerLength] = useState(15 * 60 * 1000); // Default 15 minutes
   const [timeLeft, setTimeLeft] = useState(timerLength);
-  const [showModal, setShowModal] = useState(false);
   const [isElementsVisible, setIsElementsVisible] = useState(true);
   type SoundKeys = keyof typeof sounds; 
   type EndSoundKeys = keyof typeof endSounds; 
@@ -148,15 +148,20 @@ const Timer = () => {
   const timerOptions = [
     { label: "30 secs", value: 0.5 * 60 * 1000 },
     { label: "5m", value: 5 * 60 * 1000 },
+    { label: "10m", value: 10 * 60 * 1000 },
     { label: "15m", value: 15 * 60 * 1000 },
     { label: "20m", value: 20 * 60 * 1000 },
+    { label: "25m", value: 25 * 60 * 1000 },
     { label: "30m", value: 30 * 60 * 1000 },
+    { label: "35m", value: 35 * 60 * 1000 },
+    { label: "40m", value: 40 * 60 * 1000 },
     { label: "45m", value: 45 * 60 * 1000 },
+    { label: "50m", value: 50 * 60 * 1000 },
+    { label: "55m", value: 55 * 60 * 1000 },
     { label: "1hr", value: 60 * 60 * 1000 },
     { label: "1.5hrs", value: 90 * 60 * 1000 },
     { label: "2hr", value: 120 * 60 * 1000 },
     { label: "2.5hrs", value: 150 * 60 * 1000 },
-
   ];
 
   const handleTriggerReload = async () => {
@@ -316,7 +321,6 @@ const Timer = () => {
   const handleOptionSelect = (value: number) => {
     setTimerLength(value);
     setTimeLeft(value);
-    setShowModal(false);
   };
 
 
@@ -425,32 +429,14 @@ const Timer = () => {
         </div>
 
         <div className="flex flex-col gap-6 items-center justify-center">
-          <p 
-            className={`z-[1] text-textcolor text-6xl ${isTimerRunning ? 'cursor-default' : 'cursor-pointer'}`}
-            onClick={() => !isTimerRunning && setShowModal(true)}
-          >
-            {formatTime(timeLeft)}
-          </p>
+          <TimerSelector
+            canChange={isTimerRunning}
+            timerLength={timerLength}
+            timerOptions={timerOptions}
+            onTimerChange={handleOptionSelect}
+            displayValue={formatTime(timeLeft)}
+          />
 
-          {showModal && (
-            <Modal className="dark" placement="center" isOpen={showModal} onClose={() => setShowModal(false)}>
-              <ModalContent>
-                <ModalBody className="p-10 bg-darkaccent text-textcolor grid grid-cols-3 gap-4 justify-items-center align-items-center">
-                  {timerOptions.map((option) => (
-                    <Button
-                      className="bg-darkaccent border-darkaccent2 border-1 w-[80px] sm:w-[120px] text-textcolor"
-                      color="secondary"
-                      key={option.value}
-                      variant="faded"
-                      onPress={() => handleOptionSelect(option.value)}
-                    >
-                      {option.label}
-                    </Button>
-                  ))}
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-          )}
           <div className={`${isElementsVisible ? '' : 'disappearing-element fade-out'} w-full h-full flex justify-center `}>
             <HoverBorderGradient 
               containerClassName="rounded-xl " 

@@ -130,6 +130,90 @@ export const getSessions = async () => {
   }
 };
 
+export const getStreak = async () => {
+  try {
+    const user = auth.currentUser;
+    if (!user) {
+      console.error("No user is currently logged in.");
+      return 0;
+    }
+
+    console.log("User ID:", user.uid);
+
+    // Get all sessions
+    const userSessionsCollection = collection(db, "podo", user.uid, "sessions");
+    const querySnapshot = await getDocs(userSessionsCollection);
+
+    // Convert sessions to dates and sort them in descending order
+    const sessionDates = querySnapshot.docs
+      .map(doc => {
+        const date = doc.data().startTime;
+        return date;
+      }) // Assuming each session has a 'date' field
+      .filter(date => {
+        if (!date) console.warn("Undefined date found, filtering it out.");
+        return date;
+      }) // Filter out any undefined dates
+      .map(date => new Date(date).toDateString()) // Convert to date string to ignore time
+      .reduce((acc, date) => {
+        acc[date] = true; // Use object to remove duplicate dates
+        return acc;
+      }, {});
+
+    const dates = Object.keys(sessionDates)
+      .map(date => new Date(date))
+      .sort((a, b) => b - a); // Sort in descending order
+
+    if (dates.length === 0) {
+      console.log("No valid session dates found.");
+      return 0;
+    }
+
+    // Get today's date without time
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    // If no session today, check if there was one yesterday to continue the streak
+    const mostRecentDate = new Date(dates[0]);
+    mostRecentDate.setHours(0, 0, 0, 0);
+
+    if (mostRecentDate < today) {
+      const yesterday = new Date(today);
+      yesterday.setDate(yesterday.getDate() - 1);
+
+      if (mostRecentDate < yesterday) {
+        return 0;
+      }
+    }
+
+    // Calculate streak
+    let streak = 1;
+    let currentDate = mostRecentDate;
+
+    for (let i = 1; i < dates.length; i++) {
+      const previousDate = new Date(dates[i]);
+      previousDate.setHours(0, 0, 0, 0);
+
+      // Check if dates are consecutive
+      const expectedPreviousDate = new Date(currentDate);
+      expectedPreviousDate.setDate(expectedPreviousDate.getDate() - 1);
+
+      if (previousDate.getTime() === expectedPreviousDate.getTime()) {
+        streak++;
+        currentDate = previousDate;
+      } else {
+        break;
+      }
+    }
+
+    return streak;
+
+  } catch (e) {
+    console.error("Error calculating streak: ", e);
+    return 0;
+  }
+};
+
 
 // Export the initialized Firebase app, auth, and db
 export { app, auth, db, storage };

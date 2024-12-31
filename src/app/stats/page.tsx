@@ -504,6 +504,11 @@ const formatTimestamp = (timestamp: string | number) => {
           </ScrollShadow>
         </div>
       </div>
+      <div className="flex flex-row gap-2 items-center justify-center text-center text-white">
+        <p className="text-3xl sm:text-4xl font-semibold">
+          {sessionsData.length ? sessionsData.length : 0} Sessions Finished
+        </p>
+      </div>
       <div className="flex flex-col sm:flex-row items-center justify-center w-full gap-6">
         <Card className="dark bg-darkaccent w-full h-full sm:w-1/2 py-4 sm:h-[260px]">
             <CardBody className="dark flex flex-row sm:flex-col gap-4 items-center justify-center overflow-hidden">
