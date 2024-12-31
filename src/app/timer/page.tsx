@@ -351,7 +351,7 @@ const Timer = () => {
   };
 
   return (
-    <div className="flex flex-col w-full h-screen max-h-screen items-center justify-center overflow-hidden bg-dark1">
+    <div className="flex flex-col items-center justify-center bg-dark1 h-screen overflow-hidden">
       <div
         className={`flex w-full text-textcolor fade-gradual ${
           isStarsSelected ? "" : "hidden"
@@ -359,7 +359,7 @@ const Timer = () => {
         {isStarsSelected && ( 
           <ParticlesStars
             className=" z-[0] bg-dark1 absolute inset-0"
-            quantity={800}
+            quantity={600}
             ease={100}
             color="#ffffff"
             refresh
