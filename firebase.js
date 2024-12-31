@@ -147,16 +147,19 @@ export const getStreak = async () => {
     // Convert sessions to dates and sort them in descending order
     const sessionDates = querySnapshot.docs
       .map(doc => {
-        const date = doc.data().startTime;
-        return date;
-      }) // Assuming each session has a 'date' field
+        const data = doc.data();
+        if (data.status === "finished") {
+          return data.startTime;
+        }
+        return null;
+      })
       .filter(date => {
-        if (!date) console.warn("Undefined date found, filtering it out.");
+        if (!date) console.warn("Undefined date or status not 'finished', filtering it out.");
         return date;
-      }) // Filter out any undefined dates
-      .map(date => new Date(date).toDateString()) // Convert to date string to ignore time
+      })
+      .map(date => new Date(date).toDateString())
       .reduce((acc, date) => {
-        acc[date] = true; // Use object to remove duplicate dates
+        acc[date] = true;
         return acc;
       }, {});
 
