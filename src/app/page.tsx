@@ -104,7 +104,7 @@ export default function Home() {
         {selectedBackgroundIndex === "stars" && (
             <ParticlesStars
             className="fixed top-0 left-0 w-screen h-screen z-0" // Adjust styling to cover the entire background
-            quantity={600} // Check if this number is supported by the component
+            quantity={400} // Check if this number is supported by the component
             ease={100}
             color="#ffffff"
             refresh={true}
@@ -130,14 +130,14 @@ export default function Home() {
               <Image
                 disableSkeleton
                 className="dark h-full"
-                src="./podo_logo.png"
-                alt="Podo Logo"
+                src="./logo/focus-flow-logo-white.png"
+                alt="Focus Flow logo"
                 width={100}
               />
               <h1 className=" whitespace-pre-wrap text-center text-7xl font-medium tracking-tighter pb-4">
                 Your Flow, Your Way
               </h1> 
-              <p className=" text-lg text-center text-white max-w-[600px] leading-tight">A chill Pomodoro timer that vibes with your aesthetic. Focus effortlessly with calming sounds and dreamy visuals. Pick your style and let time work for you.</p>
+              <p className=" text-lg text-center text-white max-w-[600px] leading-tight">A simple Pomodoro timer that vibes with your aesthetic. Focus effortlessly with calming sounds and dreamy visuals. Pick your style and let time work for you.</p>
             </div>
               <div className="flex flex-row gap-2 pt-4">
                 <Button variant="solid" color="secondary" onPress={getStarted} size="md">Start For Free!</Button>
@@ -147,9 +147,12 @@ export default function Home() {
           
         </div>
           <div className="w-full h-full">
-            <Image className="dark" src="" alt="" width={100} height={100} />
+            <img className="object-contain w-full h-full rounded-lg" src="video-placeholder.mp4" alt="" />
           </div>
-          <h2 className="text-center text-white text-5xl py-6">So many features to explore</h2>
+          <div className="w-full h-full flex flex-row justify-center items-center gap-2">
+            <h2 className="text-center text-white text-4xl py-6">So many features to </h2>
+            <h2 className="text-center text-4xl py-6 moving-text-gradient font-semibold">explore</h2>
+          </div>
         <div className="w-full h-full px-10 sm:px-0 sm:w-4/5 sm:max-w-4/5 max-w-[1000px] gap-4">
           <div className="sticky-cards-container w-full">
             <div className="sticky-card block border-2 border-darkaccent3 min-w-full min-h-[500px] max-h-[500px] sm:min-h-[450px] sm:max-h-[450px]  flex justify-center items-center">

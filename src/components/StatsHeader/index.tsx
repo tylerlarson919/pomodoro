@@ -1,16 +1,15 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { faBars, faChartSimple, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "@nextui-org/link";
 import { Image } from "@nextui-org/image";
 import { onAuthStateChanged, User } from "firebase/auth";
-import { auth } from "../../../firebase"; 
+import { auth } from "../../../firebase";
 import { usePathname } from "next/navigation";
-import ClockIcon from "../../../public/icons/clock"
-import BarChartIcon from "../../../public/icons/bar-chart"
-import XIcon from "../../../public/icons/x-icon"
-import MenuIcon from "../../../public/icons/menu-icon"
+import ClockIcon from "../../../public/icons/clock";
+import BarChartIcon from "../../../public/icons/bar-chart";
+import XIcon from "../../../public/icons/x-icon";
+import MenuIcon from "../../../public/icons/menu-icon";
 
   export default function StatsHeader() {
     const [showMenu, setShowMenu] = useState(false);
@@ -74,9 +73,9 @@ import MenuIcon from "../../../public/icons/menu-icon"
             <div id="header-button"
               className={`cursor-pointer w-7 h-6 transform transition-transform duration-300 ease-in-out ${
                 showMenu ? "rotate-180 scale-110" : "rotate-0 scale-100"
-                }`} 
+                }`}
                 onClick={(event) => {
-                  event.stopPropagation(); // Prevent click from bubbling up to the window
+                  event.stopPropagation();
                   setShowMenu((prev) => !prev);
                 }}
             >
@@ -86,9 +85,9 @@ import MenuIcon from "../../../public/icons/menu-icon"
             <div 
               className={`cursor-pointer w-7 h-7 transform transition-transform duration-300 ease-in-out ${
                 showMenu ? "rotate-180 scale-110" : "rotate-0 scale-100"
-                }`} 
+                }`}
                 onClick={(event) => {
-                  event.stopPropagation(); // Prevent click from bubbling up to the window
+                  event.stopPropagation();
                   setShowMenu((prev) => !prev);
                 }}
             >
@@ -107,8 +106,8 @@ import MenuIcon from "../../../public/icons/menu-icon"
           <div className="p-4">
             <div className="flex flex-col gap-1 pt-4">
               <Image 
-                alt="Podo Logo"
-                src="./podo_logo.png"
+                alt="Focus Flow Logo"
+                src="./logo/focus-flow-logo-white.png"
                 height={63}
                 width={63}
               />

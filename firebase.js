@@ -76,7 +76,7 @@ export const editSettings = async (settings) => {
       await setDoc(userSettingsRef, settings);
     }
   } else {
-    console.error("No user is currently logged in.");
+    console.log("No user is currently logged in.");
   }
 };
 
@@ -122,7 +122,7 @@ export const getSessions = async () => {
       });
       return sessions;
     } else {
-      console.error("No user is currently logged in.");
+      console.log("No user is currently logged in.");
       return [];
     }
   } catch (e) {
@@ -134,7 +134,7 @@ export const getStreak = async () => {
   try {
     const user = auth.currentUser;
     if (!user) {
-      console.error("No user is currently logged in.");
+      console.log("No user is currently logged in.");
       return 0;
     }
 
