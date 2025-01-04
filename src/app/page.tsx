@@ -139,7 +139,7 @@ export default function Home() {
             <div className="flex flex-col items-center justify-center gap-0 text-white">
               <Image
                 disableSkeleton
-                className="dark h-full"
+                className="dark h-full pb-4"
                 src="./logo/focus-flow-logo-white.png"
                 alt="Focus Flow logo"
                 width={150}
@@ -169,7 +169,7 @@ export default function Home() {
               
             />
           </div>
-          <div id="features-section" className="w-full h-full flex flex-col sm:flex-row justify-center items-center gap-0 sm:gap-2 py-10">
+          <div id="features-section" className="w-full h-full flex flex-col sm:flex-row justify-center items-center gap-0 sm:gap-2">
             <h2 className="text-center text-white text-5xl font-semibold">So many features to </h2>
             <h2 className="text-center text-5xl moving-text-gradient font-semibold">explore</h2>
           </div>
@@ -294,9 +294,9 @@ export default function Home() {
           </div>
           <div className=" flex flex-col sm:flex-row justify-between items-center w-full gap-4 py-16">
             <div className="w-full h-full flex flex-col gap-2">
-              <div className="w-full h-full flex flex-col sm:flex-row justify-center items-center gap-0 sm:gap-2 py-10">
-                <h2 className="text-center text-white text-5xl font-semibold">Get started for</h2>
-                <h2 className="text-center text-5xl moving-text-gradient font-semibold">free</h2>
+              <div className="w-full h-full flex flex-col lg:flex-row justify-center items-center gap-0 lg:gap-2 py-10">
+                <h2 className="text-center text-white text-3xl lg:text-5xl font-semibold">Get started for</h2>
+                <h2 className="text-center text-3xl lg:text-5xl moving-text-gradient font-semibold">free</h2>
               </div>
               <p className="text-center text-textcolor text-lg">No credit card required</p>
             </div>

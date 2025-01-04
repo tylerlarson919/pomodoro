@@ -47,15 +47,15 @@ const onEmailSignUpButtonClick = useCallback(async () => {
   }, [email, password, router]);
 
   return (
-    <div className="p-5 w-full h-full min-h-screen mx-auto flex flex-col bg-darkaccent justify-center">
-        <div className="flex flex-col items-center justify-center gap-3 max-w-md mx-auto">
-          <Image
-            disableSkeleton
-            className="dark h-full"
-            src="./logo/focus-flow-logo-white.png"
-            alt="Focus Flow logo"
-            width={150}
-          />
+    <div className="p-5 w-full h-full min-h-screen mx-auto flex flex-col bg-darkaccent justify-center gap-10">
+      <Image
+        disableSkeleton
+        className="dark h-full"
+        src="./logo/focus-flow-logo-white.png"
+        alt="Focus Flow logo"
+        width={150}
+      />
+      <div className="flex flex-col items-center justify-center gap-3 max-w-md mx-auto">
           <h1 className="text-4xl font-bold text-white">Sign Up</h1>
           <div className="flex flex-row gap-1">
             <p className="text-textcolor">Already have an account?</p>
