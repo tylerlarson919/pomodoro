@@ -35,6 +35,9 @@ export default function Home() {
   const [selectedBackgroundSound, setSelectedBackgroundSound] = React.useState<Selection>(new Set<string>(["gentleRain"]));
   const [audioToPlay, setAudioToPlay] = React.useState<string | undefined>(undefined);
   
+    const handleContextMenu = (e: any) => {
+      e.preventDefault(); // Disable the context menu
+    };
 
   useEffect(() => {
     if (isAudioPlaying) {
@@ -146,12 +149,21 @@ export default function Home() {
           </div>
           
         </div>
-          <div className="w-full h-full">
-            <img className="object-contain w-full h-full rounded-lg" src="video-placeholder.mp4" alt="" />
+          <div className="w-full h-full px-10 sm:px-0 sm:w-4/5 sm:max-w-4/5 max-w-[1000px]">
+            <video 
+              loop 
+              muted
+              controls={false}
+              autoPlay
+              onContextMenu={handleContextMenu}
+              className="object-contain w-full h-full rounded-xl"
+              src="/prism-timer-vid-tiny.mp4"
+              
+            />
           </div>
-          <div className="w-full h-full flex flex-row justify-center items-center gap-2">
-            <h2 className="text-center text-white text-4xl py-6">So many features to </h2>
-            <h2 className="text-center text-4xl py-6 moving-text-gradient font-semibold">explore</h2>
+          <div className="w-full h-full flex flex-row justify-center items-center gap-2 py-10">
+            <h2 className="text-center text-white text-5xl">So many features to </h2>
+            <h2 className="text-center text-5xl moving-text-gradient font-semibold">explore</h2>
           </div>
         <div className="w-full h-full px-10 sm:px-0 sm:w-4/5 sm:max-w-4/5 max-w-[1000px] gap-4">
           <div className="sticky-cards-container w-full">

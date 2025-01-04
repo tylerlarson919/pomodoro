@@ -9,10 +9,10 @@ const PricingSection: NextPage = () => {
 
     return (
         <div className="w-full h-full flex flex-col">
-            <Tabs aria-label="Options" className="dark z-10" classNames={{base: "justify-center"}}>
+            <Tabs aria-label="Options" className="dark z-10" classNames={{tabList: "bg-darkaccent3", base: "justify-center"}}>
                 <Tab key="monthly" title="Monthly">
                     <div className="w-full h-full flex flex-col md:grid md:grid-cols-2 gap-4" >
-                        <div className="z-10 border-2 border-darkaccent3 bg-darkaccent3 bg-opacity-70 backdrop-blur-lg drop-shadow-lg rounded-2xl p-4 w-full flex flex-col items-center justify-between gap-6 h-[300px]">
+                        <div className="z-10 border-2 sticky-card-pricing border-darkaccent3 border-2 rounded-2xl p-4 w-full flex flex-col items-center justify-between gap-6 h-[300px]">
                             <div className="flex flex-col text-center items-center justify-center gap-4">
                                 <p className="text-sm text-textcolor">Beginner</p>
                                 <p className="text-4xl text-white">Free</p>
@@ -30,7 +30,7 @@ const PricingSection: NextPage = () => {
                             </div>
                             <Button className="dark rounded-xl w-full" variant="faded" color="default" size="sm">Get Started</Button>
                         </div>
-                        <div className="z-10 border-2 border-darkaccent3 bg-darkaccent3 bg-opacity-70 backdrop-blur-lg drop-shadow-lg rounded-2xl p-4 w-full flex flex-col items-center justify-between gap-6 h-[300px]">
+                        <div className="z-10 border-2 sticky-card-pricing border-darkaccent3 border-2 rounded-2xl p-4 w-full flex flex-col items-center justify-between gap-6 h-[300px]">
                             <div className="flex flex-col text-center items-center justify-center gap-4">
                                 <p className="text-sm text-textcolor">Pro</p>
                                 <div className="flex flex-row items-end">
@@ -59,7 +59,7 @@ const PricingSection: NextPage = () => {
                 </Tab>
                 <Tab key="yearly" title="Yearly">
                     <div className="w-full h-full flex flex-col md:grid md:grid-cols-2 gap-4" >
-                        <div className="z-10 border-2 border-darkaccent3 bg-darkaccent3 bg-opacity-70 backdrop-blur-lg drop-shadow-lg rounded-2xl p-4 w-full flex flex-col items-center justify-between gap-6 h-[300px]">
+                        <div className="z-10 border-2 sticky-card-pricing border-darkaccent3 border-2 rounded-2xl p-4 w-full flex flex-col items-center justify-between gap-6 h-[300px]">
                             <div className="flex flex-col text-center items-center justify-center gap-4">
                                 <p className="text-sm text-textcolor">Beginner</p>
                                 <p className="text-4xl text-white">Free</p>
@@ -77,7 +77,7 @@ const PricingSection: NextPage = () => {
                             </div>
                             <Button className="dark rounded-xl w-full" variant="faded" color="default" size="sm">Get Started</Button>
                         </div>
-                        <div className="z-10 border-2 border-darkaccent3 bg-darkaccent3 bg-opacity-70 backdrop-blur-lg drop-shadow-lg rounded-2xl p-4 w-full flex flex-col items-center justify-between gap-6 h-[300px]">
+                        <div className="z-10 border-2 sticky-card-pricing border-darkaccent3 border-2 rounded-2xl p-4 w-full flex flex-col items-center justify-between gap-6 h-[300px]">
                             <div className="flex flex-col text-center items-center justify-center gap-4">
                                 <p className="text-sm text-textcolor">Pro</p>
                                 <div className="flex flex-row items-end">

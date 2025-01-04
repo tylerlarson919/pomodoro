@@ -138,7 +138,6 @@ export const getStreak = async () => {
       return 0;
     }
 
-    console.log("User ID:", user.uid);
 
     // Get all sessions
     const userSessionsCollection = collection(db, "podo", user.uid, "sessions");
