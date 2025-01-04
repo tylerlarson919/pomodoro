@@ -132,7 +132,7 @@ export default function Home() {
                 className="dark h-full"
                 src="./logo/focus-flow-logo-white.png"
                 alt="Focus Flow logo"
-                width={100}
+                width={150}
               />
               <h1 className=" whitespace-pre-wrap text-center text-7xl font-medium tracking-tighter pb-4">
                 Your Flow, Your Way
