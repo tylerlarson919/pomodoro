@@ -71,6 +71,13 @@ export default function Home() {
   const getStarted = () => {
     window.location.href = "/signup";
   };
+
+  const pricingClick = () => {
+    const element = document.getElementById('pricing-section');
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
   
   const onNextBackground = () => {
     setSelectedBackgroundIndex((prevIndex) => {
@@ -144,7 +151,7 @@ export default function Home() {
             </div>
               <div className="flex flex-row gap-2 pt-4">
                 <Button variant="solid" color="secondary" onPress={getStarted} size="md">Start For Free!</Button>
-                <Button variant="solid" color="secondary" onPress={getStarted} size="md">View Pricing</Button>
+                <Button variant="solid" color="secondary" onPress={pricingClick} size="md">View Pricing</Button>
               </div>
           </div>
           
@@ -153,6 +160,7 @@ export default function Home() {
             <video 
               loop 
               muted
+              playsInline
               controls={false}
               autoPlay
               onContextMenu={handleContextMenu}
@@ -161,8 +169,8 @@ export default function Home() {
               
             />
           </div>
-          <div className="w-full h-full flex flex-row justify-center items-center gap-2 py-10">
-            <h2 className="text-center text-white text-5xl">So many features to </h2>
+          <div id="features-section" className="w-full h-full flex flex-col sm:flex-row justify-center items-center gap-0 sm:gap-2 py-10">
+            <h2 className="text-center text-white text-5xl font-semibold">So many features to </h2>
             <h2 className="text-center text-5xl moving-text-gradient font-semibold">explore</h2>
           </div>
         <div className="w-full h-full px-10 sm:px-0 sm:w-4/5 sm:max-w-4/5 max-w-[1000px] gap-4">
@@ -285,7 +293,13 @@ export default function Home() {
             
           </div>
           <div className=" flex flex-col sm:flex-row justify-between items-center w-full gap-4 py-16">
-            <h1 className="z-10 text-white text-center sm:text-left text-4xl md:text-5xl">Get started for free</h1>
+            <div className="w-full h-full flex flex-col gap-2">
+              <div className="w-full h-full flex flex-col sm:flex-row justify-center items-center gap-0 sm:gap-2 py-10">
+                <h2 className="text-center text-white text-5xl font-semibold">Get started for</h2>
+                <h2 className="text-center text-5xl moving-text-gradient font-semibold">free</h2>
+              </div>
+              <p className="text-center text-textcolor text-lg">No credit card required</p>
+            </div>
             <div className="flex flex-col gap-2 items-center justify-start max-w-[350px]">
               <p className="text-textcolor text-center sm:text-left z-10">Start your journey to focusing today. Join FocusFlow for free and unlock a new world of focus insights.</p>
               <Button color="secondary" variant="shadow" className="z-10 w-full">
@@ -293,7 +307,7 @@ export default function Home() {
               </Button>
             </div>
           </div>
-          <div className="w-full h-full ">
+          <div id="pricing-section" className="w-full h-full ">
             <PricingSection />
           </div>
         </div>

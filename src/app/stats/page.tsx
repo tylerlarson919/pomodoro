@@ -12,7 +12,9 @@ import {
   Card,
   CardBody,
   CircularProgress,
-  ScrollShadow
+  ScrollShadow,
+  Avatar,
+  Divider,
 } from "@nextui-org/react";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { useRouter } from "next/navigation";
@@ -26,6 +28,7 @@ import type {DateValue} from "@react-types/datepicker";
 import LineChart from "@/components/LineChart"  ;
 import UHeaderIcon from "@/components/userHeaderIcon";
 import MakeDummyData from "@/components/makeDummyData";
+import { GlareCard } from "@/components/ui/glare-card";
 
 // Define the type for session data
 type Session = {
@@ -34,6 +37,10 @@ type Session = {
   endTime: string;
   timerLength: string;
   status: string;
+};
+
+type ReplaceSpacesProps = {
+  input: string;
 };
 
  const columns = [
@@ -49,23 +56,18 @@ const Stats = () => {
   const [filteredSessionsData, setFilteredSessionsData] = useState<Session[]>([]);
 
   const [user, setUser] = useState<User | null>(null);
-  const router = useRouter();
   const [avgTimeValue, setAvgTimeValue] = useState(0);
   const [timeThisMonth, setTimeThisMonth] = useState(0);
   const [currentMonth, setCurrentMonth] = useState<string>("");
-  const [selectedTimeframe, setSelectedTimeframe] = useState<string>("day");
   const [isFilterMenuOpen, setisFilterMenuOpen] = useState(false);
   const [isFilterActive, setisFilterActive] = useState(false);
   const [isSortMenuOpen, setisSortMenuOpen] = useState(false);
-  const [period, setPeriod] = useState("this");
-  const periodOrder = ["last", "this"]; // Define the order of periods
+
   // Unused settings props:
    const [selectedGif, setSelectedGif] = useState<string>('');
    const [selectedSound, setSelectedSound] = useState<string>('');
    const [selectedEndSound, setSelectedEndSound] = useState<string>('');
-   const [selectedYouTubeAudio, setSelectedYouTubeAudio] = useState<string>('LJih9bxSacU');
    const [selectedBackground, setSelectedBackground] = useState<string>('');
-   const [iframeSrc, setIframeSrc] = useState("https://example.com");
    const [isStarsSelected, setIsStarsSelected] = React.useState(false);
 
   // Filter card props
@@ -77,7 +79,12 @@ const Stats = () => {
   const [dateRange, setDateRange] = useState<RangeValue<DateValue> | null>(null);
   const [date, setDate] = useState<DateValue | null>(null);
   const [selectedStatusKey, setSelectedStatusKey] = useState<Set<string>>(new Set(["both"]));
+  const [totalTimeFocused, setTotalTimeFocused] = useState("");  
 
+  const ReplaceSpaces: React.FC<ReplaceSpacesProps> = ({ input }) => {
+      const replaceSpaces = (str: string) => str.replace(/\s+/g, '+');
+      return replaceSpaces(input);
+  };
 
   const settingsProps = {
     selectedSound,
@@ -86,6 +93,13 @@ const Stats = () => {
     selectedBackground,
     isStarsSelected,
   };
+
+  useEffect(() => {
+      const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+          setUser(currentUser);
+      });
+      return () => unsubscribe(); // Cleanup listener on unmount
+  }, []);
 
   const handleTriggerReload = async () => {
     if (user) {
@@ -303,7 +317,8 @@ const Stats = () => {
           return date.toDateString(); // Normalize to unique day strings
         })
       );
-  
+      const totalTimeText = formatTotalTime(totalTime);
+      setTotalTimeFocused(totalTimeText); // Set the formatted time
       const avgTime = totalTime / uniqueDays.size;
       setAvgTimeValue(Math.round(avgTime));
   
@@ -319,6 +334,31 @@ const Stats = () => {
   }, [sessionsData]);  
   
   
+
+  function formatTotalTime(totalTime: number): string {
+    // Total time is expected to be in minutes
+    const days = Math.floor(totalTime / (60 * 24));
+    const hours = Math.floor((totalTime % (60 * 24)) / 60);
+    const minutes = totalTime % 60;
+    
+    if (days > 0) {
+        // Format for days
+        return `${days}d ${hours}h ${minutes}m`;
+    } else if (hours > 0) {
+        // Format for hours
+        return `${hours}h ${minutes}m`;
+    } else if (totalTime >= 60 * 24 * 7) {
+        // Format for weeks
+        const weeks = (totalTime / (60 * 24 * 7)).toFixed(1);
+        return `${weeks}w`;
+    } else if (totalTime >= 60 * 24 * 30) {
+        // Format for months
+        const months = (totalTime / (60 * 24 * 30)).toFixed(1);
+        return `${months} months`;
+    } else {
+        return `${minutes}m`; // Fallback for minutes if all else fails
+    }
+}
 // Function to filter sessions based on the selected timeframe
 const filterClick = (event: React.MouseEvent<HTMLButtonElement>) => {
   if (!isFilterMenuOpen && !isFilterActive) {
@@ -440,9 +480,36 @@ const formatTimestamp = (timestamp: string | number) => {
     <div className="flex flex-col w-full h-full min-h-screen max-h-full items-center justify-start bg-dark1  px-6 lg:px-52 gap-6 pb-6">
       <StatsHeader/>
       <UHeaderIcon onTriggerReload={handleTriggerReload} settingsProps={settingsProps}/>
+      <h1 className="text-4xl font-bold text-white pb-2 pt-16 px-2 text-center">Session Stats</h1>
+      <div className="w-full h-full">
+        <GlareCard className="w-full h-[400px] sm:h-40">
+          <div className="flex flex-col sm:flex-row items-center justify-center sm:justify-start gap-4 sm:gap-6 w-full h-full p-6">
+            <div className="flex flex-col items-start justify-center w-fit h-fit">
+              <Avatar
+                isFocusable={false}
+                className="w-18 h-18 sm:w-26 sm:h-26"
+                alt="User Profile"
+                id="user-profile"
+                src={user?.photoURL || `https://eu.ui-avatars.com/api/?name=${ReplaceSpaces({ input: user?.displayName || "Anonymous" })}&size=250`}
+              />
+            </div>
+            <div className="w-fit h-fit flex flex-col items-center sm:items-start justify-center text-textcolor">
+              <p className="text-2xl sm:text-2xl font-semibold text-center sm:text-left">Session&apos;s Complete</p>
+              <p className="text-5xl font-bold text-shadow-glow text-center sm:text-left">
+                {sessionsData.length ? sessionsData.length : 0}
+              </p>
+            </div>
+            <Divider orientation="horizontal" className="dark block sm:hidden w-full max-w-[220px] h-[1px] rounded-full bg-textcolor" />
+            <div className="w-fit h-fit flex flex-col items-center sm:items-start justify-center text-textcolor">
+              <p className="text-2xl sm:text-2xl font-semibold text-center sm:text-left">Time Focused</p>
+              <p className="text-5xl font-bold text-shadow-glow text-center sm:text-left">
+                {totalTimeFocused ? totalTimeFocused : "0m"}
+              </p>
+            </div>
+          </div>
+        </GlareCard>
+      </div>
       <div className="flex flex-col items-center justify-start w-full">
-
-        <h1 className="text-4xl font-bold text-white mb-4 mt-4">Session Stats</h1>
         <div className="bg-darkaccent w-full flex flex-col relative h-auto box-border outline-none shadow-medium rounded-large">
           <div className="flex items-center justify-center w-full h-[40px] group relative">
             <div className={`opacity-100 ${isFilterActive ? "opacity-100" : "opacity-0"} absolute left-0 right-0 top-0 bottom-0 transition-opacity duration-200 opacity-0 group-hover:opacity-100 flex items-center justify-end gap-2`}>
@@ -494,7 +561,7 @@ const formatTimestamp = (timestamp: string | number) => {
                     <TableCell className="dark text-white">
                       <div className="flex flex-row gap-2 content-center items-center justify-center sm:justify-start">
                           <div className={`w-4 h-4 sm:w-2 sm:h-2 rounded-full items-center ${item.status === "finished" ? "bg-green-600" : "bg-red-600"}`}></div>
-                          <p className="hidden sm:flex">{item.status}</p>
+                          <p className="hidden sm:flex">{item.status === "finished" ? "complete" : "failed"}</p>
                       </div>
                   </TableCell>
                   </TableRow>
@@ -503,11 +570,6 @@ const formatTimestamp = (timestamp: string | number) => {
             </Table>
           </ScrollShadow>
         </div>
-      </div>
-      <div className="flex flex-row gap-2 items-center justify-center text-center text-white">
-        <p className="text-3xl sm:text-4xl font-semibold">
-          {sessionsData.length ? sessionsData.length : 0} Sessions Finished
-        </p>
       </div>
       <div className="flex flex-col sm:flex-row items-center justify-center w-full gap-6">
         <Card className="dark bg-darkaccent w-full h-full sm:w-1/2 py-4 sm:h-[260px]">
@@ -537,7 +599,7 @@ const formatTimestamp = (timestamp: string | number) => {
         </Card>
       </div>
       
-      <Card className="dark bg-darkaccent w-full py-1 px-1 h-[500px] md:h-[450px]">
+      <Card className="dark bg-darkaccent w-full py-1 px-1 h-full">
         <CardBody className="relative dark flex flex-col items-center justify-start md:justify-center">
           <div className="w-full h-full">
             <LineChart data={filteredSessionsData} />

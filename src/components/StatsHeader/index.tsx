@@ -107,7 +107,7 @@ import MenuIcon from "../../../public/icons/menu-icon";
             <div className="flex flex-col gap-1 pt-4">
               <Image 
                 alt="Focus Flow Logo"
-                src="./logo/focus-flow-logo-white.png"
+                src="./logo/focus-flow-icon-white.png"
                 height={63}
                 width={63}
               />

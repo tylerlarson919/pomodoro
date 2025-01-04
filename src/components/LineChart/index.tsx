@@ -6,17 +6,15 @@
 import type { NextPage } from "next";
 import React from 'react';
 import { AreaChart, Area, XAxis, YAxis, Line, Tooltip, ResponsiveContainer, TooltipProps } from 'recharts';
-import { useEffect } from "react";
-import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button } from "@nextui-org/react";
+import { useEffect, useState } from "react";
+import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem, Button, DatePicker } from "@nextui-org/react";
 import { faChevronDown } from '@fortawesome/free-solid-svg-icons';
 import dynamic from 'next/dynamic';
-
 
 
 const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').then((mod) => mod.FontAwesomeIcon), {
     ssr: false,
   });
-
 
 interface Session {
     status: string; // Assuming status is a string
@@ -26,20 +24,46 @@ interface Session {
     endTime: string;
 }
 
-
 interface ChartData {
     name: string;
     length: number;
     date: string;
 }
 
-
 // Chart component
 const LineChart: NextPage<{ data: any }> = ({ data }) => {
     const [initialData, setInitialData] = React.useState<Session[]>([]); 
     const [chartData, setChartData] = React.useState<ChartData[]>([]); // Initialize as empty array
-    const [sortTF, setSortTF] = React.useState<string[]>(["day"]);
+    const [sortTF, setSortTF] = useState<string[]>(["day"]); // Default to "day" 
 
+
+    const handlePreviousClick = () => {
+        const now = new Date();
+        if (sortTF[0] === "day") {
+            now.setDate(now.getDate() - 1);
+        } else if (sortTF[0] === "week") {
+            now.setDate(now.getDate() - 7);
+        } else if (sortTF[0] === "month") {
+            now.setMonth(now.getMonth() - 1);
+        } else if (sortTF[0] === "year") {
+            now.setFullYear(now.getFullYear() - 1);
+        }
+        setSortTF([sortTF[0]]);
+    };
+    
+    const handleNextClick = () => {
+        const now = new Date();
+        if (sortTF[0] === "day") {
+            now.setDate(now.getDate() + 1);
+        } else if (sortTF[0] === "week") {
+            now.setDate(now.getDate() + 7);
+        } else if (sortTF[0] === "month") {
+            now.setMonth(now.getMonth() + 1);
+        } else if (sortTF[0] === "year") {
+            now.setFullYear(now.getFullYear() + 1);
+        }
+        setSortTF([sortTF[0]]);
+    };
 
     const CustomTooltip: React.FC<TooltipProps<number, string>> = ({ active, payload, label }) => {
         const formatDate = (dateString: string, sortType: string) => {
@@ -72,8 +96,6 @@ const LineChart: NextPage<{ data: any }> = ({ data }) => {
     
         return null;
     };
-
-
     
     useEffect(() => {
         if (data) {
@@ -100,8 +122,7 @@ const LineChart: NextPage<{ data: any }> = ({ data }) => {
                         const monthKey = normalizedDate.slice(0, 7); // Extract "YYYY-MM"
                         grouped[monthKey] = (grouped[monthKey] || 0) + length;
                     }
-                });
-            
+                });            
                 return grouped;
             };
             
@@ -140,11 +161,7 @@ const LineChart: NextPage<{ data: any }> = ({ data }) => {
                     setChartData(filledData);
                 }
             };
-            
-    
-            filterData();
-            
-            // Dummy data can be logged here if needed
+            filterData();            
         }
     }, [data, sortTF]);
     
@@ -153,7 +170,7 @@ const LineChart: NextPage<{ data: any }> = ({ data }) => {
 
     return (
   <div className="flex justify-center items-center w-full h-full rounded-lg box-border p-2 sm:p-0 flex-col gap-4">
-        <div className="flex w-full h-fit justify-center sm:justify-end">
+        <div className="flex flex-col gap-1 w-full h-fit justify-center sm:justify-start items-center">
             <Dropdown className="dark">
                 <DropdownTrigger className="w-full h-full">
                 <Button endContent={<FontAwesomeIcon icon={faChevronDown} className="w-2.5 h-2.5"/>} size="sm" className="h-10 capitalize text-[12px] p-1 w-28 text-textcolor dark hover:bg-gray-100/10" variant="bordered">
@@ -175,7 +192,7 @@ const LineChart: NextPage<{ data: any }> = ({ data }) => {
                 <DropdownItem className="text-textcolor" key="month">Month</DropdownItem>
                 </DropdownMenu>
             </Dropdown>
-        </div>
+       </div>
     <ResponsiveContainer width="100%" height="100%">
 
       <AreaChart

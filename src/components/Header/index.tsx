@@ -16,6 +16,19 @@ export default function Header() {
       return () => unsubscribe(); // Cleanup listener on unmount
     }, []);
     
+    const pricingClick = () => {
+      const element = document.getElementById('pricing-section');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
+
+    const featuresClick = () => {
+      const element = document.getElementById('features-section');
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth' });
+      }
+    };
     
     return (
       <div className="w-full min-h-20 max-h-20 md:px-32 lg:px-40 sticky top-0 z-50 max-w-[1320px]">
@@ -23,12 +36,12 @@ export default function Header() {
           <Image
             className="w-full rounded-none"
             alt="Focus Flow Logo"
-            src="./logo/focus-flow-logo-white.png"
+            src="./logo/focus-flow-icon-white.png"
             height={50}
           />
           <div className="flex flex-row gap-4 items-center justify-center">
-            <Link href="/features" className="text-white">Features</Link>
-            <Link href="/pricing" className="text-white">Pricing</Link>
+            <Link onPress={featuresClick} className="text-white">Features</Link>
+            <Link onPress={pricingClick} className="text-white">Pricing</Link>
             {user ? (
             <div className="flex flex-row gap-4 items-center justify-center pr-10">
               <UserHeaderIconMainPage />
