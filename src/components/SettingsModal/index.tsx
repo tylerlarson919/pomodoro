@@ -90,7 +90,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
               <ModalContent>
                 <ModalBody className="p-10  text-textcolor">
 
-                <h3>Select Background Sound</h3>
+                <h3>Background Sound</h3>
                 <Select
                   className=""
                   popoverProps={{
@@ -99,8 +99,8 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                       content: "text-white p-0 border-small border-divider dark border-none",
                     },
                   }}
-                  aria-label="Select Background Sound"
-                  placeholder="Select Background Sound"
+                  aria-label="Background Sound"
+                  placeholder="Background Sound"
                   defaultSelectedKeys={[selectedSound]}
                   onChange={(event) => setSelectedSound(event.target.value)} 
                   value={selectedSound}
@@ -112,7 +112,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                   ))}
                 </Select>
 
-                <h3 className="mt-6">Select End Sound</h3>
+                <h3 className="mt-6">Timer End Sound</h3>
                 <Select
                   className=""
                   popoverProps={{
@@ -121,8 +121,8 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                       content: "text-white p-0 border-small border-divider dark border-none",
                     },
                   }}
-                  aria-label="Select End Sound"
-                  placeholder="Select End Sound"
+                  aria-label="Timer End Sound"
+                  placeholder="Timer End Sound"
                   defaultSelectedKeys={[selectedEndSound]}
                   onChange={(event) => setSelectedEndSound(event.target.value)} 
                   value={selectedEndSound}
@@ -149,7 +149,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                   ))}
                 </Select>
 
-                <h3 className="mt-6">Choose GIF Display</h3>
+                <h3 className="mt-6">Focus Scene</h3>
                 <Select 
                   className=""
                   popoverProps={{
@@ -158,8 +158,8 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                       content: "text-white p-0 border-small border-divider dark border-none",
                     },
                   }}
-                  aria-label="Select Background Gif"
-                  placeholder="Select Background Gif"
+                  aria-label="Focus Scene"
+                  placeholder="Focus Scene"
                   onChange={(event) => setSelectedGif(event.target.value)} 
                   value={selectedGif}
                   defaultSelectedKeys={[selectedGif]}
@@ -176,7 +176,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                     </SelectItem>
                   ))}
                 </Select>
-                <h3 className="mt-6">Choose Background</h3>
+                <h3 className="mt-6">Background Effects</h3>
                 <Select 
                   className=""
                   popoverProps={{
@@ -185,7 +185,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                       content: "text-white p-0 border-small border-divider dark border-none",
                     },
                   }}
-                  aria-label="Choose Background"
+                  aria-label="Background Effects"
                   placeholder="Choose Background"
                   onChange={(event) => setSelectedBackground(event.target.value)} 
                   value={selectedBackground}
