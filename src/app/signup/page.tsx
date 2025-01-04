@@ -47,7 +47,7 @@ const onEmailSignUpButtonClick = useCallback(async () => {
   }, [email, password, router]);
 
   return (
-    <div className="p-5 w-full h-full min-h-screen mx-auto flex flex-col bg-darkaccent justify-center gap-10">
+    <div className="p-5 w-full h-full min-h-screen mx-auto flex flex-col bg-darkaccent justify-center items-center gap-10">
       <Image
         disableSkeleton
         className="dark h-full"

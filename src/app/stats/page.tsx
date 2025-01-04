@@ -490,7 +490,7 @@ const formatTimestamp = (timestamp: string | number) => {
                 className="w-18 h-18 sm:w-26 sm:h-26"
                 alt="User Profile"
                 id="user-profile"
-                src={user?.photoURL || `https://eu.ui-avatars.com/api/?name=${ReplaceSpaces({ input: user?.displayName || "Anonymous" })}&size=250`}
+                src={user?.photoURL || `https://eu.ui-avatars.com/api/?name=${ReplaceSpaces({ input: user?.displayName || "Anonymous" })}&size=95`}
               />
             </div>
             <div className="w-fit h-fit flex flex-col items-center sm:items-start justify-center text-textcolor">
@@ -599,7 +599,7 @@ const formatTimestamp = (timestamp: string | number) => {
         </Card>
       </div>
       
-      <Card className="dark bg-darkaccent w-full py-1 px-1 h-full">
+      <Card className="dark bg-darkaccent w-full py-1 px-1 h-[600px] md:h-[500px] overflow-hidden">
         <CardBody className="relative dark flex flex-col items-center justify-start md:justify-center">
           <div className="w-full h-full">
             <LineChart data={filteredSessionsData} />
