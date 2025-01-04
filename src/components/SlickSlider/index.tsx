@@ -2,7 +2,7 @@ import React, { useState, useRef, TouchEvent, MouseEvent } from 'react';
 
 // Define our images
 const sliderImages = [
-  './images/slide1.jpg',
+  './images/stats-slider1.png',
   './images/slide2.jpg',
   './images/slide3.jpg',
   './images/slide4.jpg',
@@ -99,7 +99,7 @@ const SlickSlider = ({ images = sliderImages }) => {
         
       >
         <div
-          className="flex transition-transform duration-300 ease-out h-full"
+          className="flex transition-transform duration-300 ease-out h-full w-fit"
           style={{
             transform: `translateX(calc(-${currentIndex * 100}% + ${dragPosition}px))`
           }}
@@ -112,7 +112,7 @@ const SlickSlider = ({ images = sliderImages }) => {
               <img
                 src={image}
                 alt={`Slide ${index + 1}`}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-contain rounded-lg"
               />
             </div>
           ))}
