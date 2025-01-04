@@ -223,7 +223,7 @@ const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').t
                     </div>
                     )}
                 </div>
-                <div className="flex flex-row gap-1 items-center justify-between">
+                <div className="flex flex-row gap-1 items-center justify-end">
                     <p className="text-textcolor text-[12px] capitalize">Status is</p> 
                     <Dropdown className="dark " 
                         classNames={{
