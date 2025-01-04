@@ -157,7 +157,7 @@ export default function Home() {
               autoPlay
               onContextMenu={handleContextMenu}
               className="object-contain w-full h-full rounded-xl"
-              src="/prism-timer-vid-tiny.mp4"
+              src="/prism-timer-vid-tiny.webm"
               
             />
           </div>
