@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useRef, useEffect } from 'react';
-import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { Button, Select, SelectItem, Image } from "@nextui-org/react";
 import { get } from "lodash";
@@ -169,7 +168,7 @@ export default function Home() {
               
             />
           </div>
-          <div id="features-section" className="w-full h-full flex flex-col sm:flex-row justify-center items-center gap-0 sm:gap-2">
+          <div id="features-section" className="w-full h-full flex flex-col sm:flex-row justify-center items-center gap-0 sm:gap-2 py-10">
             <h2 className="text-center text-white text-5xl font-semibold">So many features to </h2>
             <h2 className="text-center text-5xl moving-text-gradient font-semibold">explore</h2>
           </div>
@@ -293,8 +292,8 @@ export default function Home() {
             
           </div>
           <div className=" flex flex-col sm:flex-row justify-between items-center w-full gap-4 py-16">
-            <div className="w-full h-full flex flex-col gap-2">
-              <div className="w-full h-full flex flex-col lg:flex-row justify-center items-center gap-0 lg:gap-2 py-10">
+            <div className="w-full h-full flex flex-col gap-2 py-6">
+              <div className="w-full h-full flex flex-col lg:flex-row justify-center items-center gap-0 lg:gap-2 ">
                 <h2 className="text-center text-white text-3xl lg:text-5xl font-semibold">Get started for</h2>
                 <h2 className="text-center text-3xl lg:text-5xl moving-text-gradient font-semibold">free</h2>
               </div>

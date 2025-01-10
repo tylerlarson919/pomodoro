@@ -37,7 +37,7 @@ export default function Header() {
             className="w-full rounded-none"
             alt="Focus Flow Logo"
             src="./logo/focus-flow-icon-white.png"
-            height={50}
+            height={40}
           />
           <div className="flex flex-row gap-4 items-center justify-center">
             <Link onPress={featuresClick} className="text-white">Features</Link>
