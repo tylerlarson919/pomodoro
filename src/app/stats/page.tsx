@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState, useMemo } from "react";
-import { auth, getSessions } from "../../../firebase";
+import { auth, getSessions, isUserPaidOrTrial } from "../../../firebase";
 import {
   Table,
   TableHeader,
@@ -54,6 +54,7 @@ type ReplaceSpacesProps = {
 const Stats = () => {
   const [sessionsData, setSessionsData] = useState<Session[]>([]);
   const [filteredSessionsData, setFilteredSessionsData] = useState<Session[]>([]);
+  const router = useRouter();
 
   const [user, setUser] = useState<User | null>(null);
   const [avgTimeValue, setAvgTimeValue] = useState(0);
@@ -62,6 +63,7 @@ const Stats = () => {
   const [isFilterMenuOpen, setisFilterMenuOpen] = useState(false);
   const [isFilterActive, setisFilterActive] = useState(false);
   const [isSortMenuOpen, setisSortMenuOpen] = useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   // Unused settings props:
    const [selectedGif, setSelectedGif] = useState<string>('');
@@ -93,6 +95,30 @@ const Stats = () => {
     selectedBackground,
     isStarsSelected,
   };
+
+    useEffect(() => {
+      const checkUserStatus = async () => {
+        const user = auth.currentUser; // Check if a user is currently logged in
+  
+        // Redirect to home if not logged in
+        if (!user) {
+          router.push('/');
+          return; // Exit the function early to prevent further checks
+        }
+  
+        const userStatus = await isUserPaidOrTrial();
+  
+        // Check if the current pathname is either /stats or /timer
+        if (!userStatus) {
+          console.log("User is not paid or in a trial. Redirecting");
+        } else {
+          console.log("User is paid or in a trial. Enjoy!");
+          setLoading(false);
+        }
+      };
+  
+      checkUserStatus();
+    }, []);
 
   useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {

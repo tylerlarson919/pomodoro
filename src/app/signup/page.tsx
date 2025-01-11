@@ -1,7 +1,7 @@
 "use client";
 import type { NextPage } from "next";
-import { useState, useCallback } from "react";
-import { auth, signInWithGoogle } from "../../../firebase";
+import { useState, useCallback, useEffect } from "react";
+import { auth, editSettings, signInWithGoogle, doesUserTrialStartDateExist } from "../../../firebase";
 import {
     signInWithPopup,
     signInWithEmailAndPassword,
@@ -15,23 +15,45 @@ import {
   const SignUp: NextPage = () => {
 
   const [email, setEmail] = useState("");
-   const [password, setPassword] = useState("");
-   const [loading, setLoading] = useState(false);
-   const [error, setError] = useState<string | null>(null);
-   const router = useRouter();
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
- 
+  
+  const routeToTheRightPage = () => {
+    const query = new URLSearchParams(window.location.search);
+    if (query.has("getStarted")) {
+      router.push("/get-started");
+    } else {
+      router.push("/timer");
+    }
+  };
+
+
+  const handleTrial = useCallback(async () => {
+    const userExist = await doesUserTrialStartDateExist(); // Await the result
+  
+    if (userExist) {
+      router.push("/timer");
+    } else {
+      // Set the trialStartDate for a new user
+      await editSettings({ trialStartDate: new Date(), isPaidUser: false });
+      console.log("Trial started for the user.");
+    }
+  }, []);  
  
  
  const loginWithGoogle = useCallback(async () => {
     try {
       const result = await signInWithGoogle();
       console.log("sign-in-form.tsx | result", result);
-      router.push("/timer"); // Redirect to /app
+      handleTrial();
+      routeToTheRightPage(); // Redirect
     } catch (error) {
       console.log("sign-in-form | ERROR", error);
     }
-  }, [router]);
+  }, []);
 
 const onEmailSignUpButtonClick = useCallback(async () => {
     try {
@@ -40,11 +62,12 @@ const onEmailSignUpButtonClick = useCallback(async () => {
       }
   
       const result = await createUserWithEmailAndPassword(auth, email, password);
-      router.push("/timer"); // Redirect to /app
+      handleTrial();
+      routeToTheRightPage(); // Redirect
     } catch (error) {
       console.log("sign-in-form.tsx | ERROR", error);
     }
-  }, [email, password, router]);
+  }, [email, password]);
 
   return (
     <div className="p-5 w-full h-full min-h-screen mx-auto flex flex-col bg-darkaccent justify-center items-center gap-10">

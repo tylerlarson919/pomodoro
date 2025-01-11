@@ -60,6 +60,67 @@ export const signInWithEmailAndPassword = async (email, password) => {
   }
 };
 
+// Function to determine if a user trialStartDate exists
+export const doesUserTrialStartDateExist = async () => {
+  const user = auth.currentUser;
+  if (user) {
+    const userSettingsRef = doc(db, "podo", user.uid, "settings", "userSettings");
+    const settingsDoc = await getDoc(userSettingsRef);
+
+    if (settingsDoc.trialStartDate) {
+      // Update existing settings
+      return true;
+    } else {
+      return false;
+    }
+  } else {
+    console.log("No user is currently logged in.");
+  }
+};
+
+// Function to check if the user is paid or currenently within their trial period
+export const isUserPaidOrTrial = async () => {
+  const user = auth.currentUser;
+  if (user) {
+    const userSettingsRef = doc(db, "podo", user.uid, "settings", "userSettings");
+    const settingsDoc = await getDoc(userSettingsRef);
+    
+    // Ensure the settings document exists
+    if (!settingsDoc.exists()) {
+      console.log("User settings document does not exist.");
+      return false;
+    }
+
+    const data = settingsDoc.data();
+
+    // Access values correctly based on the Firestore structure
+    const isPaidUser = data.isPaidUser; // Access booleanValue for isPaidUser
+    const trialStartDate = data.trialStartDate ? data.trialStartDate.timestampValue : null; // Access timestampValue for trialStartDate
+
+    let isInTrial = false; // Default value for isInTrial
+
+    // Check if trialStartDate exists
+    if (trialStartDate) {
+      // Convert trialStartDate to a Date object
+      const trialStartDateObj = new Date(trialStartDate);
+      // Calculate trialEndDate
+      const trialEndDate = new Date(trialStartDateObj);
+      trialEndDate.setDate(trialEndDate.getDate() + 7); // Add 7 days to trialStartDate
+
+      // Check if the trial period has ended
+      isInTrial = trialEndDate >= new Date(); // true if still in trial
+    }
+
+    // Return true if the user is either paid or in trial
+    return isPaidUser || isInTrial; 
+  } else {
+    console.log("No user is currently logged in.");
+    return false; // Return false if no user is logged in
+  }
+};
+
+
+
 // Function to manage user settings
 export const editSettings = async (settings) => {
   const user = auth.currentUser;

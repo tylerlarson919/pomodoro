@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import { useEffect, useMemo, useState, useRef, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { Image, Modal, ModalBody, ModalContent, Button, Input, Skeleton } from "@nextui-org/react";
 import { sounds, gifs, endSounds, backgrounds } from "../../components/SettingsModal/assets";
 import ParticlesStars from "@/components/ui/particles"
 import { getFirestore, doc, getDoc } from "firebase/firestore"; // Add this import
 import { onAuthStateChanged, User, getAuth } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import { auth, addSession, endSession, getSessions, editSettings } from "../../../firebase";
+import { auth, addSession, endSession, getSessions, editSettings, isUserPaidOrTrial } from "../../../firebase";
 import UHeaderIcon from "@/components/userHeaderIcon";
 import StatsHeader from "@/components/StatsHeader";
 import Meteors from "@/components/ui/meteors";
@@ -18,6 +18,8 @@ import TimerPopupModal from "@/components/TimerPopupModal";
 import EndSessionButton from "@/components/EndSessionButton";
 import { HoverBorderGradient  } from "@/components/ui/hover-border-gradient";
 import TimerSelector from "@/components/ui/timer-selector";
+import LoadingPage from "@/components/LoadingPage"
+
 
 const Timer = () => {
   const db = getFirestore();
@@ -44,6 +46,7 @@ const Timer = () => {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [popupType, setPopupType] = React.useState<"end" | "continue">("end");
   const [user, setUser] = useState<User | null>(null);
+  const [isLoadingPageLoading, setIsLoadingPageLoading] = React.useState(false);
   const router = useRouter();
 
 
@@ -131,19 +134,7 @@ const Timer = () => {
   }, []);
   
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        console.log("User is not authenticated, redirecting to login.");
-        router.push("/login"); // Redirect to login if not signed in
-      } else {
-        setUser(user);
-        await fetchUserSettings(user.uid); // Fetch user settings if authenticated
-      }
-    });
 
-    return () => unsubscribe(); // Cleanup on unmount
-  }, [router]);
 
   const timerOptions = [
     { label: "30 secs", value: 0.5 * 60 * 1000 },
@@ -350,8 +341,47 @@ const Timer = () => {
     return `${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
+
+
+  useEffect(() => {
+    const checkUserStatus = onAuthStateChanged(auth, async (user) => {
+      // Redirect to home if not logged in
+      if (!user) {
+        console.log("User is not authenticated, redirecting to login.");
+        router.push('/login');
+        return; // Exit the function early to prevent further checks
+      } else {
+        await fetchUserSettings(user.uid);
+        setUser(user);
+      }
+  
+      const userStatus = await isUserPaidOrTrial();
+
+      // Check if the current pathname is either /stats or /timer
+      if (!userStatus) {
+        console.log("User is not paid or in a trial. Redirecting");
+        // Here you can add your redirect logic if needed
+        // Example: router.push('/somewhere-else');
+      } else {
+        console.log("User is paid or in a trial. Enjoy!");
+      }
+  
+      // Hide loading indicator once checks are complete
+      setIsLoadingPageLoading(false);
+    });
+  
+    return () => {
+      // Cleanup: Unsubscribe from the auth listener
+      checkUserStatus(); 
+    };
+  }, [router]);
+  
+
+    
+
   return (
     <div className="flex flex-col items-center justify-center bg-dark1 h-screen overflow-hidden">
+      <LoadingPage isPageLoading={isLoadingPageLoading}/>
       <div
         className={`flex w-full text-textcolor fade-gradual ${
           isStarsSelected ? "" : "hidden"

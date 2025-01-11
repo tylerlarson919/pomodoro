@@ -3,7 +3,6 @@
 import React, { useRef, useEffect } from 'react';
 import { useState } from "react";
 import { Button, Select, SelectItem, Image } from "@nextui-org/react";
-import { get } from "lodash";
 import Header from "@/components/Header";
 import PricingSection from "@/components/PricingSection";
 import ParticlesStars from "@/components/ui/particles"
@@ -62,10 +61,6 @@ export default function Home() {
     setIsAudioPlaying(false);
     setSelectedBackgroundSound(new Set<string>(e.target.value.split(",")));
   };
-
-  useEffect(() => {
-    console.log("Selected GIF:", selectedBackgroundIndex);
-  }, [selectedBackgroundIndex]);
 
   const getStarted = () => {
     window.location.href = "/signup";

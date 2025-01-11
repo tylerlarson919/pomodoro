@@ -51,7 +51,7 @@ export default function Header() {
               <Button className="dark pl-4"
                 color="secondary"
                 variant="shadow"
-                href="/login"
+                href="/signup"
               >
                 Get Started
 

@@ -89,3 +89,36 @@ body {
   -webkit-text-fill-color: transparent;
   animation: textGradientFlow 10s ease infinite;
 }
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #939393; /* Change to your desired dot color */
+  margin: 0 5px;
+}
+
+@keyframes scale-dot {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.5); /* Change to desired scale */
+  }
+}
+
+/* Animation classes */
+.animate-dot1 {
+  animation: scale-dot 600ms ease-in-out infinite;
+  animation-delay: 0s; /* No delay for the first dot */
+}
+
+.animate-dot2 {
+  animation: scale-dot 600ms ease-in-out infinite;
+  animation-delay: 200ms; /* Delay for the second dot */
+}
+
+.animate-dot3 {
+  animation: scale-dot 600ms ease-in-out infinite;
+  animation-delay: 400ms; /* Delay for the third dot */
+}

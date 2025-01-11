@@ -1,8 +1,8 @@
-
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { NextUIProvider } from '@nextui-org/react';
+import Head from "next/head";
 
 
 const geistSans = localFont({
@@ -26,8 +26,12 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+
   return (
       <html lang="en">
+        <Head>
+          <script src="https://js.stripe.com/v3/"></script>
+        </Head>
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased w-full h-full bg-dark1`}
         >

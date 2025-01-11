@@ -114,8 +114,6 @@ type ReplaceSpacesProps = {
 
     const onAvatarClick = () => {
         setIsDropdownVisable(prevstate => !prevstate);
-        console.log("dropdown clicked");
-
     };
 
     return (

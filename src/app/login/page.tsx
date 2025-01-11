@@ -1,13 +1,8 @@
 "use client";
 import type { NextPage } from "next";
 import { useState, useCallback } from "react";
-import { auth, signInWithGoogle } from "../../../firebase";
-import {
-  signInWithPopup,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  AuthError, GoogleAuthProvider, User 
-} from "firebase/auth";
+import { auth, signInWithGoogle, editSettings, doesUserTrialStartDateExist } from "../../../firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Input, Image, Button, Divider } from "@nextui-org/react";
 import Link from "next/link";
@@ -18,40 +13,37 @@ const Login: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-  const [isLogin, setIsLogin] = useState(false)
-  const [user, setUser] = useState<User | null>(null);
 
+const handleTrial = useCallback(async () => {
+    const userExist = await doesUserTrialStartDateExist(); // Await the result
+  
+    if (userExist) {
+      router.push("/timer");
+    } else {
+      // Set the trialStartDate for a new user
+      await editSettings({ trialStartDate: new Date(), isPaidUser: false });
+      console.log("Trial started for the user.");
+    }
+  }, []);  
 
-  const handleAuthError = (err: unknown) => {
-    const error = err as AuthError;
-    console.error("Full error:", error);
-
-    switch (error.code) {
-      case 'auth/popup-closed-by-user':
-        setError("Google sign-in was cancelled.");
-        break;
-      case 'auth/internal-error':
-        setError("An internal authentication error occurred. Please check your configuration.");
-        break;
-      case 'auth/invalid-credential':
-        setError("Invalid credentials. Please try again.");
-        break;
-      case 'auth/network-request-failed':
-        setError("Network error. Please check your internet connection.");
-        break;
-      default:
-        setError("Google login failed. Please try again.");
+  const routeToTheRightPage = () => {
+    const query = new URLSearchParams(window.location.search);
+    if (query.has("getStarted")) {
+      router.push("/get-started");
+    } else {
+      router.push("/timer");
     }
   };
 
   const loginWithGoogle = useCallback(async () => {
     try {
       const result = await signInWithGoogle();
-      router.push("/timer"); // Redirect to /timer
+      handleTrial();
+      routeToTheRightPage(); // Redirect
     } catch (error) {
       console.log("sign-in-form | ERROR", error);
     }
-  }, [router]);
+  }, []);
   
   
   const onEmailLoginButtonClick = useCallback(async () => {
@@ -62,11 +54,12 @@ const Login: NextPage = () => {
   
       const result = await signInWithEmailAndPassword(auth, email, password);
       console.log("sign-in-form.tsx | result", result);
-      router.push("/timer"); // Redirect to /app
+      handleTrial();
+      routeToTheRightPage(); // Redirect
     } catch (error) {
       console.log("sign-in-form.tsx | ERROR", error);
     }
-  }, [email, password, router]);
+  }, [email, password]);
   
   
   
