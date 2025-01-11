@@ -45,8 +45,8 @@ export default function Header() {
             height={40}
           />
           <div className="flex flex-row gap-4 items-center justify-center">
-            <Link onPress={featuresClick} className="text-white">Features</Link>
-            <Link onPress={pricingClick} className="text-white">Pricing</Link>
+            <Link onPress={featuresClick} className="text-white hover:cursor-pointer">Features</Link>
+            <Link onPress={pricingClick} className="text-white hover:cursor-pointer">Pricing</Link>
             {user ? (
             <div className="flex flex-row gap-4 items-center justify-center pr-10">
               <UserHeaderIconMainPage />

@@ -5,7 +5,7 @@ import dynamic from "next/dynamic";
 import { Avatar, AvatarIcon } from "@nextui-org/avatar";
 import { Dropdown, DropdownTrigger, DropdownMenu, DropdownItem } from "@nextui-org/dropdown";
 import { onAuthStateChanged, User, signOut } from "firebase/auth"; // Import signOut
-import { auth, getStreak } from "../../../firebase"; // Adjust the path if necessary
+import { auth, getStreak, isUserPaid } from "../../../firebase"; // Adjust the path if necessary
 import { useRouter } from "next/navigation";
 import { add, set } from "lodash";
 import SettingsModal from "../SettingsModal";
@@ -36,6 +36,7 @@ type ReplaceSpacesProps = {
     const router = useRouter();
     const [currentStreak, setCurrentStreak] = useState<number | null>(null);
     const [isHelpMenuVisible, setIsHelpMenuVisible] = useState(false);
+    const [isUserPaidLocal, setIsUserPaidLocal] = useState(false);
 
     useEffect(() => {
 
@@ -55,6 +56,21 @@ type ReplaceSpacesProps = {
             console.error("Failed to fetch streak", error);
         }
     };
+
+
+    useEffect(() => {
+        const checkUserStatus = onAuthStateChanged(auth, async (user) => {
+
+      
+          const userStatus = await isUserPaid();
+          setIsUserPaidLocal(userStatus);      
+        });
+      
+        return () => {
+          // Cleanup: Unsubscribe from the auth listener
+          checkUserStatus(); 
+        };
+      }, [router]);
 
 
     useEffect(() => {
@@ -81,7 +97,7 @@ type ReplaceSpacesProps = {
 
     const upgradePlan = () => {
         setIsDropdownVisable(false);
-        router.push("/upgrade");
+        router.push("/get-started");
     };
 
     const ReplaceSpaces: React.FC<ReplaceSpacesProps> = ({ input }) => {
@@ -169,13 +185,17 @@ type ReplaceSpacesProps = {
                             <SettingsIcon color="#939393" className="w-5 h-5"/>
                             <p>Settings</p>
                         </div>
-                        <div
-                            className="p-2 text-textcolor cursor-pointer hover:bg-darkaccent2 text-sm font-semibold cursor-pointer rounded-lg gap-2 flex flex-row items-center"
-                            onClick={upgradePlan}
-                        >
-                            <RepeatIcon color="#939393" className="w-5 h-5"/>
-                            Upgrade Plan
-                        </div>
+                        {isUserPaidLocal ?(
+                            <div
+                                className="p-2 text-textcolor cursor-pointer hover:bg-darkaccent2 text-sm font-semibold cursor-pointer rounded-lg gap-2 flex flex-row items-center"
+                                onClick={upgradePlan}
+                            >
+                                <RepeatIcon color="#939393" className="w-5 h-5"/>
+                                Upgrade Plan
+                            </div>
+                        ) : (
+                            null
+                        )} 
                         <div
                             className="p-2 text-textcolor cursor-pointer hover:bg-darkaccent2 text-sm font-semibold cursor-pointer rounded-lg gap-2 flex flex-row items-center"
                             onClick={handleLogout}

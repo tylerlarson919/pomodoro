@@ -7,6 +7,14 @@ import { Button, Tabs, Tab } from "@nextui-org/react";
 
 const PricingSection: NextPage = () => {
 
+
+    const getStarted = () => {
+        window.location.href = "/get-started";
+      };
+      const getStartedFree = () => {
+        window.location.href = "/signup";
+      };
+
     return (
         <div className="w-full h-full flex flex-col">
             <Tabs aria-label="Options" className="dark z-10" classNames={{tabList: "bg-darkaccent3", base: "justify-center"}}>
@@ -28,7 +36,7 @@ const PricingSection: NextPage = () => {
                                     <p>Limited pictures and sounds</p>
                                 </div>
                             </div>
-                            <Button className="dark rounded-xl w-full" variant="faded" color="default" size="sm">Get Started</Button>
+                            <Button className="dark rounded-xl w-full" variant="faded" color="default" size="sm" onPress={getStartedFree}>Get Started</Button>
                         </div>
                         <div className="z-10 border-2 sticky-card-pricing border-darkaccent3 border-2 rounded-2xl p-4 w-full flex flex-col items-center justify-between gap-6 h-[300px]">
                             <div className="flex flex-col text-center items-center justify-center gap-4">
@@ -53,7 +61,7 @@ const PricingSection: NextPage = () => {
                                     <p>Upload your own photos to use</p>
                                 </div>
                             </div>
-                            <Button className="dark rounded-xl w-full" variant="faded" color="default" size="sm">Get Started</Button>
+                            <Button className="dark rounded-xl w-full" variant="faded" color="default" size="sm" onPress={getStarted}>Get Started</Button>
                         </div>
                     </div>
                 </Tab>
@@ -75,7 +83,7 @@ const PricingSection: NextPage = () => {
                                     <p>Limited pictures and sounds</p>
                                 </div>
                             </div>
-                            <Button className="dark rounded-xl w-full" variant="faded" color="default" size="sm">Get Started</Button>
+                            <Button className="dark rounded-xl w-full" variant="faded" color="default" size="sm" onPress={getStartedFree}>Get Started</Button>
                         </div>
                         <div className="z-10 border-2 sticky-card-pricing border-darkaccent3 border-2 rounded-2xl p-4 w-full flex flex-col items-center justify-between gap-6 h-[300px]">
                             <div className="flex flex-col text-center items-center justify-center gap-4">
@@ -100,7 +108,7 @@ const PricingSection: NextPage = () => {
                                     <p>Upload your own photos to use</p>
                                 </div>
                             </div>
-                            <Button className="dark rounded-xl w-full" variant="faded" color="default" size="sm">Get Started</Button>
+                            <Button className="dark rounded-xl w-full" variant="faded" color="default" size="sm" onPress={getStarted}>Get Started</Button>
                         </div>
                     </div>
                 </Tab>

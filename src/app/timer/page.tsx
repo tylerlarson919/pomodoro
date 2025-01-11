@@ -359,9 +359,7 @@ const Timer = () => {
 
       // Check if the current pathname is either /stats or /timer
       if (!userStatus) {
-        console.log("User is not paid or in a trial. Redirecting");
-        // Here you can add your redirect logic if needed
-        // Example: router.push('/somewhere-else');
+        router.push('/');
       } else {
         console.log("User is paid or in a trial. Enjoy!");
       }

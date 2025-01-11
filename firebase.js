@@ -119,6 +119,29 @@ export const isUserPaidOrTrial = async () => {
   }
 };
 
+export const isUserPaid = async () => {
+  const user = auth.currentUser;
+  if (user) {
+    const userSettingsRef = doc(db, "podo", user.uid, "settings", "userSettings");
+    const settingsDoc = await getDoc(userSettingsRef);
+    
+    // Ensure the settings document exists
+    if (!settingsDoc.exists()) {
+      console.log("User settings document does not exist.");
+      return false;
+    }
+
+    const data = settingsDoc.data();
+
+    // Access values correctly based on the Firestore structure
+    const isPaidUser = data.isPaidUser; // Access booleanValue for isPaidUser
+    
+    return isPaidUser; 
+  } else {
+    console.log("No user is currently logged in.");
+    return false; // Return false if no user is logged in
+  }
+};
 
 
 // Function to manage user settings

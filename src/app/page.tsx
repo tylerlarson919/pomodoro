@@ -296,7 +296,7 @@ export default function Home() {
             </div>
             <div className="flex flex-col gap-2 items-center justify-start max-w-[350px]">
               <p className="text-textcolor text-center sm:text-left z-10">Start your journey to focusing today. Join FocusFlow for free and unlock a new world of focus insights.</p>
-              <Button color="secondary" variant="shadow" className="z-10 w-full">
+              <Button color="secondary" variant="shadow" className="z-10 w-full" onPress={getStarted}>
                 Start your free trial
               </Button>
             </div>

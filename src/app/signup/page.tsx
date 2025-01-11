@@ -71,13 +71,16 @@ const onEmailSignUpButtonClick = useCallback(async () => {
 
   return (
     <div className="p-5 w-full h-full min-h-screen mx-auto flex flex-col bg-darkaccent justify-center items-center gap-10">
-      <Image
-        disableSkeleton
-        className="dark h-full"
-        src="./logo/focus-flow-logo-white.png"
-        alt="Focus Flow logo"
-        width={150}
-      />
+      <div className="absolute top-0 w-full flex justify-center pt-4">
+        <Image
+            onClick={() => router.push("/")}
+            disableSkeleton
+            className="dark height-fit hover:cursor-pointer"
+            src="./logo/focus-flow-logo-white.png"
+            alt="Focus Flow logo"
+            width={130}
+        />
+      </div>
       <div className="flex flex-col items-center justify-center gap-3 max-w-md mx-auto">
           <h1 className="text-4xl font-bold text-white">Sign Up</h1>
           <div className="flex flex-row gap-1">

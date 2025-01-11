@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Avatar } from "@nextui-org/avatar";
 import { onAuthStateChanged, User, signOut } from "firebase/auth"; // Import signOut
-import { auth } from "../../../firebase"; // Adjust the path if necessary
+import { auth, isUserPaid } from "../../../firebase"; // Adjust the path if necessary
 import { useRouter } from "next/navigation";
 import SettingsIcon from "../../../public/icons/settings";
 import LogOutIcon from "../../../public/icons/log-out";
@@ -25,7 +25,7 @@ type ReplaceSpacesProps = {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const router = useRouter();
     const [currentStreak, setCurrentStreak] = useState<number | null>(null);
-    const [isHelpMenuVisible, setIsHelpMenuVisible] = useState(false);
+    const [isUserPaidLocal, setIsUserPaidLocal] = useState(false);
 
     useEffect(() => {
 
@@ -37,7 +37,19 @@ type ReplaceSpacesProps = {
     }, []);
 
 
+useEffect(() => {
+        const checkUserStatus = onAuthStateChanged(auth, async (user) => {
 
+      
+          const userStatus = await isUserPaid();
+          setIsUserPaidLocal(userStatus);      
+        });
+      
+        return () => {
+          // Cleanup: Unsubscribe from the auth listener
+          checkUserStatus(); 
+        };
+      }, [router]);
 
     useEffect(() => {
         if (isModalOpen) {
@@ -58,7 +70,7 @@ type ReplaceSpacesProps = {
 
     const upgradePlan = () => {
         setIsDropdownVisable(false);
-        router.push("/upgrade");
+        router.push("/get-started");
     };
 
     const timerClick = () => {
@@ -125,13 +137,17 @@ type ReplaceSpacesProps = {
                             <ClockIcon color="#939393" className="w-5 h-5"/>
                             Go to Timer
                         </div>
-                        <div
-                            className="p-2 text-textcolor cursor-pointer hover:bg-darkaccent2 text-sm font-semibold cursor-pointer rounded-lg gap-2 flex flex-row items-center"
-                            onClick={upgradePlan}
-                        >
-                            <RepeatIcon color="#939393" className="w-5 h-5"/>
-                            Upgrade Plan
-                        </div>
+                        {isUserPaidLocal ?(
+                            <div
+                                className="p-2 text-textcolor cursor-pointer hover:bg-darkaccent2 text-sm font-semibold cursor-pointer rounded-lg gap-2 flex flex-row items-center"
+                                onClick={upgradePlan}
+                            >
+                                <RepeatIcon color="#939393" className="w-5 h-5"/>
+                                Upgrade Plan
+                            </div>
+                        ) : (
+                            null
+                        )} 
                         <div
                             className="p-2 text-textcolor cursor-pointer hover:bg-darkaccent2 text-sm font-semibold cursor-pointer rounded-lg gap-2 flex flex-row items-center"
                             onClick={handleLogout}
