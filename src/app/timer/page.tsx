@@ -359,6 +359,7 @@ const Timer = () => {
 
       // Check if the current pathname is either /stats or /timer
       if (!userStatus) {
+        console.log("userStatus is invalid, redirecting to home.");
         router.push('/');
       } else {
         console.log("User is paid or in a trial. Enjoy!");

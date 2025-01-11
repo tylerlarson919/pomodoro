@@ -137,7 +137,7 @@ useEffect(() => {
                             <ClockIcon color="#939393" className="w-5 h-5"/>
                             Go to Timer
                         </div>
-                        {isUserPaidLocal ?(
+                        {!isUserPaidLocal ? (
                             <div
                                 className="p-2 text-textcolor cursor-pointer hover:bg-darkaccent2 text-sm font-semibold cursor-pointer rounded-lg gap-2 flex flex-row items-center"
                                 onClick={upgradePlan}
