@@ -190,7 +190,7 @@ const Timer = () => {
       
       setSelectedBackground(settings.selectedBackground || "");
 
-      setSelectedGif(settings.selectedGif || "/campfire1.gif");
+      setSelectedGif(settings.selectedGif || "/campfire.gif");
 
       setIsStarsSelected(settings.selectedBackground === "Stars");
       setIsSnowSelected(settings.selectedBackground === "Snow");
