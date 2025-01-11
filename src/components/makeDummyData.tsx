@@ -1,7 +1,5 @@
 import { addSession } from "../../firebase";
 
-const MakeDummyData = () => {
-
 const generateRandomSessions = () => {
   const timerLengths = [5, 15, 20, 30, 45, 60, 90, 120];
   const timerNames = [
@@ -56,9 +54,5 @@ const bulkAddSessions = async () => {
   }
 };
 
-return (
-  <button onClick={bulkAddSessions}>Generate Dummy Data</button>
-);
-
-};
-export default MakeDummyData;
+// Export the bulkAddSessions function
+export default bulkAddSessions;

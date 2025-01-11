@@ -63,20 +63,38 @@ export const signInWithEmailAndPassword = async (email, password) => {
 // Function to determine if a user trialStartDate exists
 export const doesUserTrialStartDateExist = async () => {
   const user = auth.currentUser;
-  if (user) {
+
+  if (!user) {
+    console.log("No user is currently logged in.");
+    return false;
+  }
+
+  try {
     const userSettingsRef = doc(db, "podo", user.uid, "settings", "userSettings");
+
+    // Fetch the document from Firestore
     const settingsDoc = await getDoc(userSettingsRef);
 
-    if (settingsDoc.trialStartDate) {
-      // Update existing settings
-      return true;
+    if (settingsDoc.exists()) {
+      const settingsData = settingsDoc.data();
+
+      // Check if trialStartDate exists and is valid
+      if (settingsData.trialStartDate) {
+        return true; // Valid trialStartDate exists
+      } else {
+        console.log("Trial start date does not exist.");
+        return false;
+      }
     } else {
+      console.log("Settings document does not exist.");
       return false;
     }
-  } else {
-    console.log("No user is currently logged in.");
+  } catch (error) {
+    console.error("Error checking trial start date:", error);
+    return false;
   }
 };
+
 
 // Function to check if the user is paid or currenently within their trial period
 export const isUserPaidOrTrial = async () => {
@@ -95,21 +113,19 @@ export const isUserPaidOrTrial = async () => {
 
     // Access values correctly based on the Firestore structure
     const isPaidUser = data.isPaidUser; // Access booleanValue for isPaidUser
-    const trialStartDate = data.trialStartDate ? data.trialStartDate.timestampValue : null; // Access timestampValue for trialStartDate
+    const trialStartDate = data.trialStartDate || null;
 
     let isInTrial = false; // Default value for isInTrial
 
     // Check if trialStartDate exists
     if (trialStartDate) {
-      // Convert trialStartDate to a Date object
-      const trialStartDateObj = new Date(trialStartDate);
-      // Calculate trialEndDate
+      // Convert the Firestore Timestamp to a Date object
+      const trialStartDateObj = new Date(trialStartDate.seconds * 1000); 
       const trialEndDate = new Date(trialStartDateObj);
-      trialEndDate.setDate(trialEndDate.getDate() + 7); // Add 7 days to trialStartDate
-
-      // Check if the trial period has ended
-      isInTrial = trialEndDate >= new Date(); // true if still in trial
+      trialEndDate.setDate(trialEndDate.getDate() + 7);
+      isInTrial = trialEndDate >= new Date(); // Check if still in trial
     }
+    
 
     // Return true if the user is either paid or in trial
     return isPaidUser || isInTrial; 

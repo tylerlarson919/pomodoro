@@ -32,22 +32,34 @@ import {
 
 
   const handleTrial = useCallback(async () => {
-    const userExist = await doesUserTrialStartDateExist(); // Await the result
+    try {
+      const userExists = await doesUserTrialStartDateExist();
   
-    if (userExist) {
-      router.push("/timer");
-    } else {
-      // Set the trialStartDate for a new user
-      await editSettings({ trialStartDate: new Date(), isPaidUser: false });
-      console.log("Trial started for the user.");
+      if (userExists) {
+        router.push("/timer");
+      } else {
+        console.log("No valid trial start date found. Setting for the first time...");
+  
+        // Update Firestore with a new trial start date
+        await editSettings((prevSettings: any) => ({
+          ...prevSettings,
+          trialStartDate: new Date().toISOString(), // Store ISO string format
+          isPaidUser: prevSettings?.isPaidUser || false,
+        }));
+  
+        router.push("/timer");
+      }
+    } catch (error) {
+      console.error("Error in handleTrial:", error);
     }
-  }, []);  
+  }, [router]);
+  
+  
  
  
  const loginWithGoogle = useCallback(async () => {
     try {
       const result = await signInWithGoogle();
-      console.log("sign-in-form.tsx | result", result);
       handleTrial();
       routeToTheRightPage(); // Redirect
     } catch (error) {

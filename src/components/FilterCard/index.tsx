@@ -11,10 +11,9 @@ import { Image, Card, CardBody, Dropdown,
     DropdownSection,
     DropdownItem, Button, Selection, DateRangePicker, DatePicker } from "@nextui-org/react";
 import {parseDate} from "@internationalized/date";
-import { set } from "lodash";
 
 export type FilterCardProps = {
-    selectedKeys: Set<string>;
+    selectedKeys: Set<string>;  
     setSelectedKeys: (keys: Set<string>) => void; // Make sure this matches your usage
     selectedFilterTypeKeys1: Set<string>;
     setSelectedFilterTypeKeys1: (keys: Set<string>) => void;
@@ -28,25 +27,17 @@ export type FilterCardProps = {
     setDate: (date: DateValue | null) => void;
     selectedStatusKey: Set<string>;
     setSelectedStatusKey: (keys: Set<string>) => void;
-
   };
-  
-  
-
-
 
 const FontAwesomeIcon = dynamic(() => import('@fortawesome/react-fontawesome').then((mod) => mod.FontAwesomeIcon), {
     ssr: false,
   });
   
   export default function FilterCard(props: FilterCardProps) {
-
-
     const [selectedKeys, setSelectedKeys] = useState<Set<string>>(new Set(["is-relative-to-today"]));
     const [selectedFilterTypeKeys1, setSelectedFilterTypeKeys1] = useState<Set<string>>(new Set(["this"]));
     const [selectedFilterTypeKeys2, setSelectedFilterTypeKeys2] = useState<Set<string>>(new Set(["week"]));
     const [selectedStatusKey, setSelectedStatusKey] = useState<Set<string>>(new Set(["both"]));
-    
     const [removeFilter, setRemoveFilter] = useState(false);
     const [dateRange, setDateRange] = useState<RangeValue<DateValue> | null>(null);
     const [date, setDate] = useState<DateValue | null>(

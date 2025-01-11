@@ -27,8 +27,10 @@ import type {RangeValue} from "@react-types/shared";
 import type {DateValue} from "@react-types/datepicker";
 import LineChart from "@/components/LineChart"  ;
 import UHeaderIcon from "@/components/userHeaderIcon";
-import MakeDummyData from "@/components/makeDummyData";
+import bulkAddSessions from "@/components/makeDummyData";
 import { GlareCard } from "@/components/ui/glare-card";
+import TrialEndedPopupModal from "@/components/TrialEndedPopupModal";
+import LoadingPage from "@/components/LoadingPage"
 
 // Define the type for session data
 type Session = {
@@ -63,7 +65,8 @@ const Stats = () => {
   const [isFilterMenuOpen, setisFilterMenuOpen] = useState(false);
   const [isFilterActive, setisFilterActive] = useState(false);
   const [isSortMenuOpen, setisSortMenuOpen] = useState(false);
-  const [loading, setLoading] = React.useState(false);
+  const [isLoadingPageLoading, setIsLoadingPageLoading] = React.useState(false);
+  const [trialEndedPopup, setTrialEndedPopup] = React.useState(false);
 
   // Unused settings props:
    const [selectedGif, setSelectedGif] = useState<string>('');
@@ -97,28 +100,55 @@ const Stats = () => {
   };
 
     useEffect(() => {
-      const checkUserStatus = async () => {
-        const user = auth.currentUser; // Check if a user is currently logged in
-  
-        // Redirect to home if not logged in
-        if (!user) {
-          router.push('/');
-          return; // Exit the function early to prevent further checks
+        const checkUserStatus = onAuthStateChanged(auth, async (user) => {
+          // Redirect to home if not logged in
+          if (!user) {
+            console.log("User is not authenticated, redirecting to login.");
+            router.push('/login');
+            return; // Exit the function early to prevent further checks
+          } else {
+            await fetchUserSettings(user.uid);
+            setUser(user);
+          }
+      
+          const userStatus = await isUserPaidOrTrial();
+    
+          // Check if the current pathname is either /stats or /timer
+          if (!userStatus) {
+            console.log("userStatus is invalid, Opening popup.");
+            setTrialEndedPopup(true);
+    
+          } else {
+            console.log("User is paid or in a trial. Enjoy!");
+          }
+      
+          // Hide loading indicator once checks are complete
+          setIsLoadingPageLoading(false);
+        });
+      
+        return () => {
+          // Cleanup: Unsubscribe from the auth listener
+          checkUserStatus(); 
+        };
+      }, [router]);
+      
+      // function to handle clicks outside of the popup, when the popup is open
+      useEffect(() => {
+        if (trialEndedPopup) { 
+          // Adding event listener for clicks
+          console.log("Adding event listener for clicks");
+          document.addEventListener('click', handleTrialClick);
+    
+          // Cleanup event listener on component unmount or when trialEndedPopup changes
+          return () => {
+            document.removeEventListener('click', handleTrialClick);
+          };
         }
-  
-        const userStatus = await isUserPaidOrTrial();
-  
-        // Check if the current pathname is either /stats or /timer
-        if (!userStatus) {
-          router.push('/');
-        } else {
-          console.log("User is paid or in a trial. Enjoy!");
-          setLoading(false);
-        }
+      }, [trialEndedPopup, router]);
+    
+      const handleTrialClick = () => {
+        router.push("/get-started");
       };
-  
-      checkUserStatus();
-    }, []);
 
   useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -190,25 +220,30 @@ const Stats = () => {
           const periodMultiplier = selectedFilterTypeKeys1.has("this") ? 0 : -1; // Adjust based on selection
           const timeFrame = selectedFilterTypeKeys2.has("day") ? 1 :
                             selectedFilterTypeKeys2.has("week") ? 7 :
-                            selectedFilterTypeKeys2.has("month") ? 30 : 365;
+                            selectedFilterTypeKeys2.has("month") ? 30 :
+                            365; // Default to year if none selected
       
           let startDate, endDate;
       
           if (selectedFilterTypeKeys2.has("week")) {
-              const currentDay = today.getDay(); // Get the current day (0 = Sunday, 1 = Monday, ..., 6 = Saturday)
-              const sundayOffset = currentDay; // Offset to get to Sunday
-              const endOfWeekOffset = 6 - currentDay; // Offset to get to Saturday
+              const currentDay = today.getDay();
+              const sundayOffset = currentDay; // Days until last Sunday
+              const endOfWeekOffset = 6 - currentDay; // Days until next Saturday
       
-              startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - sundayOffset, 0, 0, 0); // Start of this week (Sunday)
-              endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + endOfWeekOffset, 23, 59, 59); // End of this week (Saturday)
+              // Calculate start and end dates for the current week
+              startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - sundayOffset, 0, 0, 0);
+              endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() + endOfWeekOffset, 23, 59, 59);
           } else if (selectedFilterTypeKeys2.has("month")) {
-              startDate = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0); // Start of this month
-              endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59); // End of this month
+              // Start of this month
+              startDate = new Date(today.getFullYear(), today.getMonth(), 1, 0, 0, 0);
+              // End of this month
+              endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0, 23, 59, 59);
           } else if (selectedFilterTypeKeys2.has("year")) {
-              startDate = new Date(today.getFullYear(), 0, 1, 0, 0, 0); // Start of this year
-              endDate = new Date(today.getFullYear(), 11, 31, 23, 59, 59); // End of this year
-          }
-          else {
+              // Start of this year
+              startDate = new Date(today.getFullYear(), 0, 1, 0, 0, 0);
+              // End of this year
+              endDate = new Date(today.getFullYear(), 11, 31, 23, 59, 59);
+          } else {
               // For day
               startDate = new Date(today.getTime() - (timeFrame * periodMultiplier * 24 * 60 * 60 * 1000));
               endDate = new Date(today.getTime() + (timeFrame * (1 - periodMultiplier) * 24 * 60 * 60 * 1000));
@@ -219,7 +254,7 @@ const Stats = () => {
               month: '2-digit',
               day: '2-digit',
           }).replace(',', ''); // Remove comma for consistency
-          
+      
           const formattedEndDate = endDate.toLocaleString('en-US', {
               year: 'numeric',
               month: '2-digit',
@@ -229,11 +264,13 @@ const Stats = () => {
           const parsedStartDate = parse(formattedStartDate, "MM/dd/yyyy", new Date());
           const parsedEndDate = parse(formattedEndDate, "MM/dd/yyyy", new Date());
       
+          // Filter session data based on calculated start and end dates
           fullFilteredSessionData = statusFlteredSessionData.filter(session => {
-              const sessionEnd = parse(session.endTime, "MM/dd/yy, h:mma", new Date());              
+              const sessionEnd = parse(session.endTime, "MM/dd/yy, h:mma", new Date());
               return sessionEnd >= parsedStartDate && sessionEnd <= parsedEndDate;
           });
       }
+      
       
         // Handle "is", "is-before", and "is-after" filters
         else if (["is", "is-before", "is-after"].some(key => selectedKeys.has(key))) {
@@ -278,8 +315,6 @@ const Stats = () => {
           setFilteredSessionsData(fullFilteredSessionData); 
         };
     };
-
-
         if (removeFilter === true || isFilterActive === false) {
             resetData();
             setisFilterActive(false);
@@ -290,15 +325,11 @@ const Stats = () => {
     
   }, [selectedKeys, selectedFilterTypeKeys1, selectedFilterTypeKeys2, filterType, dateRange, date, isFilterActive, removeFilter, selectedStatusKey, ]);
 
-
-
-
   // Function to set the current month
   const getCurrentMonth = () => {
     const options: Intl.DateTimeFormatOptions = { month: 'long' }; // Specify the type explicitly
     setCurrentMonth(new Date().toLocaleString('default', options));
   };
-
 
   // Use effect for most stats calculations
   useEffect(() => {
@@ -504,6 +535,8 @@ const formatTimestamp = (timestamp: string | number) => {
  
   return (
     <div className="flex flex-col w-full h-full min-h-screen max-h-full items-center justify-start bg-dark1  px-6 lg:px-52 gap-6 pb-6">
+      <TrialEndedPopupModal isPageVisable={trialEndedPopup}/>
+      <LoadingPage isPageLoading={isLoadingPageLoading}/>
       <StatsHeader/>
       <UHeaderIcon onTriggerReload={handleTriggerReload} settingsProps={settingsProps}/>
       <h1 className="text-4xl font-bold text-white pb-2 pt-16 px-2 text-center">Session Stats</h1>
@@ -520,7 +553,7 @@ const formatTimestamp = (timestamp: string | number) => {
               />
             </div>
             <div className="w-fit h-fit flex flex-col items-center sm:items-start justify-center text-textcolor">
-              <p className="text-2xl sm:text-2xl font-semibold text-center sm:text-left">Session&apos;s Complete</p>
+              <p className="text-2xl sm:text-2xl font-semibold text-center sm:text-left">Sessions Complete</p>
               <p className="text-5xl font-bold text-shadow-glow text-center sm:text-left">
                 {sessionsData.length ? sessionsData.length : 0}
               </p>
@@ -544,7 +577,7 @@ const formatTimestamp = (timestamp: string | number) => {
                     <FilterIcon color={isFilterActive ? "#005BC4" : "#939393"} className="w-4 h-4" />
                   </button>
                   {isFilterMenuOpen && (
-                    <div className="fixed lg:absolute z-[100]"
+                    <div className="absolute z-[100]"
                       >
                       <FilterCard 
                         selectedKeys={selectedKeys}
@@ -616,7 +649,7 @@ const formatTimestamp = (timestamp: string | number) => {
                 />
             </CardBody>
         </Card>
-        <Card className="dark bg-darkaccent w-full sm:w-1/2 py-4 px-6 h-full md:h-[260px]">
+        <Card className="dark bg-darkaccent w-full sm:w-1/2 py-4 px-6 min-h-[260px] md:min-h-full md:h-[260px]">
             <CardBody className="dark flex flex-col items-center justify-start md:justify-center">
                 <p className="text-left md:text-center text-5xl font-medium text-white">
                   Focused for {timeThisMonth} mins in {currentMonth}. 

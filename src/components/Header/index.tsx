@@ -37,12 +37,13 @@ export default function Header() {
     
     return (
       <div className="w-full min-h-20 max-h-20 md:px-32 lg:px-40 sticky top-0 z-50 max-w-[1320px]">
-        <div className="border-b-2 md:border-2 border-[#823fca]/50 shadow-[0_0_30px_0px_rgba(130,63,202,0.3)] w-full h-full md:rounded-2xl bg-darkaccent/50 backdrop-blur-lg flex flex-row items-center justify-between px-10 md:px-10 py-3">
+        <div className="border-b-2 md:border-2 border-[#823fca]/50 shadow-[0_0_30px_0px_rgba(130,63,202,0.3)] w-full h-full md:rounded-2xl bg-darkaccent/50 backdrop-blur-lg flex flex-row items-center justify-between px-6 py-3">
           <Image
-            className="w-full rounded-none"
+            className="rounded-none"
             alt="Focus Flow Logo"
             src="./logo/focus-flow-icon-white.png"
             height={40}
+            width={40}
           />
           <div className="flex flex-row gap-4 items-center justify-center">
             <Link onPress={featuresClick} className="text-white hover:cursor-pointer">Features</Link>

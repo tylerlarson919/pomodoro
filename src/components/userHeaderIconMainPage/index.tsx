@@ -111,7 +111,7 @@ useEffect(() => {
     };
 
     return (
-        <div className="absolute right-10 z-[39]">
+        <div className="absolute right-6 z-[39]">
             <div className="relative flex flex-row gap-2 items-center justify-center">
                 <Avatar
                     isFocusable={true}

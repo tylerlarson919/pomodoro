@@ -14,17 +14,30 @@ const Login: NextPage = () => {
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
-const handleTrial = useCallback(async () => {
-    const userExist = await doesUserTrialStartDateExist(); // Await the result
+  const handleTrial = useCallback(async () => {
+    try {
+      const userExists = await doesUserTrialStartDateExist();
   
-    if (userExist) {
-      router.push("/timer");
-    } else {
-      // Set the trialStartDate for a new user
-      await editSettings({ trialStartDate: new Date(), isPaidUser: false });
-      console.log("Trial started for the user.");
+      if (userExists) {
+        router.push("/timer");
+      } else {
+        console.log("No valid trial start date found. Setting for the first time...");
+  
+        // Update Firestore with a new trial start date
+        await editSettings((prevSettings: any) => ({
+          ...prevSettings,
+          trialStartDate: new Date().toISOString(), // Store ISO string format
+          isPaidUser: prevSettings?.isPaidUser || false,
+        }));
+  
+        router.push("/timer");
+      }
+    } catch (error) {
+      console.error("Error in handleTrial:", error);
     }
-  }, []);  
+  }, [router]);
+  
+  
 
   const routeToTheRightPage = () => {
     const query = new URLSearchParams(window.location.search);
@@ -53,7 +66,6 @@ const handleTrial = useCallback(async () => {
       }
   
       const result = await signInWithEmailAndPassword(auth, email, password);
-      console.log("sign-in-form.tsx | result", result);
       handleTrial();
       routeToTheRightPage(); // Redirect
     } catch (error) {

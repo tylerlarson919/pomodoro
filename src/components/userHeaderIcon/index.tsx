@@ -12,6 +12,7 @@ import SettingsModal from "../SettingsModal";
 import SettingsIcon from "../../../public/icons/settings"
 import LogOutIcon from "../../../public/icons/log-out"
 import RepeatIcon from "../../../public/icons/repeat"
+import { usePathname } from "next/navigation"; // Import usePathname
 
 interface UHeaderIconProps {
     onTriggerReload: () => void; // Function to handle reload trigger
@@ -37,6 +38,7 @@ type ReplaceSpacesProps = {
     const [currentStreak, setCurrentStreak] = useState<number | null>(null);
     const [isHelpMenuVisible, setIsHelpMenuVisible] = useState(false);
     const [isUserPaidLocal, setIsUserPaidLocal] = useState(false);
+    const pathname = usePathname(); // Get the current path
 
     useEffect(() => {
 
@@ -178,13 +180,15 @@ type ReplaceSpacesProps = {
                             <p className="font-semibold text-textcolor text-xs">Signed in as</p>
                             <p className="font-semibold text-white text-sm">{user?.displayName}</p>
                         </div>
-                        <div
-                            className="p-2 text-textcolor cursor-pointer hover:bg-darkaccent2 text-sm font-semibold cursor-pointer rounded-lg gap-2 flex flex-row items-center"
-                            onClick={handleSettings}
-                        >
-                            <SettingsIcon color="#939393" className="w-5 h-5"/>
-                            <p>Settings</p>
-                        </div>
+                        {pathname !== '/stats' && (
+                            <div
+                                className="p-2 text-textcolor cursor-pointer hover:bg-darkaccent2 text-sm font-semibold cursor-pointer rounded-lg gap-2 flex flex-row items-center"
+                                onClick={handleSettings}
+                            >
+                                <SettingsIcon color="#939393" className="w-5 h-5"/>
+                                <p>Settings</p>
+                            </div>
+                        )}
                         {!isUserPaidLocal ? (
                             <div
                                 className="p-2 text-textcolor cursor-pointer hover:bg-darkaccent2 text-sm font-semibold cursor-pointer rounded-lg gap-2 flex flex-row items-center"

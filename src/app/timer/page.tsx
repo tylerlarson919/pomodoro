@@ -19,7 +19,7 @@ import EndSessionButton from "@/components/EndSessionButton";
 import { HoverBorderGradient  } from "@/components/ui/hover-border-gradient";
 import TimerSelector from "@/components/ui/timer-selector";
 import LoadingPage from "@/components/LoadingPage"
-
+import TrialEndedPopupModal from "@/components/TrialEndedPopupModal";
 
 const Timer = () => {
   const db = getFirestore();
@@ -47,6 +47,7 @@ const Timer = () => {
   const [popupType, setPopupType] = React.useState<"end" | "continue">("end");
   const [user, setUser] = useState<User | null>(null);
   const [isLoadingPageLoading, setIsLoadingPageLoading] = React.useState(false);
+  const [trialEndedPopup, setTrialEndedPopup] = React.useState(false);
   const router = useRouter();
 
 
@@ -359,8 +360,9 @@ const Timer = () => {
 
       // Check if the current pathname is either /stats or /timer
       if (!userStatus) {
-        console.log("userStatus is invalid, redirecting to home.");
-        router.push('/');
+        console.log("userStatus is invalid, Opening popup.");
+        setTrialEndedPopup(true);
+
       } else {
         console.log("User is paid or in a trial. Enjoy!");
       }
@@ -375,11 +377,27 @@ const Timer = () => {
     };
   }, [router]);
   
+  // function to handle clicks outside of the popup, when the popup is open
+  useEffect(() => {
+    if (trialEndedPopup) { 
+      // Adding event listener for clicks
+      console.log("Adding event listener for clicks");
+      document.addEventListener('click', handleTrialClick);
 
-    
+      // Cleanup event listener on component unmount or when trialEndedPopup changes
+      return () => {
+        document.removeEventListener('click', handleTrialClick);
+      };
+    }
+  }, [trialEndedPopup, router]);
+
+  const handleTrialClick = () => {
+    router.push("/get-started");
+  };
 
   return (
     <div className="flex flex-col items-center justify-center bg-dark1 h-screen overflow-hidden">
+      <TrialEndedPopupModal isPageVisable={trialEndedPopup}/>
       <LoadingPage isPageLoading={isLoadingPageLoading}/>
       <div
         className={`flex w-full text-textcolor fade-gradual ${

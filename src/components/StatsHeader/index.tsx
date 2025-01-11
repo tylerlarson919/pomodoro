@@ -104,13 +104,13 @@ import MenuIcon from "../../../public/icons/menu-icon";
         >
           {/* Menu content */}
           <div className="p-4">
-            <div className="flex flex-col gap-1 pt-4">
+            <div className="flex flex-col gap-1">
               <Image 
-                className="dark w-full flex justify-center pb-4"
+                className="dark flex justify-center mb-4"
                 alt="Focus Flow Logo"
                 src="./logo/focus-flow-icon-white.png"
-                height={63}
-                width={63}
+                height={40}
+                width={40}
               />
               <div className={`flex flex-row gap-1.5 items-center justify-start text-textcolor rounded-md p-2 ${currentPage === "timer" ? "hover:bg-secondary/20" : "hover:bg-textcolor/20"}`}>
                 <ClockIcon color={currentPage === "timer" ? "#6020A0" : "#939393"} className="w-2 h-2"/>
