@@ -144,7 +144,7 @@ export default function Home() {
               <p className=" text-lg text-center text-white max-w-[600px] leading-tight">A simple Pomodoro timer that vibes with your aesthetic. Focus effortlessly with calming sounds and dreamy visuals. Pick your style and let time work for you.</p>
             </div>
               <div className="flex flex-row gap-2 pt-4">
-                <Button variant="solid" color="secondary" onPress={getStarted} size="md">Start For Free!</Button>
+                <Button variant="solid" color="secondary" onPress={getStarted} size="md">Start 7 Day Trial</Button>
                 <Button variant="solid" color="secondary" onPress={pricingClick} size="md">View Pricing</Button>
               </div>
           </div>

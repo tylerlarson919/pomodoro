@@ -9,6 +9,11 @@ import UserHeaderIconMainPage from "@/components/userHeaderIconMainPage";
 export default function Header() {
     const [user, setUser] = useState<null | User>(null);
   
+
+    const getStarted = () => {
+      window.location.href = "/signup";
+    };
+    
     useEffect(() => {
       const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
         setUser(currentUser);
@@ -51,9 +56,9 @@ export default function Header() {
               <Button className="dark pl-4"
                 color="secondary"
                 variant="shadow"
-                href="/signup"
+                onPress={getStarted}
               >
-                Get Started
+                Get Started For Free!
 
               </Button>
             </>
