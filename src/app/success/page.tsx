@@ -1,24 +1,29 @@
 "use client";
-import React, { Suspense } from "react";
-import { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Button, Image } from "@nextui-org/react";
 import { editSettings } from "../../../firebase";
 
 const SuccessPage = () => {
+  return (
+    <Suspense fallback={<p>Loading...</p>}>
+      <SuccessContent />
+    </Suspense>
+  );
+};
+
+const SuccessContent = () => {
   const searchParams = useSearchParams();
   const router = useRouter();
   const [status, setStatus] = useState<"loading" | "succeeded" | "failed" | "error">("loading");
 
   const paymentIntentId = searchParams.get("payment_intent");
 
-
   const setPaidUser = async (userId: boolean) => {
-    editSettings({ isPaidUser: true })
-    .catch((err: any) => console.error("Error updating Status:", err));
+    editSettings({ isPaidUser: true }).catch((err: any) =>
+      console.error("Error updating Status:", err)
+    );
   };
-
-  
 
   useEffect(() => {
     if (!paymentIntentId) {
@@ -28,36 +33,34 @@ const SuccessPage = () => {
     }
 
     const verifyPayment = async () => {
-        try {
-          const response = await fetch("/api/verify-payment", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ paymentIntentId }),
-          });
-      
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Error response from server:", errorText);
-            throw new Error("Failed to verify payment.");
-          }
-      
-          const { status: paymentStatus } = await response.json();
-          
-          const redirectStatus = searchParams.get("redirect_status");
-          
-          // Compare the retrieved payment status with the redirect status
-          if (paymentStatus === "succeeded" && redirectStatus === "succeeded") {
-            setStatus("succeeded");
-            setPaidUser(true);
-          } else {
-            setStatus("failed");
-          }
-        } catch (error) {
-          console.error("Error verifying payment:", error);
-          setStatus("error");
+      try {
+        const response = await fetch("/api/verify-payment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paymentIntentId }),
+        });
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error("Error response from server:", errorText);
+          throw new Error("Failed to verify payment.");
         }
+
+        const { status: paymentStatus } = await response.json();
+
+        const redirectStatus = searchParams.get("redirect_status");
+
+        if (paymentStatus === "succeeded" && redirectStatus === "succeeded") {
+          setStatus("succeeded");
+          setPaidUser(true);
+        } else {
+          setStatus("failed");
+        }
+      } catch (error) {
+        console.error("Error verifying payment:", error);
+        setStatus("error");
+      }
     };
-      
 
     verifyPayment();
   }, [paymentIntentId]);
@@ -67,7 +70,6 @@ const SuccessPage = () => {
   }
 
   return (
-    <Suspense fallback={<p>Loading...</p>}>
       <div className="flex items-center justify-center min-h-screen w-screen flex-col items-center justify-center text-white">
           <div className="absolute top-0 w-full flex justify-center pt-4">
               <Image
@@ -120,7 +122,6 @@ const SuccessPage = () => {
           )}
 
       </div>      
-    </Suspense>
   );
 };
 
