@@ -25,12 +25,12 @@ import SortIcon from  "../../../public/icons/sort-icon";
 import FilterCard from '@/components/FilterCard';
 import type {RangeValue} from "@react-types/shared";
 import type {DateValue} from "@react-types/datepicker";
-import LineChart from "@/components/LineChart"  ;
 import UHeaderIcon from "@/components/userHeaderIcon";
 import bulkAddSessions from "@/components/makeDummyData";
 import { GlareCard } from "@/components/ui/glare-card";
 import TrialEndedPopupModal from "@/components/TrialEndedPopupModal";
 import LoadingPage from "@/components/LoadingPage"
+import LineChart from "@/components/charts/LineChart"  ;
 
 // Define the type for session data
 type Session = {
@@ -60,7 +60,7 @@ const Stats = () => {
 
   const [user, setUser] = useState<User | null>(null);
   const [avgTimeValue, setAvgTimeValue] = useState(0);
-  const [timeThisMonth, setTimeThisMonth] = useState(0);
+  const [timeThisMonth, setTimeThisMonth] = useState<string>("0 mins");
   const [currentMonth, setCurrentMonth] = useState<string>("");
   const [isFilterMenuOpen, setisFilterMenuOpen] = useState(false);
   const [isFilterActive, setisFilterActive] = useState(false);
@@ -336,59 +336,96 @@ const Stats = () => {
     getCurrentMonth();
   
     const calculateAvgTimePerDay = () => {
-      const finishedSessions = sessionsData.filter(session => session.status === "finished");
+      const finishedSessions = sessionsData.filter(
+        (session) => session.status === "finished"
+      );
       console.log("finishedSessions:", finishedSessions);
   
       if (finishedSessions.length === 0) {
         setAvgTimeValue(0);
-        setTimeThisMonth(0); // Reset timeThisMonth as well
+        setTimeThisMonth("0 mins"); // Reset timeThisMonth as well
         return;
       }
   
       // Helper function to parse timerLength (e.g., "1m")
-      const parseTimerLength = (timerLength: any) => {
-        const match = timerLength.match(/^(\d+)([smhd])$/); // Matches format like "1m"
+      const parseTimerLength = (timerLength: string): number => {
+        const match = timerLength.match(/^\d+[smhd]$/);
         if (!match) return 0;
   
-        const value = Number(match[1]);
-        const unit = match[2];
+        const value = Number(timerLength.slice(0, -1));
+        const unit = timerLength.slice(-1);
   
         // Convert time to minutes
         switch (unit) {
-          case 's': return value / 60; // seconds to minutes
-          case 'm': return value;     // already in minutes
-          case 'h': return value * 60; // hours to minutes
-          case 'd': return value * 1440; // days to minutes
-          default: return 0;
+          case "s":
+            return value / 60; // seconds to minutes
+          case "m":
+            return value; // already in minutes
+          case "h":
+            return value * 60; // hours to minutes
+          case "d":
+            return value * 1440; // days to minutes
+          default:
+            return 0;
         }
       };
   
-      const totalTime = finishedSessions.reduce((sum, session) => {
-        return sum + parseTimerLength(session.timerLength);
-      }, 0);
+      const sessionsByDay = finishedSessions.reduce((acc: Record<string, number[]>, session) => {
+        const day = new Date(session.startTime).toDateString();
+        if (!acc[day]) acc[day] = [];
+        acc[day].push(parseTimerLength(session.timerLength));
+        return acc;
+      }, {});
   
-      // Get unique days from sessions (convert startTime string to a Date)
-      const uniqueDays = new Set(
-        finishedSessions.map(session => {
-          const date = new Date(session.startTime);
-          return date.toDateString(); // Normalize to unique day strings
-        })
+      console.log("sessionsByDay:", sessionsByDay);
+  
+      const avgTimePerDay = Object.values(sessionsByDay).reduce((sum, daySessions) => {
+        const dayAvg = daySessions.reduce((a, b) => a + b, 0) / daySessions.length;
+        return sum + dayAvg;
+      }, 0) / Object.keys(sessionsByDay).length;
+  
+      console.log("avgTimePerDay:", avgTimePerDay);
+  
+      setAvgTimeValue(Math.round(avgTimePerDay));
+  
+      const totalTime = finishedSessions.reduce(
+        (sum, session) => sum + parseTimerLength(session.timerLength),
+        0
       );
-      const totalTimeText = formatTotalTime(totalTime);
-      setTotalTimeFocused(totalTimeText); // Set the formatted time
-      const avgTime = totalTime / uniqueDays.size;
-      setAvgTimeValue(Math.round(avgTime));
   
-      // Calculate time this month by summing the timerLength of finished sessions
-      const timeThisMonth = finishedSessions.reduce((sum, session) => {
-        return sum + parseTimerLength(session.timerLength);
-      }, 0);
+      console.log("totalTime:", totalTime);
   
-      setTimeThisMonth(timeThisMonth);
+      const formatTime = (minutes: number): string => {
+        const units = [
+          { label: "month", value: 43800 },
+          { label: "week", value: 10080 },
+          { label: "day", value: 1440 },
+          { label: "hour", value: 60 },
+          { label: "min", value: 1 },
+        ];
+        let remainingMinutes = minutes;
+        const parts: string[] = [];
+  
+        for (const unit of units) {
+          const count = Math.floor(remainingMinutes / unit.value);
+          if (count > 0) {
+            parts.push(`${count} ${unit.label}${count > 1 ? "s" : ""}`);
+            remainingMinutes %= unit.value;
+          }
+        }
+  
+        return parts.join(", ");
+      };
+  
+      const formattedTime = formatTime(totalTime);
+      setTotalTimeFocused(formattedTime);
+      setTimeThisMonth(formattedTime);
     };
   
     calculateAvgTimePerDay();
-  }, [sessionsData]);  
+  }, [sessionsData]);
+  
+  
   
   
 
@@ -652,7 +689,7 @@ const formatTimestamp = (timestamp: string | number) => {
         <Card className="dark bg-darkaccent w-full sm:w-1/2 py-4 px-6 min-h-[260px] md:min-h-full md:h-[260px]">
             <CardBody className="dark flex flex-col items-center justify-start md:justify-center">
                 <p className="text-left md:text-center text-5xl font-medium text-white">
-                  Focused for {timeThisMonth} mins in {currentMonth}. 
+                  Focused for {timeThisMonth} in {currentMonth}. 
                 </p>
             </CardBody>
         </Card>
