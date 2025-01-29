@@ -1,16 +1,11 @@
 "use client";
 import type { NextPage } from "next";
 import { useState, useCallback, useEffect } from "react";
-import { auth, editSettings, signInWithGoogle, doesUserTrialStartDateExist } from "../../../firebase";
-import {
-    signInWithPopup,
-    signInWithEmailAndPassword,
-    createUserWithEmailAndPassword,
-    AuthError, GoogleAuthProvider, User 
-  } from "firebase/auth";
-  import { useRouter } from "next/navigation";
-  import { Input, Link, Image, Button, Divider } from "@nextui-org/react"; 
-  
+import { auth, editSettings, doesUserTrialStartDateExist } from "../../../firebase";
+import { useRouter } from "next/navigation";
+import { Input, Link, Image, Button, Divider } from "@nextui-org/react"; 
+import { getAuth, createUserWithEmailAndPassword, signInWithRedirect, GoogleAuthProvider } from "firebase/auth";
+
   
   const SignUp: NextPage = () => {
 
@@ -57,15 +52,12 @@ import {
   
  
  
- const loginWithGoogle = useCallback(async () => {
-    try {
-      const result = await signInWithGoogle();
-      handleTrial();
-      routeToTheRightPage(); // Redirect
-    } catch (error) {
-      console.log("sign-in-form | ERROR", error);
-    }
+  const loginWithGoogle = useCallback(() => {
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+      signInWithRedirect(auth, provider);
   }, []);
+
 
 const onEmailSignUpButtonClick = useCallback(async () => {
     try {
@@ -80,6 +72,20 @@ const onEmailSignUpButtonClick = useCallback(async () => {
       console.log("sign-in-form.tsx | ERROR", error);
     }
   }, [email, password]);
+
+
+  // Runs after the user logs in with google
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        handleTrial();
+        routeToTheRightPage();
+      }
+    });
+  
+    return () => unsubscribe();
+  }, [handleTrial, routeToTheRightPage]);
+
 
   return (
     <div className="p-5 w-full h-full min-h-screen mx-auto flex flex-col bg-darkaccent justify-center items-center gap-10">

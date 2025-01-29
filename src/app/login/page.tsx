@@ -1,8 +1,9 @@
 "use client";
 import type { NextPage } from "next";
-import { useState, useCallback } from "react";
-import { auth, signInWithGoogle, editSettings, doesUserTrialStartDateExist } from "../../../firebase";
+import { useState, useCallback, useEffect } from "react";
+import { auth, editSettings, doesUserTrialStartDateExist } from "../../../firebase";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import { getAuth, signInWithRedirect, GoogleAuthProvider } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Input, Image, Button, Divider } from "@nextui-org/react";
 import Link from "next/link";
@@ -48,17 +49,13 @@ const Login: NextPage = () => {
     }
   };
 
-  const loginWithGoogle = useCallback(async () => {
-    try {
-      const result = await signInWithGoogle();
-      handleTrial();
-      routeToTheRightPage(); // Redirect
-    } catch (error) {
-      console.log("sign-in-form | ERROR", error);
-    }
+  const loginWithGoogle = useCallback(() => {
+      const auth = getAuth();
+      const provider = new GoogleAuthProvider();
+      signInWithRedirect(auth, provider);
   }, []);
   
-  
+
   const onEmailLoginButtonClick = useCallback(async () => {
     try {
       if (!email || !password) {
@@ -73,8 +70,19 @@ const Login: NextPage = () => {
     }
   }, [email, password]);
   
+  // Runs after the user logs in with google
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        handleTrial();
+        routeToTheRightPage();
+      }
+    });
   
+    return () => unsubscribe();
+  }, [handleTrial, routeToTheRightPage]);
   
+
 
     return (
       <div className="p-5 w-full h-full min-h-screen mx-auto flex flex-col bg-darkaccent justify-center items-center gap-10">
