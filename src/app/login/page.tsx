@@ -136,7 +136,7 @@ const Login: NextPage = () => {
                   {isVisible ? (
                     <EyeIcon color="#939393" className="" />
                   ) : (
-                    <EyeSlashIcon color="#939393" className=" " />
+                    <EyeSlashIcon color="#939393" className="" />
                   )}
                 </button>
               }
