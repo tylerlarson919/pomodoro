@@ -54,14 +54,18 @@ const Login: NextPage = () => {
       if (!email || !password) {
         throw new Error("Email and password are required.");
       }
-  
       const result = await signInWithEmailAndPassword(auth, email, password);
       handleTrial();
-      routeToTheRightPage(); // Redirect
-    } catch (error) {
-      console.log("sign-in-form.tsx | ERROR", error);
+      routeToTheRightPage();
+    } catch (error: any) {
+      if (error.code === "auth/too-many-requests") {
+        console.log("Too many failed attempts. Please try again later.");
+      } else {
+        console.log("sign-in-form.tsx | ERROR", error);
+      }
     }
   }, [email, password]);
+  
 
   const loginWithGoogle = useCallback(async () => {
     // If embedded, open in a new tab
