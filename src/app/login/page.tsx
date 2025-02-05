@@ -2,8 +2,8 @@
 import type { NextPage } from "next";
 import { useState, useCallback, useEffect } from "react";
 import { auth, editSettings, doesUserTrialStartDateExist } from "../../../firebase";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { getAuth, signInWithRedirect, GoogleAuthProvider } from "firebase/auth";
+import {  } from "firebase/auth";
+import { getAuth, signInWithRedirect, GoogleAuthProvider, signInWithEmailAndPassword, getRedirectResult } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import { Input, Image, Button, Divider } from "@nextui-org/react";
 import Link from "next/link";
@@ -49,13 +49,6 @@ const Login: NextPage = () => {
     }
   };
 
-  const loginWithGoogle = useCallback(() => {
-      const auth = getAuth();
-      const provider = new GoogleAuthProvider();
-      signInWithRedirect(auth, provider);
-  }, []);
-  
-
   const onEmailLoginButtonClick = useCallback(async () => {
     try {
       if (!email || !password) {
@@ -69,9 +62,29 @@ const Login: NextPage = () => {
       console.log("sign-in-form.tsx | ERROR", error);
     }
   }, [email, password]);
+
+  const loginWithGoogle = useCallback(() => {
+    const auth = getAuth();
+    const provider = new GoogleAuthProvider();
+    signInWithRedirect(auth, provider);
+  }, []);
   
-  // Runs after the user logs in with google
   useEffect(() => {
+    const auth = getAuth();
+  
+    // Check for redirected sign-in result
+    getRedirectResult(auth)
+      .then((result) => {
+        if (result?.user) {
+          handleTrial();
+          routeToTheRightPage();
+        }
+      })
+      .catch((error) => {
+        console.log("Google Sign-In Error:", error);
+      });
+  
+    // Also listen for auth state changes
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         handleTrial();
