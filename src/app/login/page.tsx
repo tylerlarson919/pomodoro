@@ -74,16 +74,11 @@ const Login: NextPage = () => {
   
 
   const loginWithGoogle = useCallback(async () => {
-    // If embedded, open in a new tab
-    if (window.self !== window.top) {
-      window.open(window.location.href, "_blank");
-      return;
-    }
-  
     try {
       const auth = getAuth();
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider); // Use popup instead of redirect
+  
       if (result.user) {
         handleTrial();
         routeToTheRightPage();
