@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import type { NextPage } from "next";
 import { useState, useCallback, useEffect } from "react";
 import { auth, editSettings, doesUserTrialStartDateExist } from "../../../firebase";
@@ -7,6 +8,8 @@ import { getAuth, signInWithPopup, GoogleAuthProvider, signInWithEmailAndPasswor
 import { useRouter } from "next/navigation";
 import { Input, Image, Button, Divider } from "@nextui-org/react";
 import Link from "next/link";
+import EyeIcon from  "../../../public/icons/eye";
+import EyeSlashIcon from  "../../../public/icons/eye-slash";
 
 const Login: NextPage = () => {
   const [email, setEmail] = useState("");
@@ -14,6 +17,9 @@ const Login: NextPage = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const [isVisible, setIsVisible] = React.useState(false);
+
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleTrial = useCallback(async () => {
     try {
@@ -115,11 +121,25 @@ const Login: NextPage = () => {
               className="dark w-full "
             />
             <Input
-              type="password"
+              type={isVisible ? "text" : "password"}
               placeholder="Password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="dark w-full "
+              className="dark w-full"
+              endContent={
+                <button
+                  aria-label="toggle password visibility"
+                  className="focus:outline-none"
+                  type="button"
+                  onClick={toggleVisibility}
+                >
+                  {isVisible ? (
+                    <EyeIcon color="#939393" className="" />
+                  ) : (
+                    <EyeSlashIcon color="#939393" className=" " />
+                  )}
+                </button>
+              }
             />
             <Button
               variant="bordered"
