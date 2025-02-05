@@ -64,11 +64,16 @@ const Login: NextPage = () => {
   }, [email, password]);
 
   const loginWithGoogle = useCallback(async () => {
+    // If embedded, open in a new tab
+    if (window.self !== window.top) {
+      window.open(window.location.href, "_blank");
+      return;
+    }
+  
     try {
       const auth = getAuth();
       const provider = new GoogleAuthProvider();
-      const result = await signInWithPopup(auth, provider); // Use popup instead of redirect
-  
+      const result = await signInWithPopup(auth, provider);
       if (result.user) {
         handleTrial();
         routeToTheRightPage();
@@ -82,12 +87,12 @@ const Login: NextPage = () => {
       <div className="p-5 w-full h-full min-h-screen mx-auto flex flex-col bg-darkaccent justify-center items-center gap-10">
         <div className="absolute top-0 w-full flex justify-center pt-4">
           <Image
-              onClick={() => router.push("/")}
-              disableSkeleton
-              className="dark height-fit hover:cursor-pointer"
-              src="./logo/focus-flow-logo-white.png"
-              alt="Focus Flow logo"
-              width={130}
+            onClick={() => router.push("/")}
+            disableSkeleton
+            className="dark height-fit hover:cursor-pointer"
+            src="./logo/focus-flow-logo-white.png"
+            alt="Focus Flow logo"
+            width={130}
           />
         </div>
         <div className="flex flex-col items-center justify-center gap-3 max-w-md mx-auto">
